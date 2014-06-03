@@ -1,4 +1,4 @@
-package com.android.famcircle;
+package com.android.famcircle.ui;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,8 +19,12 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.famnotes.android.famnotes.R;
-import com.famnotes.android.ui.BaseActivity;
+import com.android.famcircle.Action;
+import com.android.famcircle.CustomGallery;
+import com.android.famcircle.GalleryAdapter;
+import com.android.famcircle.R;
+import com.android.famcircle.R.id;
+import com.android.famcircle.R.layout;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;

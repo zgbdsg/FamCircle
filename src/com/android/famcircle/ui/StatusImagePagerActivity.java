@@ -1,4 +1,4 @@
-package com.android.famcircle;
+package com.android.famcircle.ui;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 import android.graphics.Bitmap;
@@ -13,8 +13,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.famnotes.android.famnotes.R;
-import com.famnotes.android.ui.BaseActivity;
+import com.android.famcircle.HackyViewPager;
+import com.android.famcircle.R;
+import com.android.famcircle.R.drawable;
+import com.android.famcircle.R.id;
+import com.android.famcircle.R.layout;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;

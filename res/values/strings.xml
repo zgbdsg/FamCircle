@@ -2,7 +2,15 @@
 <resources>
 
     <string name="app_name">FamCircle</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">进入FamCircle</string>
     <string name="action_settings">Settings</string>
+    
+        <!-- share -->
+    <string name="no_data"></string>
+    <string name="link_message">分享了一个链接</string>
+    <string name="descr_image">status picture</string>
+    <string name="comment">评论</string>
+    <string name="zan_text">赞</string>
+    <string name="status_send">发布</string>
 
 </resources>

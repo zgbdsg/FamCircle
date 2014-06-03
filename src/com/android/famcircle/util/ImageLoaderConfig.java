@@ -5,8 +5,7 @@ import java.io.File;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-
-import com.famnotes.android.famnotes.R;
+import com.android.famcircle.R;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;

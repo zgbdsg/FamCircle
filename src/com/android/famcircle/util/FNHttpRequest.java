@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cordova.api.LOG;
-//import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -25,6 +23,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+//import org.apache.commons.codec.digest.DigestUtils;
+
+import android.util.Log;
 
 //var userid ='xxxx'; // $_GET ["userid"];
 //var password='pureHtml'; //read from db;
@@ -58,7 +59,7 @@ public class FNHttpRequest {
 			localUrl += "&signature=" + signature;
 			localUrl += "&XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=14005670183461"; //debug PHP跟踪需要
 			
-			LOG.d("FNHttpRequest", localUrl);
+			Log.d("FNHttpRequest", localUrl);
 			HttpPost httpPost = new HttpPost(localUrl);
 			// HTTP Post之multipart/form-data和application/x-www-form-urlencoded
 			// 关于HttpPost，有这样两种可Post的数据载体，分别是MultipartEntity和UrlEncodedFormEntity，对这两者的共性和异性做如下解释和备忘：

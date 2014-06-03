@@ -1,14 +1,22 @@
-package com.android.famcircle;
+package com.android.famcircle.ui;
+
+import com.android.famcircle.R;
+import com.android.famcircle.R.id;
+import com.android.famcircle.R.layout;
+import com.android.famcircle.R.menu;
 
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.os.Build;
 
 public class MainActivity extends Activity {
@@ -22,6 +30,17 @@ public class MainActivity extends Activity {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
+
+		TextView begin = (TextView)findViewById(R.id.gotoshare);
+		begin.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(null,ShareActivity.class);
+				startActivity(intent);
+			}
+		});
 	}
 
 	@Override

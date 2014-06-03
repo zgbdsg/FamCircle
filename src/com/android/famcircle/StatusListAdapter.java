@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,10 +32,9 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.famnotes.android.famnotes.R;
-import com.famnotes.android.util.DensityUtil;
-import com.famnotes.android.util.FNHttpRequest;
-import com.famnotes.android.util.PostData;
+import com.android.famcircle.ui.StatusImagePagerActivity;
+import com.android.famcircle.util.FNHttpRequest;
+import com.android.famcircle.util.PostData;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -75,6 +73,7 @@ public class StatusListAdapter extends BaseAdapter{
 	private StatusListInfo statusInfo;
 	private List<StatusZanInfo> statusZanInfoList;
 	private List<StatusReplyInfo> statusReplyInfoList;
+	private String[] imageUrls;
 	
 	public StatusListAdapter(Context context,
 			List<HashMap<String, Object>> data) {
@@ -123,7 +122,7 @@ public class StatusListAdapter extends BaseAdapter{
 		statusReplyInfoList = (List<StatusReplyInfo>)dataList.get(position).get("replyinfo");
 		//Log.i("reply Len:", ""+statusReplyInfoList.size()+"");
 		
-		final String[] imageUrls = statusInfo.getPicArray();
+		imageUrls = statusInfo.getPicArray();
 		
 		class GridViewAdapter extends BaseAdapter{
 
@@ -223,14 +222,14 @@ public class StatusListAdapter extends BaseAdapter{
 		String resrc_type = statusInfo.getResrc_type();
 		
 		Date dt = new Date(Long.parseLong(statusInfo.getCreatTime()+"000"));
-		SimpleDateFormat df=new SimpleDateFormat("MM月dd�?  a hh�?); 
+		SimpleDateFormat df=new SimpleDateFormat("MM��dd��   a hh��"); 
 		holder.publish_time.setText(df.format(dt));
 		ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+statusInfo.getAvatar(), holder.userLogo,options,null);
 		holder.userName.setText(statusInfo.getName());
 		holder.status.setText(statusInfo.getStatus());
 		
 		
-		/*图片初始�?/
+		/*图片初始�?*/
 		if(resrc_type.equals("0")){
 			 holder.statusPics.setVisibility(8);
 		}else if(resrc_type.equals("1")){
@@ -283,7 +282,7 @@ public class StatusListAdapter extends BaseAdapter{
 		holder.all_reply_component.setVisibility(8);
 		holder.zanText.setText("");
 		//Log.i("all_reply_component :", "vi "+holder.all_reply_component.getVisibility());
-		/*初始化回复和�?/
+		/*初始化回复和�*/
 		if(statusZanInfoList.size() > 0 | statusReplyInfoList.size() > 0){
 			holder.all_reply_component.setVisibility(0);
 			//Log.i("all_reply_component set after :", "vi "+holder.all_reply_component.getVisibility());
@@ -313,16 +312,13 @@ public class StatusListAdapter extends BaseAdapter{
 				// TODO Auto-generated method stub
 				final StatusListInfo statInfo=(StatusListInfo)dataList.get(pos).get("statusInfo");
 				Log.i("pop on ", statInfo.getStatusId()+"  "+statInfo.getStatus());
-				/*为评价按钮添�?弹出框事�?/
 				View popupView = layoutInflater.inflate(R.layout.status_popup_window, null);
 				
-				/*点赞功能*/
 				popupView.findViewById(R.id.zan_area).setOnClickListener(new OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						/*只有测试用户*/
 						sendZan(""+1,statInfo.getUsrId(),statInfo.getStatusId());
 					}
 				});
@@ -337,13 +333,12 @@ public class StatusListAdapter extends BaseAdapter{
 						View replyView = layoutInflater.inflate(R.layout.status_popup_input_window, null);
 
 						PopupWindow replyPopUpWindow = new PopupWindow(replyView,LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT,true);
-						/*点击别处消失*/
+
 						replyPopUpWindow.setTouchable(true);
 						replyPopUpWindow.setOutsideTouchable(true);
 						replyPopUpWindow.setBackgroundDrawable(new BitmapDrawable(context.getResources(), (Bitmap) null));
 						
 						replyPopUpWindow.showAtLocation(v,Gravity.BOTTOM,0,0);
-						// 如果输入法打�?��关闭，如果没打开则打�?
 						InputMethodManager im=(InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
 						im.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 						replyPopUpWindow.setTouchInterceptor(new OnTouchListener() {

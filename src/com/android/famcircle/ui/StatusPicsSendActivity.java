@@ -1,4 +1,4 @@
-package com.android.famcircle;
+package com.android.famcircle.ui;
 
 import java.util.ArrayList;
 
@@ -16,11 +16,15 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.famnotes.android.famnotes.R;
-import com.famnotes.android.ui.BaseActivity;
-import com.famnotes.android.util.FNHttpRequest;
-import com.famnotes.android.util.PostData;
-import com.famnotes.android.util.StringUtils;
+import com.android.famcircle.Action;
+import com.android.famcircle.CustomGallery;
+import com.android.famcircle.GalleryAdapter;
+import com.android.famcircle.R;
+import com.android.famcircle.R.id;
+import com.android.famcircle.R.layout;
+import com.android.famcircle.util.FNHttpRequest;
+import com.android.famcircle.util.PostData;
+import com.android.famcircle.util.StringUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusPicsSendActivity extends BaseActivity{

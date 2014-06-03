@@ -1,6 +1,5 @@
 package com.android.famcircle;
 
-import com.famnotes.android.famnotes.R;
 
 
 

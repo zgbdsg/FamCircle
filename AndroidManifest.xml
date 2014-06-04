@@ -3,6 +3,8 @@
     package="com.android.famcircle"
     android:versionCode="1"
     android:versionName="1.0" >
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -20,6 +22,40 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.android.famcircle.ui.ShareActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            <!-- VIEW一定需要吗 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        
+         <activity android:name="com.android.famcircle.ui.StatusImagePagerActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            <!-- VIEW一定需要吗 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.android.famcircle.ui.StatusPicsSendActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            <!-- VIEW一定需要吗 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.android.famcircle.ui.StatusSelectPictureActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
+            <!-- VIEW一定需要吗 -->
+            <intent-filter>
+                <action android:name="famnotes.ACTION_PICK" />
+                <action android:name="famnotes.ACTION_MULTIPLE_PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

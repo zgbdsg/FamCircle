@@ -28,6 +28,7 @@ import com.android.famcircle.R;
 import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
+import com.android.famcircle.StatusZanInfo;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -66,14 +67,12 @@ public class ShareActivity  extends BaseActivity {
 		Log.i("activity ", "shared!!!!!!");
 		statuslist = (ListView)findViewById(R.id.statuslist);
 
-		//绑定控件 findViewById()
 		initialUserProfile();
 		initialStatuses();
 		
 		View headview = LayoutInflater.from(this).inflate(R.layout.activity_share_header, null);
 		statuslist.addHeaderView(headview);
 		
-		/*状�?数据配置*/
 		//listMap = getStatusListMaps("");
 		myadapter = new StatusListAdapter(this, listMap);
 		statuslist.setAdapter(myadapter);
@@ -108,7 +107,6 @@ public class ShareActivity  extends BaseActivity {
 		isNeedRefresh = true;
 		
 		sendStatus = (ImageView)findViewById(R.id.btn_send_status);
-		/*相机图片点击时间*/
 		sendStatus.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -125,7 +123,7 @@ public class ShareActivity  extends BaseActivity {
 	@Override
 	protected void onStart(){
 		super.onStart();
-		/*配置用户名和头像*/
+
 		if(isNeedRefresh)
 			onLoading.show();
 		//myadapter.notifyDataSetChanged();
@@ -201,7 +199,7 @@ public class ShareActivity  extends BaseActivity {
 	}
 	private List<HashMap<String, Object>> getStatusListMaps(String string) {
 		// TODO Auto-generated method stub
-		/*更新状�?*/
+
 		//initialStatuses();
 		JSONObject allResult = JSON.parseObject(statusResult);
 		JSONObject jsonResult = allResult.getJSONObject("results");
@@ -237,7 +235,6 @@ public class ShareActivity  extends BaseActivity {
 			info.setPicArray(picArray);
 			map.put("statusInfo", info);
 			
-			/*添加 �?/
 			JSONArray zanInfo = status.getJSONArray("zan");
 			//Log.i("json zan Len:", ""+zanInfo.size()+"");
 			List<StatusZanInfo> zanList = new ArrayList<StatusZanInfo>();
@@ -249,7 +246,6 @@ public class ShareActivity  extends BaseActivity {
 			}
 			map.put("zaninfo", zanList);
 			
-			/*添加回复*/
 			JSONArray replyInfo = status.getJSONArray("reply");
 			//Log.i("json reply Len:", ""+replyInfo.size()+"");
 			List<StatusReplyInfo> replyList = new ArrayList<StatusReplyInfo>();

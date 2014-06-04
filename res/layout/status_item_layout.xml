@@ -83,7 +83,7 @@
 		     <LinearLayout android:layout_width="wrap_content"
 			         	   android:layout_height="wrap_content"
 			         	   android:gravity="left">
-			     <com.famnotes.android.share.StatusGridView
+			     <com.android.famcircle.StatusGridView
 			         android:id="@+id/status_content_pics"
 			         android:layout_width="fill_parent"
 			         android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
 		             	   android:layout_width="match_parent"
 		             	   android:layout_height="wrap_content"/>
 		         
-		         <com.famnotes.android.share.ReplyListView android:id="@+id/replyList"
+		         <com.android.famcircle.ReplyListView android:id="@+id/replyList"
 		             	   android:layout_width="fill_parent"
 		             	   android:layout_height="fill_parent"
 		             	   android:dividerHeight="0.2dp"

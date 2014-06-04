@@ -195,7 +195,7 @@ public class StatusListAdapter extends BaseAdapter{
 				}
 				
 				StatusReplyInfo reply = statusReplyInfoList.get(position);
-				replyTextView.setText(reply.getFromUsrName()+" 回复 "+reply.getToUsrName()+": "+reply.getReply());
+				replyTextView.setText(reply.getFromUsrName()+" reply�� "+reply.getToUsrName()+": "+reply.getReply());
 				return replyTextView;
 			}
 			
@@ -229,13 +229,13 @@ public class StatusListAdapter extends BaseAdapter{
 		holder.status.setText(statusInfo.getStatus());
 		
 		
-		/*图片初始�?*/
 		if(resrc_type.equals("0")){
 			 holder.statusPics.setVisibility(8);
 		}else if(resrc_type.equals("1")){
 			holder.statusPics.setVisibility(0);
 			GridViewAdapter myGridViewAdapter = new GridViewAdapter();
 			holder.statusPics.setAdapter(myGridViewAdapter);
+			holder.statusPics.setTag(position);
 			switch (imageUrls.length) {
 			case 1:
 				holder.statusPics.setNumColumns(1);
@@ -271,10 +271,14 @@ public class StatusListAdapter extends BaseAdapter{
 			holder.statusPics.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					int num = (Integer)parent.getTag();
+					final StatusListInfo statInfo=(StatusListInfo)dataList.get(num).get("statusInfo");
+					String[] imageUrls = statInfo.getPicArray();
 					String[] bigImageUrl = new String[imageUrls.length];
 					for(int i=0;i<imageUrls.length;i ++)
-						bigImageUrl[i] = "http://114.215.180.229"+statusInfo.getBigPicPath()+imageUrls[i];
-					startImagePagerActivity(position,statusInfo.getStatusId() , bigImageUrl);
+						bigImageUrl[i] = "http://114.215.180.229"+statInfo.getBigPicPath()+imageUrls[i];
+					Log.i("start pager", "");
+					startImagePagerActivity(position,statInfo.getStatusId() , bigImageUrl);
 				}
 			});
 		}
@@ -282,7 +286,7 @@ public class StatusListAdapter extends BaseAdapter{
 		holder.all_reply_component.setVisibility(8);
 		holder.zanText.setText("");
 		//Log.i("all_reply_component :", "vi "+holder.all_reply_component.getVisibility());
-		/*初始化回复和�*/
+
 		if(statusZanInfoList.size() > 0 | statusReplyInfoList.size() > 0){
 			holder.all_reply_component.setVisibility(0);
 			//Log.i("all_reply_component set after :", "vi "+holder.all_reply_component.getVisibility());
@@ -358,7 +362,6 @@ public class StatusListAdapter extends BaseAdapter{
 				Log.i("location :", location[0] +" "+location[1]);
 				commentPopupWindow = new PopupWindow(popupView, 360, 80, true);
 				
-				/*点击别处消失*/
 				commentPopupWindow.setTouchable(true);
 				commentPopupWindow.setOutsideTouchable(true);
 				commentPopupWindow.setBackgroundDrawable(new BitmapDrawable(context.getResources(), (Bitmap) null));

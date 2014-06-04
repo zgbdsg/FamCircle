@@ -18,23 +18,30 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
+import com.android.famcircle.util.StringUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -46,7 +53,13 @@ public class StatusListAdapter extends BaseAdapter{
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			super.handleMessage(msg);
-			commentPopupWindow.dismiss();
+			if(msg.arg1 == 1)
+				commentPopupWindow.dismiss();
+			else if(msg.arg1 == 0){
+				ShareActivity share = (ShareActivity)context;
+				final RelativeLayout replyWindow = share.replyWindow;
+				replyWindow.performClick();
+			}
 		}
 		
 	};
@@ -73,7 +86,6 @@ public class StatusListAdapter extends BaseAdapter{
 	private StatusListInfo statusInfo;
 	private List<StatusZanInfo> statusZanInfoList;
 	private List<StatusReplyInfo> statusReplyInfoList;
-	private String[] imageUrls;
 	
 	public StatusListAdapter(Context context,
 			List<HashMap<String, Object>> data) {
@@ -122,10 +134,12 @@ public class StatusListAdapter extends BaseAdapter{
 		statusReplyInfoList = (List<StatusReplyInfo>)dataList.get(position).get("replyinfo");
 		//Log.i("reply Len:", ""+statusReplyInfoList.size()+"");
 		
-		imageUrls = statusInfo.getPicArray();
-		
 		class GridViewAdapter extends BaseAdapter{
-
+			String[] imageUrls;
+			
+			public GridViewAdapter(String[] imageurls){
+				this.imageUrls = imageurls;
+			}
 			@Override
 			public int getCount() {
 				// TODO Auto-generated method stub
@@ -233,10 +247,10 @@ public class StatusListAdapter extends BaseAdapter{
 			 holder.statusPics.setVisibility(8);
 		}else if(resrc_type.equals("1")){
 			holder.statusPics.setVisibility(0);
-			GridViewAdapter myGridViewAdapter = new GridViewAdapter();
+			GridViewAdapter myGridViewAdapter = new GridViewAdapter(statusInfo.getPicArray());
 			holder.statusPics.setAdapter(myGridViewAdapter);
 			holder.statusPics.setTag(position);
-			switch (imageUrls.length) {
+			switch (statusInfo.getPicArray().length) {
 			case 1:
 				holder.statusPics.setNumColumns(1);
 				break;
@@ -334,26 +348,27 @@ public class StatusListAdapter extends BaseAdapter{
 						// TODO Auto-generated method stub
 						Log.i("press reply", "!!!");
 						commentPopupWindow.dismiss();
-						View replyView = layoutInflater.inflate(R.layout.status_popup_input_window, null);
-
-						PopupWindow replyPopUpWindow = new PopupWindow(replyView,LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT,true);
-
-						replyPopUpWindow.setTouchable(true);
-						replyPopUpWindow.setOutsideTouchable(true);
-						replyPopUpWindow.setBackgroundDrawable(new BitmapDrawable(context.getResources(), (Bitmap) null));
+						ShareActivity share = (ShareActivity)context;
+						final RelativeLayout  inputWindow = share.inputWindow;
+						final RelativeLayout replyWindow = share.replyWindow;
+						Log.i("reply visual","  "+ inputWindow.getVisibility());
+						inputWindow.setVisibility(View.VISIBLE);
+						replyWindow.setVisibility(View.VISIBLE);
+						inputWindow.requestFocus();
+						InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
+						imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
 						
-						replyPopUpWindow.showAtLocation(v,Gravity.BOTTOM,0,0);
-						InputMethodManager im=(InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-						im.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-						replyPopUpWindow.setTouchInterceptor(new OnTouchListener() {
+						Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
+						final EditText replyContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+						btnReplySend.setOnClickListener(new OnClickListener() {
 							
 							@Override
-							public boolean onTouch(View v, MotionEvent event) {
+							public void onClick(View arg0) {
 								// TODO Auto-generated method stub
-								return false;
+								sendReply(""+1,statInfo.getUsrId(),statInfo.getStatusId(),
+										StringUtils.gbEncoding(replyContent.getText().toString()));
 							}
 						});
-						replyPopUpWindow.update();
 					}
 				});
 				
@@ -371,6 +386,7 @@ public class StatusListAdapter extends BaseAdapter{
 				Log.i("popup ", commentPopupWindow.getWidth()+"  "+commentPopupWindow.getHeight());
 				commentPopupWindow.update();
 				//commentPopupWindow.showAtLocation(v, Gravity.NO_GRAVITY, location[0]-commentPopupWindow.getWidth(), location[1]);
+				
 			}
 		});
 		
@@ -400,6 +416,7 @@ public class StatusListAdapter extends BaseAdapter{
 				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":1, \"reply\":\"\"}");
 				String json=new FNHttpRequest().doPost(pdata).trim();
 				Message msg = new Message();
+				msg.arg1 = 1;
 				handler.sendMessage(msg);
 				System.out.println(json);
 
@@ -408,4 +425,22 @@ public class StatusListAdapter extends BaseAdapter{
 		}.execute("");
 	}
 	
+	public void sendReply(final String fromUsrId, final String toUsrId ,final String statusId,final String replyContent){
+		new AsyncTask<String, String, String>() {
+
+			@Override
+			protected String doInBackground(String... params) {
+				// TODO Auto-generated method stub
+				Log.i("reply  info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
+				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":0, \"reply\":\""+replyContent+"\"}");
+				String json=new FNHttpRequest().doPost(pdata).trim();
+				Message msg = new Message();
+				msg.arg1 = 0 ;
+				handler.sendMessage(msg);
+				System.out.println(json);
+
+				return null;
+			}
+		}.execute("");
+	}
 }

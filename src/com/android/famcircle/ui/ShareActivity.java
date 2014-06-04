@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,10 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -56,6 +60,8 @@ public class ShareActivity  extends BaseActivity {
 	
 	Context context;
 	PopupWindow commentPopupWindow;
+	public RelativeLayout replyWindow;
+	public RelativeLayout inputWindow;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +69,22 @@ public class ShareActivity  extends BaseActivity {
 		setContentView(R.layout.activity_share);
 		
 		AppManager.getInstance().addActivity(this);
-		context = getApplicationContext();
+		context = this;
 		Log.i("activity ", "shared!!!!!!");
+		replyWindow = (RelativeLayout)findViewById(R.id.relative_pop_up_input_window);
+		replyWindow.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(inputWindow.getWindowToken(), 0);
+				inputWindow.setVisibility(View.INVISIBLE);
+				replyWindow.setVisibility(View.INVISIBLE);
+				
+			}
+		});
+		inputWindow = (RelativeLayout)findViewById(R.id.pop_up_input_window);
 		statuslist = (ListView)findViewById(R.id.statuslist);
 
 		initialUserProfile();

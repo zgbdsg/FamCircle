@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +19,10 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -35,6 +35,11 @@ import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 
@@ -48,6 +53,7 @@ public class ShareActivity  extends BaseActivity {
 	String statusResult;
 	List<HashMap<String, Object>> listMap;
 	ListView statuslist;
+	PullToRefreshListView mPullRefreshListView;
 	StatusListAdapter myadapter;
 	Handler myhandler;
 	String[] imageUrls;
@@ -85,7 +91,36 @@ public class ShareActivity  extends BaseActivity {
 			}
 		});
 		inputWindow = (RelativeLayout)findViewById(R.id.pop_up_input_window);
-		statuslist = (ListView)findViewById(R.id.statuslist);
+		mPullRefreshListView = (PullToRefreshListView)findViewById(R.id.statuslist);
+		mPullRefreshListView.setMode(Mode.BOTH);
+		// Set a listener to be invoked when the list should be refreshed.
+		mPullRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				String label = DateUtils.formatDateTime(getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+
+				// Update the LastUpdatedLabel
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel("refresh at: "+label);
+				refreshView.getLoadingLayoutProxy().setRefreshingLabel(getResources().getString(R.string.pull_to_refresh_refreshing_label));
+				refreshView.getLoadingLayoutProxy().setReleaseLabel(getResources().getString(R.string.pull_to_refresh_release_label));
+				refreshView.getLoadingLayoutProxy().setPullLabel(getResources().getString(R.string.pull_to_refresh_pull_label));
+				
+				// Do work to refresh the list here.
+				new GetDataTask().execute();
+			}
+		});
+
+		// Add an end-of-list listener
+		mPullRefreshListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+
+			@Override
+			public void onLastItemVisible() {
+				Toast.makeText(ShareActivity.this, "End of List!", Toast.LENGTH_SHORT).show();
+			}
+		});
+				
+		statuslist = mPullRefreshListView.getRefreshableView();
 
 		initialUserProfile();
 		initialStatuses();
@@ -150,6 +185,30 @@ public class ShareActivity  extends BaseActivity {
 	}
 	
 
+	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+
+		@Override
+		protected String[] doInBackground(Void... params) {
+			// Simulates a background job.
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String[] result) {
+			//listMap.add(null);
+			myadapter.notifyDataSetChanged();
+
+			// Call onRefreshComplete when the list has been refreshed.
+			mPullRefreshListView.onRefreshComplete();
+
+			super.onPostExecute(result);
+		}
+	}
+	
 	public void sendZan(final String fromUsrId, final String toUsrId ,final String statusId){
 		new AsyncTask<String, String, String>() {
 

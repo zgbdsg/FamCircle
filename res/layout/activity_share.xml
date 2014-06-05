@@ -23,14 +23,21 @@
 
     </FrameLayout>
     
-    <FrameLayout android:layout_width="match_parent"
-        				  android:layout_height="match_parent" >
-	    <ListView
+    <FrameLayout android:layout_width="fill_parent"
+        		 android:layout_height="fill_parent" >
+        
+	    <com.handmark.pulltorefresh.library.PullToRefreshListView
+	        xmlns:ptr="http://schemas.android.com/apk/res-auto" 
 	        android:id="@+id/statuslist"
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent" 
 	        android:dividerHeight="2dp"
 	        android:layout_marginBottom="5dp"
+	        android:fadingEdge="none"
+	        android:fastScrollEnabled="false"
+        	android:footerDividersEnabled="false"
+        	android:headerDividersEnabled="false"
+        	android:smoothScrollbar="true" 
 	        android:divider="@null"/>
 	    
 	    <RelativeLayout android:layout_width="match_parent"

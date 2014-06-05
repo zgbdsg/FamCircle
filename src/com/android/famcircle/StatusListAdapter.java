@@ -13,16 +13,11 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -128,6 +123,7 @@ public class StatusListAdapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
+		Log.i("get view("+dataList.size()+") :", ""+position);
 		statusInfo = (StatusListInfo)dataList.get(position).get("statusInfo");
 		statusZanInfoList = (List<StatusZanInfo>)dataList.get(position).get("zaninfo");
 		//Log.i("zan Len:", ""+statusZanInfoList.size()+"");

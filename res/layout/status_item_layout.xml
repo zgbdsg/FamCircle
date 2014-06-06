@@ -114,8 +114,8 @@
 					android:id="@+id/commentButton"
 					android:layout_marginRight="10dp"
 					android:layout_alignParentRight="true"
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content"
+					android:layout_height="25dp"
+					android:layout_width="30dp"
 					android:background="@drawable/coment" />
 			</RelativeLayout>
 			
@@ -123,18 +123,23 @@
 		         		   android:orientation="vertical"
 		         		   android:layout_width="fill_parent"
 		         		   android:layout_height="wrap_content"
+		         		   android:layout_marginRight="5dp"
 		         		   android:visibility="gone"
 		         		   android:background="@drawable/detail">
 				
 		         <TextView android:id="@+id/zan_text"
 		             	   android:layout_width="match_parent"
-		             	   android:layout_height="wrap_content"/>
+		             	   android:layout_height="wrap_content"
+		             	   android:paddingLeft="4dp"
+		             	   android:paddingTop="4dp"/>
 		         
 		         <com.android.famcircle.ReplyListView android:id="@+id/replyList"
 		             	   android:layout_width="fill_parent"
 		             	   android:layout_height="fill_parent"
 		             	   android:dividerHeight="0.2dp"
 					       android:layout_marginBottom="5dp"
+					       android:paddingLeft="4dp"
+		             	   android:paddingTop="4dp"
 					       android:divider="@null" />
 
 		     </LinearLayout>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -14,11 +13,12 @@ import android.os.Message;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.AppManager;
+import com.android.famcircle.CustomProgressDialog;
 import com.android.famcircle.R;
 import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
@@ -58,11 +59,12 @@ public class ShareActivity  extends BaseActivity {
 	Handler myhandler;
 	String[] imageUrls;
 	GridView statusPics;
-	ImageView sendStatus;
+	//ImageView sendStatus;
 	DisplayImageOptions options;
 	
-	ProgressDialog onLoading;
+	private CustomProgressDialog onLoading;
 	Boolean isNeedRefresh;
+	int currentMode;
 	
 	Context context;
 	PopupWindow commentPopupWindow;
@@ -100,14 +102,21 @@ public class ShareActivity  extends BaseActivity {
 				String label = DateUtils.formatDateTime(getApplicationContext(), System.currentTimeMillis(),
 						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
 
-				// Update the LastUpdatedLabel
 				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel("refresh at: "+label);
 				refreshView.getLoadingLayoutProxy().setRefreshingLabel(getResources().getString(R.string.pull_to_refresh_refreshing_label));
 				refreshView.getLoadingLayoutProxy().setReleaseLabel(getResources().getString(R.string.pull_to_refresh_release_label));
 				refreshView.getLoadingLayoutProxy().setPullLabel(getResources().getString(R.string.pull_to_refresh_pull_label));
 				
-				// Do work to refresh the list here.
-				new GetDataTask().execute();
+				// Update the LastUpdatedLabel
+				if(refreshView.getCurrentMode() == Mode.PULL_FROM_START) {
+					// Do work to refresh the list here.
+					currentMode = 1;
+					new GetDataTask().execute(1);
+				}else if(refreshView.getCurrentMode() == Mode.PULL_FROM_END){
+					currentMode = 0;
+					new GetDataTask().execute(0);
+				}
+				
 			}
 		});
 
@@ -143,9 +152,27 @@ public class ShareActivity  extends BaseActivity {
 					case 1:
 						commentPopupWindow.dismiss();
 						break;
+					case 3:
+						List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
+						List<HashMap<String, Object>> resultList = getStatusListMaps(statusResult);
+						
+						if(currentMode == 0){
+							allList.addAll(listMap);
+							allList.addAll(resultList);
+						}else{
+							allList.addAll(resultList);
+							allList.addAll(listMap);
+						}
+						listMap = allList;
+						Log.i("listMap length :", ""+listMap.size());
+						myadapter.notifyDataSetChanged();
 
+						// Call onRefreshComplete when the list has been refreshed.
+						mPullRefreshListView.onRefreshComplete();
+						break;
 					default:
-						listMap = getStatusListMaps("");
+						listMap = getStatusListMaps(statusResult);
+						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	Log.i("data", listMap.get(0).get("statusInfo").toString());
 		            	onLoading.dismiss();
@@ -156,11 +183,12 @@ public class ShareActivity  extends BaseActivity {
 	            }
 	        }
 		};
-		onLoading = new ProgressDialog(this);
+		onLoading = new CustomProgressDialog(this);
 		onLoading.setCancelable(true);
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 		
+		/*
 		sendStatus = (ImageView)findViewById(R.id.btn_send_status);
 		sendStatus.setOnClickListener(new OnClickListener() {
 			
@@ -172,7 +200,7 @@ public class ShareActivity  extends BaseActivity {
 				//Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
 				//startActivityForResult(i, 200);
 			}
-		});
+		});*/
 	}
 
 	@Override
@@ -184,29 +212,86 @@ public class ShareActivity  extends BaseActivity {
 		//myadapter.notifyDataSetChanged();
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
 
-	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.share, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.btn_send_status) {
+			Intent i = new Intent(getApplicationContext(), StatusPicsSendActivity.class);
+			startActivity(i);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	private class GetDataTask extends AsyncTask<Integer, Void, String> {
 
 		@Override
-		protected String[] doInBackground(Void... params) {
+		protected String doInBackground(Integer... params) {
 			// Simulates a background job.
-			try {
-				Thread.sleep(4000);
-			} catch (InterruptedException e) {
+			String result = "";
+			if(params[0] == 0){
+				/*from end*/
+				String statusId = "-1";
+				if(listMap.size() != 0){
+					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
+					statusId = statusInfo.getStatusId();
+				}
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":1}");
+				result=new FNHttpRequest().doPost(pdata).trim();
+			}else if(params[0] == 1){
+				/*from start*/
+				String statusId = "-1";
+				if(listMap.size() != 0){
+					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
+					statusId = statusInfo.getStatusId();
+				}
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":0}");
+				result=new FNHttpRequest().doPost(pdata).trim();
 			}
-			return null;
+			
+			Log.i("refresh data :", result);
+			statusResult = result;
+			//listMap = getStatusListMaps(json);
+			//onLoading.dismiss();
+			Message message = new Message();
+			message.arg1 = 3;
+			myhandler.sendMessage(message);
+			return result;
 		}
 
+		/*
 		@Override
-		protected void onPostExecute(String[] result) {
+		protected void onPostExecute(String result) {
 			//listMap.add(null);
+			List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
+			List<HashMap<String, Object>> resultList = getStatusListMaps(result);
+			
+			if(currentMode == 0){
+				allList.addAll(listMap);
+				allList.addAll(resultList);
+			}else{
+				allList.addAll(resultList);
+				allList.addAll(listMap);
+			}
+			listMap = allList;
+			Log.i("listMap length :", ""+listMap.size());
 			myadapter.notifyDataSetChanged();
 
 			// Call onRefreshComplete when the list has been refreshed.
 			mPullRefreshListView.onRefreshComplete();
 
 			super.onPostExecute(result);
-		}
+		}*/
 	}
 	
 	public void sendZan(final String fromUsrId, final String toUsrId ,final String statusId){
@@ -280,7 +365,7 @@ public class ShareActivity  extends BaseActivity {
 		// TODO Auto-generated method stub
 
 		//initialStatuses();
-		JSONObject allResult = JSON.parseObject(statusResult);
+		JSONObject allResult = JSON.parseObject(string);
 		JSONObject jsonResult = allResult.getJSONObject("results");
 		
 		if(statusResult == null || statusResult.length() == 0 || allResult.getInteger("errCode") != 0){

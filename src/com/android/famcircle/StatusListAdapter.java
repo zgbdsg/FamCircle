@@ -371,7 +371,7 @@ public class StatusListAdapter extends BaseAdapter{
 				location = new int[2];
 				btnv.getLocationInWindow(location);
 				Log.i("location :", location[0] +" "+location[1]);
-				commentPopupWindow = new PopupWindow(popupView, 360, 80, true);
+				commentPopupWindow = new PopupWindow(popupView, 400, 90, true);
 				
 				commentPopupWindow.setTouchable(true);
 				commentPopupWindow.setOutsideTouchable(true);

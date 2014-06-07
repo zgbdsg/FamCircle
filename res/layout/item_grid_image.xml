@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="120dip">
+    android:layout_height="fill_parent"
+    android:layout_gravity="left">
 
     <ImageView
         android:id="@+id/grid_image_item"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
+        android:layout_height="80dp"
+        android:layout_gravity="left"
         android:adjustViewBounds="true"
         android:contentDescription="@string/descr_image"
-        android:scaleType="fitXY" />
+        android:scaleType="fitCenter" />
 
 </FrameLayout>

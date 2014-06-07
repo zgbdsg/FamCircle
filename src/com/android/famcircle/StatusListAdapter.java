@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
@@ -133,6 +134,10 @@ public class StatusListAdapter extends BaseAdapter{
 		class GridViewAdapter extends BaseAdapter{
 			String[] imageUrls;
 			
+			class GridHolder{
+				ImageView iamgeView;
+			}
+			
 			public GridViewAdapter(String[] imageurls){
 				this.imageUrls = imageurls;
 			}
@@ -157,17 +162,19 @@ public class StatusListAdapter extends BaseAdapter{
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				// TODO Auto-generated method stub
-				ImageView imageView;
+				GridHolder gridHolder;
 				if(convertView != null) {
-					imageView = (ImageView)convertView;
+					gridHolder = (GridHolder) convertView.getTag();
 				}else {
-					imageView = new ImageView(context);
-					imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+					convertView = layoutInflater.inflate(R.layout.item_grid_image, parent,false);
+					gridHolder = new GridHolder();
+					gridHolder.iamgeView = (ImageView) convertView.findViewById(R.id.grid_image_item);
+					convertView.setTag(gridHolder);
 				}
-				
+				gridHolder.iamgeView.setScaleType(ImageView.ScaleType.FIT_XY);
 				//imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position], imageView,options,null);
-				return imageView;
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position], gridHolder.iamgeView,options,null);
+				return convertView;
 			}
 			
 		}
@@ -253,27 +260,10 @@ public class StatusListAdapter extends BaseAdapter{
 			case 2:
 				holder.statusPics.setNumColumns(2);
 				break;
-			case 3:
-				holder.statusPics.setNumColumns(3);
-				break;
 			case 4:
 				holder.statusPics.setNumColumns(2);
 				break;
-			case 5:
-				holder.statusPics.setNumColumns(3);
-				break;
-			case 6:
-				holder.statusPics.setNumColumns(3);
-				break;
-			case 7:
-				holder.statusPics.setNumColumns(3);
-				break;
-			case 8:
-				holder.statusPics.setNumColumns(3);
-				break;
-			case 9:
-				holder.statusPics.setNumColumns(3);
-				break;
+
 			default:
 				holder.statusPics.setNumColumns(3);
 				break;

@@ -164,6 +164,7 @@ public class ShareActivity  extends BaseActivity {
 							allList.addAll(listMap);
 						}
 						listMap = allList;
+						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 						myadapter.notifyDataSetChanged();
 
@@ -171,11 +172,10 @@ public class ShareActivity  extends BaseActivity {
 						mPullRefreshListView.onRefreshComplete();
 						break;
 					default:
+						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
-		            	Log.i("data", listMap.get(0).get("statusInfo").toString());
-		            	onLoading.dismiss();
 		            	isNeedRefresh = false;
 		            	myadapter.notifyDataSetChanged();
 						break;
@@ -246,7 +246,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":1}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":0}");
 				result=new FNHttpRequest().doPost(pdata).trim();
 			}else if(params[0] == 1){
 				/*from start*/
@@ -255,7 +255,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":0}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":1}");
 				result=new FNHttpRequest().doPost(pdata).trim();
 			}
 			

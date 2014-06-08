@@ -18,11 +18,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -31,7 +33,6 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
@@ -136,6 +137,7 @@ public class StatusListAdapter extends BaseAdapter{
 			
 			class GridHolder{
 				ImageView iamgeView;
+				FrameLayout itemFrame;
 			}
 			
 			public GridViewAdapter(String[] imageurls){
@@ -169,9 +171,14 @@ public class StatusListAdapter extends BaseAdapter{
 					convertView = layoutInflater.inflate(R.layout.item_grid_image, parent,false);
 					gridHolder = new GridHolder();
 					gridHolder.iamgeView = (ImageView) convertView.findViewById(R.id.grid_image_item);
+					gridHolder.itemFrame = (FrameLayout)convertView.findViewById(R.id.item_frame);
 					convertView.setTag(gridHolder);
 				}
-				gridHolder.iamgeView.setScaleType(ImageView.ScaleType.FIT_XY);
+				
+				if(imageUrls.length == 1){
+					gridHolder.itemFrame.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+				}
+				//gridHolder.iamgeView.setScaleType(ImageView.ScaleType.FIT_XY);
 				//imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position], gridHolder.iamgeView,options,null);
 				return convertView;
@@ -256,6 +263,9 @@ public class StatusListAdapter extends BaseAdapter{
 			switch (statusInfo.getPicArray().length) {
 			case 1:
 				holder.statusPics.setNumColumns(1);
+				View itemFrame = (View)layoutInflater.inflate(R.layout.item_grid_image,null);
+				FrameLayout gridItemFrame = (FrameLayout)itemFrame.findViewById(R.id.item_frame);
+				itemFrame.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
 				break;
 			case 2:
 				holder.statusPics.setNumColumns(2);

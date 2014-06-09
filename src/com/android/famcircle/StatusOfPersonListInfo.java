@@ -12,6 +12,8 @@ public class StatusOfPersonListInfo implements Serializable{
 	private String statusTime;
 	private String[] statusTexts;
 	private String[] statusPic;
+	private String smallPicPath;
+	private String bigPicpath;
 	
 	public String getStatusTime() {
 		return statusTime;
@@ -30,6 +32,18 @@ public class StatusOfPersonListInfo implements Serializable{
 	}
 	public void setStatusPic(String[] statusPic) {
 		this.statusPic = statusPic;
+	}
+	public String getSmallPicPath() {
+		return smallPicPath;
+	}
+	public void setSmallPicPath(String smallPicPath) {
+		this.smallPicPath = smallPicPath;
+	}
+	public String getBigPicpath() {
+		return bigPicpath;
+	}
+	public void setBigPicpath(String bigPicpath) {
+		this.bigPicpath = bigPicpath;
 	}
 	
 }

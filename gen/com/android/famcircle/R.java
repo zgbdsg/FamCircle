@@ -1403,8 +1403,9 @@ containing a value of this type.
         public static final int normal=0x7f050000;
         public static final int pagePoint=0x7f05007c;
         public static final int pager=0x7f050063;
-        public static final int pics=0x7f050057;
-        public static final int pics_status=0x7f050056;
+        public static final int pics=0x7f050056;
+        public static final int pics_discript=0x7f050057;
+        public static final int pics_status=0x7f050055;
         public static final int pop_up_input_window=0x7f050074;
         public static final int progress_circular=0x7f050018;
         public static final int progress_horizontal=0x7f050019;
@@ -1454,11 +1455,10 @@ containing a value of this type.
         public static final int submit_area=0x7f050045;
         public static final int tabMode=0x7f050002;
         public static final int textView1=0x7f05004d;
-        public static final int text_status=0x7f050055;
+        public static final int text_status=0x7f050054;
         public static final int title=0x7f050037;
         public static final int top_action_bar=0x7f05002c;
         public static final int tvTitleText=0x7f050085;
-        public static final int type_of_the_status=0x7f050054;
         public static final int up=0x7f05002d;
         public static final int useLogo=0x7f050003;
         public static final int user_logo=0x7f050064;

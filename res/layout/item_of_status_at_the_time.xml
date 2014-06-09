@@ -2,37 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#A8A8A8"
     android:orientation="vertical" >
     
-    <ViewSwitcher android:layout_width="fill_parent"
-        		  android:layout_height="wrap_content"
-        		  android:layout_gravity="left"
-        		  android:background="#A8A8A8"
-        		  android:id="@+id/type_of_the_status">
     
-        <TextView android:id="@+id/text_status"
-            	  android:layout_width="fill_parent"
-            	  android:layout_height="wrap_content"
-            	  android:text="just for test text"/>
+    <TextView android:id="@+id/text_status"
+        	  android:layout_width="fill_parent"
+        	  android:layout_height="wrap_content"
+        	  android:text="just for test text"/>
         
-        <LinearLayout android:id="@+id/pics_status"
-            		  android:layout_width="fill_parent"
-            		  android:layout_height="wrap_content"
-            		  android:orientation="horizontal">
-            <ImageView android:id="@+id/pics"
-                	   android:layout_width="80dp"
-                	   android:layout_height="80dp"/>
-            
-            <LinearLayout android:layout_width="fill_parent"
-                	      android:layout_height="wrap_content"
-                	      android:orientation="vertical">
-                <TextView android:layout_width="fill_parent"
-                    	  android:layout_height="wrap_content"
-                    	  android:layout_gravity="left"
-                    	  android:text="test pics discript"/>
-            </LinearLayout>
+    <LinearLayout android:id="@+id/pics_status"
+        		  android:layout_width="fill_parent"
+        		  android:layout_height="wrap_content"
+        		  android:orientation="horizontal">
+        <ImageView android:id="@+id/pics"
+            	   android:layout_width="80dp"
+            	   android:layout_height="80dp"/>
+        
+        <LinearLayout android:layout_width="fill_parent"
+            	      android:layout_height="wrap_content"
+            	      android:orientation="vertical">
+            <TextView android:layout_width="fill_parent"
+                	  android:layout_height="wrap_content"
+                	  android:layout_gravity="left"
+                	  android:id="@+id/pics_discript"
+                	  android:text="test pics discript"/>
         </LinearLayout>
-
-	</ViewSwitcher>
+    </LinearLayout>
 
 </LinearLayout>

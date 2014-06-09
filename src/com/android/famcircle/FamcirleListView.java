@@ -4,19 +4,19 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ListView;
 
-public class ReplyListView extends ListView {
+public class FamcirleListView extends ListView {
 
-	public ReplyListView(Context context) {
+	public FamcirleListView(Context context) {
 		// TODO Auto-generated method stub
 		super(context);
 	}
 
-	public ReplyListView(Context context, AttributeSet attrs) {
+	public FamcirleListView(Context context, AttributeSet attrs) {
 		// TODO Auto-generated method stub
 		super(context, attrs);
 	}
 
-	public ReplyListView(Context context, AttributeSet attrs, int defStyle) {
+	public FamcirleListView(Context context, AttributeSet attrs, int defStyle) {
 		// TODO Auto-generated method stub
 		super(context, attrs, defStyle);
 	}

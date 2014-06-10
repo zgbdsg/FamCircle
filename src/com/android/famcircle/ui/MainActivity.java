@@ -27,8 +27,14 @@ public class MainActivity extends Activity {
 		}
 		
 		Log.i("base path", getFilesDir().getPath());
-		String baseFilepath  = getFilesDir().getPath()+"/zip";
-		File dir = new File(baseFilepath);
+		String baseFilePath  = getFilesDir().getPath()+"/zip";
+		String compressFilepath = getFilesDir().getPath()+"/compress";
+		
+		File dir = new File(baseFilePath);
+		if(!dir.exists())
+			dir.mkdirs();
+		
+		dir = new File(compressFilepath);
 		if(!dir.exists())
 			dir.mkdirs();
 	}

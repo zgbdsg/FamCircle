@@ -1,20 +1,23 @@
 package com.android.famcircle;
 
-import java.io.Serializable;
-
-public class StatusOfPersonListInfo implements Serializable{
+public class StatusOfPersonListInfo{
 
 	/**
 	 * @author zgb
 	 */
-	
-	private static final long serialVersionUID = 74904906746995617L;
 	private String statusTime;
+	private String[] creatTime;
 	private String[] statusTexts;
 	private String[] statusPic;
 	private String smallPicPath;
 	private String bigPicpath;
 	
+	public String[] getCreatTime() {
+		return creatTime;
+	}
+	public void setCreatTime(String[] creatTime) {
+		this.creatTime = creatTime;
+	}
 	public String getStatusTime() {
 		return statusTime;
 	}

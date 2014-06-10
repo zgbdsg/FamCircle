@@ -7,6 +7,7 @@ import java.util.Collections;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory.Options;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -68,8 +69,12 @@ public class StatusSelectPictureActivity extends BaseActivity{
 			File cacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(),
 					CACHE_DIR);
 
+			Options sampleOpt = new Options();
+			sampleOpt.inJustDecodeBounds = false;
+			sampleOpt.inSampleSize = 16;
+			
 			DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-					.cacheOnDisc(true).imageScaleType(ImageScaleType.EXACTLY)
+					.cacheOnDisc(true).imageScaleType(ImageScaleType.EXACTLY).decodingOptions(sampleOpt)
 					.bitmapConfig(Bitmap.Config.RGB_565).build();
 			ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
 					getBaseContext())

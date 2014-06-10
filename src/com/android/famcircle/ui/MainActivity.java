@@ -1,8 +1,11 @@
 package com.android.famcircle.ui;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +25,12 @@ public class MainActivity extends Activity {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new MainFragment()).commit();
 		}
-
+		
+		Log.i("base path", getFilesDir().getPath());
+		String baseFilepath  = getFilesDir().getPath()+"/zip";
+		File dir = new File(baseFilepath);
+		if(!dir.exists())
+			dir.mkdirs();
 	}
 
 	@Override

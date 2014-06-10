@@ -9,6 +9,7 @@
 	        android:id="@+id/statuslist"
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent" 
+	        android:background="#ffffff"
 	        android:dividerHeight="2dp"
 	        android:layout_marginBottom="5dp"
 	        android:fadingEdge="none"

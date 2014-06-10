@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
+import com.android.famcircle.ui.StatusOfPersonActivity;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
 import com.android.famcircle.util.StringUtils;
@@ -92,11 +94,16 @@ public class StatusListAdapter extends BaseAdapter{
 		this.context = context;
 		layoutInflater = (LayoutInflater)LayoutInflater.from(context);
 		
+		Options sampleOpt = new Options();
+		sampleOpt.inJustDecodeBounds = false;
+		sampleOpt.inSampleSize = 16;
+		
 		options = new DisplayImageOptions.Builder()
 		.showImageOnLoading(R.drawable.ic_stub)
 		.showImageForEmptyUri(R.drawable.ic_empty)
 		.showImageOnFail(R.drawable.ic_error)
 		.cacheInMemory(true)
+		.decodingOptions(sampleOpt)
 		.cacheOnDisc(true)
 		.considerExifParams(true)
 		.bitmapConfig(Bitmap.Config.RGB_565)
@@ -249,6 +256,18 @@ public class StatusListAdapter extends BaseAdapter{
 		SimpleDateFormat df=new SimpleDateFormat("MMÔÂddÈÕ   a hhµã"); 
 		holder.publish_time.setText(df.format(dt));
 		ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+statusInfo.getAvatar(), holder.userLogo,options,null);
+		holder.userLogo.setTag(position);
+		holder.userLogo.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				int num = (Integer)arg0.getTag();
+				final StatusListInfo statInfo=(StatusListInfo)dataList.get(num).get("statusInfo");
+				startStatusOfPersonActivity(statInfo.getUsrId());
+			}
+		});
+		
 		holder.userName.setText(statusInfo.getName());
 		holder.status.setText(statusInfo.getStatus());
 		
@@ -273,11 +292,14 @@ public class StatusListAdapter extends BaseAdapter{
 			case 4:
 				holder.statusPics.setNumColumns(2);
 				break;
-
 			default:
 				holder.statusPics.setNumColumns(3);
 				break;
 			}
+			
+			if(statusInfo.getPicArray().length > 9)
+				holder.statusPics.setNumColumns((int)Math.sqrt(statusInfo.getPicArray().length));
+			
 			holder.statusPics.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -397,6 +419,11 @@ public class StatusListAdapter extends BaseAdapter{
 		context.startActivity(intent);
 	}
 
+	private void startStatusOfPersonActivity(String  usrId) {
+		Intent intent = new Intent(context, StatusOfPersonActivity.class);
+		intent.putExtra("usrId", usrId);
+		context.startActivity(intent);
+	}
 	public void setDataList(List<HashMap<String, Object>> dataList) {
 		this.dataList = dataList;
 	}

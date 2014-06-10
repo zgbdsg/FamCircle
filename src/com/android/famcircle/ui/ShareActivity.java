@@ -368,7 +368,7 @@ public class ShareActivity  extends BaseActivity {
 		JSONObject allResult = JSON.parseObject(string);
 		JSONObject jsonResult = allResult.getJSONObject("results");
 		
-		if(statusResult == null || statusResult.length() == 0 || allResult.getInteger("errCode") != 0){
+		if(string == null || string.length() == 0 || allResult.getInteger("errCode") != 0){
 			return null;
 		}
 				

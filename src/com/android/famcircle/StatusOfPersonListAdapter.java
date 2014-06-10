@@ -36,14 +36,14 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 		ListView listview;
 	}
 	
-	private List<HashMap<String, Object>> dataList;
+	private List<Object> dataList;
 	private LayoutInflater layoutInflater; 
 	private ViewHolder holder;
 	private Context context;
 	private DisplayImageOptions options;
 	
 	public StatusOfPersonListAdapter(Context context,
-			List<HashMap<String, Object>> data) {
+			List<Object> data) {
 		
 		// TODO Auto-generated constructor stub
 		this.dataList = data;
@@ -83,14 +83,14 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		/*init data of the position*/
-		StatusOfPersonListInfo personStatusInfo = (StatusOfPersonListInfo)dataList.get(position).get("personStatusInfo");
+		StatusOfPersonListInfo personStatusInfo = (StatusOfPersonListInfo)dataList.get(position);
 		
 		if(convertView != null ){
 			holder = (ViewHolder)convertView.getTag();
 		}else {
 			convertView = layoutInflater.inflate(R.layout.personal_status_list_item, null);
 			holder = new ViewHolder();
-			holder.statusTime = (TextView)convertView.findViewById(R.id.statuses_time);
+			holder.statusTime = (TextView)convertView.findViewById(R.id.day_of_time);
 			holder.listview = (ListView)convertView.findViewById(R.id.list_of_statuses_at_the_time);
 			
 			convertView.setTag(holder);
@@ -104,7 +104,7 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 		return convertView;
 	}
 	
-	public void setDataList(List<HashMap<String, Object>> dataList) {
+	public void setDataList(List<Object> dataList) {
 		this.dataList = dataList;
 	}
 }

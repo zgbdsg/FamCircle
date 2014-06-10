@@ -143,6 +143,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		isNeedRefresh = true;
 		
 		initialStatuses();
+
 	}
 
 	@Override
@@ -228,15 +229,22 @@ public class StatusOfPersonActivity extends BaseActivity {
 			String[] picArray = new String[statusesOfTime.size()];
 			String[] textArray = new String[statusesOfTime.size()];
 			String[] creatTime = new String[statusesOfTime.size()];
+			String[][] bigPics = new String[statusesOfTime.size()][];
 			
 			for (int j = 0; j < statusesOfTime.size(); j++) {
 				JSONObject status = (JSONObject)statusesOfTime.get(j);
 				
 				if(status.getString("resrc_type").equals("0")){
 					picArray[j] = "";
+					bigPics[j] = null;
 				}else{
 					JSONArray picUrls = status.getJSONObject("resrc").getJSONArray("picArray");
 					picArray[j] = jsonResult.getIntValue("usrId") + "/"+picUrls.getString(0);
+					
+					bigPics[j] = new String[picUrls.size()];
+					for(int k=0;k<picUrls.size();k++){
+						bigPics[j][k] = jsonResult.getIntValue("usrId") + "/"+picUrls.getString(k);
+					}
 				}
 				textArray[j] = status.getString("status");
 				
@@ -248,6 +256,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 			personStatusInfo.setStatusPic(picArray);
 			personStatusInfo.setStatusTexts(textArray);
 			personStatusInfo.setCreatTime(creatTime);
+			personStatusInfo.setBigPics(bigPics);
 
 			listmap.add(personStatusInfo);
 		}

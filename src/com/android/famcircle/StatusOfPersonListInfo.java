@@ -9,6 +9,7 @@ public class StatusOfPersonListInfo{
 	private String[] creatTime;
 	private String[] statusTexts;
 	private String[] statusPic;
+	private String[][] bigPics;
 	private String smallPicPath;
 	private String bigPicpath;
 	
@@ -47,6 +48,12 @@ public class StatusOfPersonListInfo{
 	}
 	public void setBigPicpath(String bigPicpath) {
 		this.bigPicpath = bigPicpath;
+	}
+	public String[][] getBigPics() {
+		return bigPics;
+	}
+	public void setBigPics(String[][] bigPics) {
+		this.bigPics = bigPics;
 	}
 	
 }

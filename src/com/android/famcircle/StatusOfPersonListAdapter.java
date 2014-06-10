@@ -2,17 +2,24 @@ package com.android.famcircle;
 
 import java.util.HashMap;
 import java.util.List;
+
+import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.opengl.Visibility;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -100,12 +107,39 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 		PersonalStatusListAdapter statusListAdapter = new PersonalStatusListAdapter(layoutInflater, options,
 				personStatusInfo.getSmallPicPath(), personStatusInfo.getStatusTexts(), personStatusInfo.getStatusPic());
 		holder.listview.setAdapter(statusListAdapter);
+		holder.listview.setTag(position);
+		holder.listview.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				int num = (Integer)parent.getTag();
+				StatusOfPersonListInfo statInfo=(StatusOfPersonListInfo)dataList.get(num);
+				String[] imageUrls = statInfo.getBigPics()[position];
+				if(imageUrls == null)
+					return;
+				
+				String[] bigImageUrl = new String[imageUrls.length];
+				for(int i=0;i<imageUrls.length;i ++)
+					bigImageUrl[i] = "http://114.215.180.229"+statInfo.getBigPicpath()+imageUrls[i];
+				Log.i("start pager", "");
+				startImagePagerActivity(0, "", bigImageUrl);
+			}
+		});
 		
 		return convertView;
 	}
 	
 	public void setDataList(List<Object> dataList) {
 		this.dataList = dataList;
+	}
+	
+	private void startImagePagerActivity(int position,String statusId, String[] imageUrls) {
+		Intent intent = new Intent(context, StatusImagePagerActivity.class);
+		intent.putExtra("statusId", statusId);
+		intent.putExtra("images", imageUrls);
+		intent.putExtra("position", position);
+		context.startActivity(intent);
 	}
 }
 
@@ -175,6 +209,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 			listHolder.pics_discript.setText(statusTexts[position]);
 			ImageLoader.getInstance().displayImage("http://114.215.180.229"+smallPicPath+statusPic[position], listHolder.pics,options,null);
 		}
+		
 		return convertView;
 	}
 	

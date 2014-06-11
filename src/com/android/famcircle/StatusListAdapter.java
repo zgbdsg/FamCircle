@@ -1,6 +1,7 @@
 package com.android.famcircle;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -46,15 +48,34 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusListAdapter extends BaseAdapter{
 	int[] location;
+	private Handler activityHandler;
+	
 	Handler handler = new Handler(){
 
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			super.handleMessage(msg);
-			if(msg.arg1 == 1)
+			if(msg.arg1 == 1){
 				commentPopupWindow.dismiss();
-			else if(msg.arg1 == 0){
+				int loc = msg.arg2;
+				Bundle data = msg.getData();
+				List<StatusZanInfo> zanList = (List<StatusZanInfo>) dataList.get(loc).get("zaninfo");
+				if(zanList == null)
+					zanList = new ArrayList<StatusZanInfo>();
+				StatusZanInfo addZan = new StatusZanInfo();
+				Log.i("zanFromName", data.getString("fromUsrName"));
+				addZan.setFromUsrId(data.getString("fromUsrId"));
+				addZan.setFromUsrName(data.getString("fromUsrName"));
+				zanList.add(addZan);
+				
+				Message refreshMsg = new Message();
+				refreshMsg.arg1 = 4;
+				refreshMsg.setTarget(ShareActivity.myhandler);
+				
+				refreshMsg.sendToTarget();
+				
+			}else if(msg.arg1 == 0){
 				ShareActivity share = (ShareActivity)context;
 				final RelativeLayout replyWindow = share.replyWindow;
 				replyWindow.performClick();
@@ -87,11 +108,12 @@ public class StatusListAdapter extends BaseAdapter{
 	private List<StatusReplyInfo> statusReplyInfoList;
 	
 	public StatusListAdapter(Context context,
-			List<HashMap<String, Object>> data) {
+			List<HashMap<String, Object>> data,Handler activityHandler) {
 		
 		// TODO Auto-generated constructor stub
 		this.dataList = data;
 		this.context = context;
+		this.activityHandler = activityHandler;
 		layoutInflater = (LayoutInflater)LayoutInflater.from(context);
 		
 		Options sampleOpt = new Options();
@@ -139,99 +161,6 @@ public class StatusListAdapter extends BaseAdapter{
 		statusReplyInfoList = (List<StatusReplyInfo>)dataList.get(position).get("replyinfo");
 		//Log.i("reply Len:", ""+statusReplyInfoList.size()+"");
 		
-		class GridViewAdapter extends BaseAdapter{
-			String[] imageUrls;
-			
-			class GridHolder{
-				ImageView iamgeView;
-				FrameLayout itemFrame;
-			}
-			
-			public GridViewAdapter(String[] imageurls){
-				this.imageUrls = imageurls;
-			}
-			@Override
-			public int getCount() {
-				// TODO Auto-generated method stub
-				return imageUrls.length;
-			}
-
-			@Override
-			public Object getItem(int position) {
-				// TODO Auto-generated method stub
-				return position;
-			}
-
-			@Override
-			public long getItemId(int position) {
-				// TODO Auto-generated method stub
-				return position;
-			}
-
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				// TODO Auto-generated method stub
-				GridHolder gridHolder;
-				if(convertView != null) {
-					gridHolder = (GridHolder) convertView.getTag();
-				}else {
-					convertView = layoutInflater.inflate(R.layout.item_grid_image, parent,false);
-					gridHolder = new GridHolder();
-					gridHolder.iamgeView = (ImageView) convertView.findViewById(R.id.grid_image_item);
-					gridHolder.itemFrame = (FrameLayout)convertView.findViewById(R.id.item_frame);
-					convertView.setTag(gridHolder);
-				}
-				
-				if(imageUrls.length == 1){
-					gridHolder.itemFrame.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-				}
-				//gridHolder.iamgeView.setScaleType(ImageView.ScaleType.FIT_XY);
-				//imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position], gridHolder.iamgeView,options,null);
-				return convertView;
-			}
-			
-		}
-		
-		
-		class ReplyListAdapter extends BaseAdapter{
-
-			@Override
-			public int getCount() {
-				// TODO Auto-generated method stub
-				return statusReplyInfoList.size();
-			}
-
-			@Override
-			public Object getItem(int position) {
-				// TODO Auto-generated method stub
-				return position;
-			}
-
-			@Override
-			public long getItemId(int position) {
-				// TODO Auto-generated method stub
-				return position;
-			}
-
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				// TODO Auto-generated method stub
-				//Log.i("reply add :", ""+position);
-				TextView replyTextView;
-				if(convertView != null) {
-					replyTextView = (TextView)convertView;
-				}else{
-					replyTextView = new TextView(context);
-				}
-				
-				StatusReplyInfo reply = statusReplyInfoList.get(position);
-				replyTextView.setText(reply.getFromUsrName()+" reply§ç "+reply.getToUsrName()+": "+reply.getReply());
-				return replyTextView;
-			}
-			
-		}
-		
 		if(convertView != null ){
 			holder = (ViewHolder)convertView.getTag();
 		}else {
@@ -276,7 +205,7 @@ public class StatusListAdapter extends BaseAdapter{
 			 holder.statusPics.setVisibility(8);
 		}else if(resrc_type.equals("1")){
 			holder.statusPics.setVisibility(0);
-			GridViewAdapter myGridViewAdapter = new GridViewAdapter(statusInfo.getPicArray());
+			GridViewAdapter myGridViewAdapter = new GridViewAdapter(statusInfo.getPicArray(),layoutInflater,statusInfo,options);
 			holder.statusPics.setAdapter(myGridViewAdapter);
 			holder.statusPics.setTag(position);
 			switch (statusInfo.getPicArray().length) {
@@ -317,9 +246,10 @@ public class StatusListAdapter extends BaseAdapter{
 		
 		holder.all_reply_component.setVisibility(8);
 		holder.zanText.setText("");
+		holder.zanText.setVisibility(View.VISIBLE);
 		//Log.i("all_reply_component :", "vi "+holder.all_reply_component.getVisibility());
 
-		if(statusZanInfoList.size() > 0 | statusReplyInfoList.size() > 0){
+		if(statusZanInfoList.size() > 0 || statusReplyInfoList.size() > 0){
 			holder.all_reply_component.setVisibility(0);
 			//Log.i("all_reply_component set after :", "vi "+holder.all_reply_component.getVisibility());
 		}
@@ -330,13 +260,12 @@ public class StatusListAdapter extends BaseAdapter{
 				zanText = zanText.concat(statusZanInfoList.get(t).getFromUsrName()+"  ");
 			}
 			holder.zanText.setText(zanText);
+		}else{
+				holder.zanText.setVisibility(View.GONE);
 		}
 		
-		
-		if(statusReplyInfoList.size() > 0) {
-			ReplyListAdapter replyAdapter = new ReplyListAdapter();
-			holder.replyList.setAdapter(replyAdapter);
-		}
+		ReplyListAdapter replyAdapter = new ReplyListAdapter(context , statusReplyInfoList);
+		holder.replyList.setAdapter(replyAdapter);
 		
 		holder.comment.setTag(position); //Log.i("get view position ", ""+position);
 		holder.comment.setOnClickListener(new OnClickListener() {
@@ -350,21 +279,25 @@ public class StatusListAdapter extends BaseAdapter{
 				Log.i("pop on ", statInfo.getStatusId()+"  "+statInfo.getStatus());
 				View popupView = layoutInflater.inflate(R.layout.status_popup_window, null);
 				
+				popupView.findViewById(R.id.zan_area).setTag(pos);
 				popupView.findViewById(R.id.zan_area).setOnClickListener(new OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						sendZan(""+1,statInfo.getUsrId(),statInfo.getStatusId());
+						int loc=(Integer) v.getTag();
+						sendZan(loc,ShareActivity.userId,statInfo.getUsrId(),statInfo.getStatusId(),ShareActivity.userName);
 					}
 				});
 				
+				popupView.findViewById(R.id.comment_area).setTag(pos);
 				popupView.findViewById(R.id.comment_area).setOnClickListener(new OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						Log.i("press reply", "!!!");
+						int loc=(Integer) v.getTag();
 						commentPopupWindow.dismiss();
 						ShareActivity share = (ShareActivity)context;
 						final RelativeLayout  inputWindow = share.inputWindow;
@@ -377,13 +310,14 @@ public class StatusListAdapter extends BaseAdapter{
 						imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
 						
 						Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
+						btnReplySend.setTag(loc);
 						final EditText replyContent = (EditText)inputWindow.findViewById(R.id.reply_content);
 						btnReplySend.setOnClickListener(new OnClickListener() {
 							
 							@Override
 							public void onClick(View arg0) {
 								// TODO Auto-generated method stub
-								sendReply(""+1,statInfo.getUsrId(),statInfo.getStatusId(),
+								sendReply(ShareActivity.userId , statInfo.getUsrId(),statInfo.getStatusId(),
 										StringUtils.gbEncoding(replyContent.getText().toString()));
 							}
 						});
@@ -429,7 +363,7 @@ public class StatusListAdapter extends BaseAdapter{
 	}
 	
 	
-	public void sendZan(final String fromUsrId, final String toUsrId ,final String statusId){
+	public void sendZan(final int pos , final String fromUsrId, final String toUsrId ,final String statusId,final String zanFromName){
 		new AsyncTask<String, String, String>() {
 
 			@Override
@@ -440,6 +374,12 @@ public class StatusListAdapter extends BaseAdapter{
 				String json=new FNHttpRequest().doPost(pdata).trim();
 				Message msg = new Message();
 				msg.arg1 = 1;
+				msg.arg2 = pos;
+				Bundle data = new Bundle();
+				Log.i("zanFromName", zanFromName);
+				data.putString("fromUsrName", zanFromName);
+				data.putString("fromUsrId", fromUsrId);
+				msg.setData(data);
 				handler.sendMessage(msg);
 				System.out.println(json);
 
@@ -466,4 +406,110 @@ public class StatusListAdapter extends BaseAdapter{
 			}
 		}.execute("");
 	}
+}
+
+class GridViewAdapter extends BaseAdapter{
+	String[] imageUrls;
+	LayoutInflater layoutInflater; 
+	StatusListInfo statusInfo;
+	DisplayImageOptions options;
+	
+	class GridHolder{
+		ImageView iamgeView;
+		FrameLayout itemFrame;
+	}
+	
+	public GridViewAdapter(String[] imageurls,LayoutInflater layoutInflater,StatusListInfo statusInfo,DisplayImageOptions options){
+		this.imageUrls = imageurls;
+		this.layoutInflater = layoutInflater;
+		this.statusInfo = statusInfo;
+		this.options = options;
+	}
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return imageUrls.length;
+	}
+
+	@Override
+	public Object getItem(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		GridHolder gridHolder;
+		if(convertView != null) {
+			gridHolder = (GridHolder) convertView.getTag();
+		}else {
+			convertView = layoutInflater.inflate(R.layout.item_grid_image, parent,false);
+			gridHolder = new GridHolder();
+			gridHolder.iamgeView = (ImageView) convertView.findViewById(R.id.grid_image_item);
+			gridHolder.itemFrame = (FrameLayout)convertView.findViewById(R.id.item_frame);
+			convertView.setTag(gridHolder);
+		}
+		
+		if(imageUrls.length == 1){
+			gridHolder.itemFrame.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+		}
+		//gridHolder.iamgeView.setScaleType(ImageView.ScaleType.FIT_XY);
+		//imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position], gridHolder.iamgeView,options,null);
+		return convertView;
+	}
+	
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+
+class ReplyListAdapter extends BaseAdapter{
+	
+	 List<StatusReplyInfo> statusReplyInfoList;
+	Context context;
+
+	public ReplyListAdapter(Context context , List<StatusReplyInfo> statusReplyInfoList){
+		this.statusReplyInfoList = statusReplyInfoList;
+		this.context = context;
+	}
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return statusReplyInfoList.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		//Log.i("reply add :", ""+position);
+		TextView replyTextView;
+		if(convertView != null) {
+			replyTextView = (TextView)convertView;
+		}else{
+			replyTextView = new TextView(context);
+		}
+		
+		StatusReplyInfo reply = statusReplyInfoList.get(position);
+		replyTextView.setText(reply.getFromUsrName()+" reply§ç "+reply.getToUsrName()+": "+reply.getReply());
+		return replyTextView;
+	}
+	
 }

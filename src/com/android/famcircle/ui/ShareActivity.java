@@ -46,8 +46,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 public class ShareActivity  extends BaseActivity {
 	
-	String userId;
-	String userName;
+	public static String userId;
+	public static String userName;
 	String logoUrl;
 	String groupId;
 	
@@ -56,7 +56,7 @@ public class ShareActivity  extends BaseActivity {
 	ListView statuslist;
 	PullToRefreshListView mPullRefreshListView;
 	StatusListAdapter myadapter;
-	Handler myhandler;
+	public static Handler myhandler;
 	String[] imageUrls;
 	GridView statusPics;
 	//ImageView sendStatus;
@@ -138,7 +138,7 @@ public class ShareActivity  extends BaseActivity {
 		statuslist.addHeaderView(headview);
 		
 		//listMap = getStatusListMaps("");
-		myadapter = new StatusListAdapter(this, listMap);
+		myadapter = new StatusListAdapter(this, listMap , myhandler );
 		statuslist.setAdapter(myadapter);
 		
 		myhandler = new Handler(){
@@ -151,6 +151,14 @@ public class ShareActivity  extends BaseActivity {
 	            	switch (msg.arg1) {
 					case 1:
 						commentPopupWindow.dismiss();
+						break;
+					case 2:
+						onLoading.dismiss();
+						listMap = getStatusListMaps(statusResult);
+						Log.i("listMap length :", ""+listMap.size());
+		            	myadapter.setDataList(listMap);
+		            	isNeedRefresh = false;
+		            	myadapter.notifyDataSetChanged();
 						break;
 					case 3:
 						List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
@@ -171,6 +179,9 @@ public class ShareActivity  extends BaseActivity {
 						// Call onRefreshComplete when the list has been refreshed.
 						mPullRefreshListView.onRefreshComplete();
 						break;
+					case 4:
+						myadapter.notifyDataSetChanged();
+						break;
 					default:
 						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
@@ -187,20 +198,7 @@ public class ShareActivity  extends BaseActivity {
 		onLoading.setCancelable(true);
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
-		
-		/*
-		sendStatus = (ImageView)findViewById(R.id.btn_send_status);
-		sendStatus.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent i = new Intent(getApplicationContext(), StatusPicsSendActivity.class);
-				startActivity(i);
-				//Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
-				//startActivityForResult(i, 200);
-			}
-		});*/
+
 	}
 
 	@Override
@@ -269,48 +267,6 @@ public class ShareActivity  extends BaseActivity {
 			return result;
 		}
 
-		/*
-		@Override
-		protected void onPostExecute(String result) {
-			//listMap.add(null);
-			List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
-			List<HashMap<String, Object>> resultList = getStatusListMaps(result);
-			
-			if(currentMode == 0){
-				allList.addAll(listMap);
-				allList.addAll(resultList);
-			}else{
-				allList.addAll(resultList);
-				allList.addAll(listMap);
-			}
-			listMap = allList;
-			Log.i("listMap length :", ""+listMap.size());
-			myadapter.notifyDataSetChanged();
-
-			// Call onRefreshComplete when the list has been refreshed.
-			mPullRefreshListView.onRefreshComplete();
-
-			super.onPostExecute(result);
-		}*/
-	}
-	
-	public void sendZan(final String fromUsrId, final String toUsrId ,final String statusId){
-		new AsyncTask<String, String, String>() {
-
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				Log.i("zan info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
-				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":1, \"reply\":\"\"}");
-				String json=new FNHttpRequest().doPost(pdata).trim();
-				Message msg = new Message();
-				msg.arg1 = 1;
-				myhandler.sendMessage(msg);
-				System.out.println(json);
-
-				return null;
-			}
-		}.execute("");
 	}
 	
 	private void initialUserProfile() {
@@ -332,6 +288,7 @@ public class ShareActivity  extends BaseActivity {
 					JSONObject userProfile = (JSONObject) tmpArray.get(0);
 					userId = userProfile.getString("usrId");
 					userName = userProfile.getString("name");
+					Log.i("username", userName);
 					logoUrl = userProfile.getString("avatar");
 					groupId = userProfile.getString("groupId");
 				}

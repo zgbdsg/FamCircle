@@ -48,8 +48,8 @@ public class ShareActivity  extends BaseActivity {
 	
 	public static String userId;
 	public static String userName;
-	String logoUrl;
-	String groupId;
+	public static String logoUrl;
+	public static String groupId;
 	
 	String statusResult;
 	List<HashMap<String, Object>> listMap;
@@ -288,9 +288,9 @@ public class ShareActivity  extends BaseActivity {
 					JSONObject userProfile = (JSONObject) tmpArray.get(0);
 					userId = userProfile.getString("usrId");
 					userName = userProfile.getString("name");
-					Log.i("username", userName);
 					logoUrl = userProfile.getString("avatar");
-					groupId = userProfile.getString("groupId");
+					groupId = userProfile.getString("grpId");
+					Log.i("groupId", groupId);
 				}
 				return null;
 			}

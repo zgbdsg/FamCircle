@@ -107,12 +107,12 @@ public class StatusPicsSendActivity extends BaseActivity{
 							for(int i=0;i<all_path.length;i ++)
 								upfiles.add(all_path[i]);
 							pdata = new PostData("share", "postStatus",
-									"{\"usrId\":2, \"grpId\":1, \"creatTime\":\""+ 
+									"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""+ 
 									System.currentTimeMillis() / 1000+ "\", \"status\":\""
 									+StringUtils.gbEncoding(statusContent.getText().toString())+"\"}", upfiles);
 						}else{
 							pdata = new PostData("share", "postStatus",
-									"{\"usrId\":2, \"grpId\":1, \"creatTime\":\""
+									"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""
 											+ System.currentTimeMillis() / 1000
 											+ "\", \"status\":\"Post Msg on "
 											+ System.currentTimeMillis() / 1000 + "\"}");

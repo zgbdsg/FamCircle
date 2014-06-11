@@ -49,7 +49,7 @@ public class ImageUtils {
 		return bitmap;
 	}
 	
-	/*图片按比例大小压缩方法*/
+	/*图片按大小压缩方法*/
 	public static Bitmap compImageBySize(String srcPath) {
 		BitmapFactory.Options newOpts = new BitmapFactory.Options();
 		//开始读入图片，此时把options.inJustDecodeBounds 设回true了

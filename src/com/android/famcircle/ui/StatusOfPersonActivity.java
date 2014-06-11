@@ -15,7 +15,9 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -34,6 +36,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusOfPersonActivity extends BaseActivity {
 
@@ -45,6 +48,10 @@ public class StatusOfPersonActivity extends BaseActivity {
 	private String statusResult;
 	private Handler myhandler;
 	private String usrId ;
+	private String userName;
+	private String logoUrl;
+	private String groupId;
+	private View headview;;
 	private CustomProgressDialog onLoading;
 	private boolean isNeedRefresh;
 
@@ -93,7 +100,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 				});
 
 		statuslist = mPullRefreshListView.getRefreshableView();
-		View headview = LayoutInflater.from(this).inflate(
+		headview = LayoutInflater.from(this).inflate(
 				R.layout.activity_share_header, null);
 		statuslist.addHeaderView(headview);
 		
@@ -130,6 +137,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		            	myAdapter.setDataList(listMap);
 		            	isNeedRefresh = false;
 		            	myAdapter.notifyDataSetChanged();
+		            	updateProfile();
 						break;
 	            	}
 	            }
@@ -142,6 +150,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 		
+		initialUserProfile();
 		initialStatuses();
 
 	}
@@ -263,5 +272,42 @@ public class StatusOfPersonActivity extends BaseActivity {
 
 		// onLoading.dismiss();
 		return listmap;
+	}
+	
+	private void initialUserProfile() {
+		// TODO Auto-generated method stub
+
+		new AsyncTask<String, String, String >() {
+
+			@Override
+			protected String doInBackground(String... params) {
+				// TODO Auto-generated method stub
+				
+				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":"+usrId+"}");
+				String json=new FNHttpRequest().doPost(pdata);
+				Log.i("initialUserProfile  :", json);
+				
+				JSONObject jsonResult = JSON.parseObject(json);
+				JSONArray tmpArray = jsonResult.getJSONArray("results");
+				if(jsonResult.getInteger("errCode") == 0) {
+					JSONObject userProfile = (JSONObject) tmpArray.get(0);
+					userName = userProfile.getString("name");
+					logoUrl = userProfile.getString("avatar");
+					groupId = userProfile.getString("grpId");
+					Log.i("groupId", groupId);
+				}
+				return null;
+			}
+		}.execute("");
+	}
+	
+	private void updateProfile() {
+		// TODO Auto-generated method stub
+
+		TextView userNameView = (TextView) headview.findViewById(R.id.username);
+		userNameView.setText(userName);
+		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
+		ImageLoader.getInstance().displayImage("http://114.215.180.229/famnotes/Uploads/smallPic/"+usrId+"/"+logoUrl, avatar);
+		
 	}
 }

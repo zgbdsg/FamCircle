@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,9 +21,9 @@ import com.android.famcircle.Action;
 import com.android.famcircle.CustomGallery;
 import com.android.famcircle.GalleryAdapter;
 import com.android.famcircle.R;
-import com.android.famcircle.R.id;
-import com.android.famcircle.R.layout;
 import com.android.famcircle.util.FNHttpRequest;
+import com.android.famcircle.util.ImageUtils;
+import com.android.famcircle.util.PictureBody;
 import com.android.famcircle.util.PostData;
 import com.android.famcircle.util.StringUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -101,15 +102,19 @@ public class StatusPicsSendActivity extends BaseActivity{
 						handler.sendMessage(mg1);
 						PostData pdata = null;
 						if(all_path != null) {
-						for(int a=0;a<all_path.length;a++)
-								Log.i("file path:", all_path[a]);
-							ArrayList<String> upfiles = new ArrayList<String>();
-							for(int i=0;i<all_path.length;i ++)
-								upfiles.add(all_path[i]);
+							ArrayList<PictureBody> pics = new ArrayList<PictureBody>();
+							
+							for(int a=0;a<all_path.length;a++){
+									Log.i("file path:", all_path[a]);
+									Bitmap tmpmap = ImageUtils.compImageBySize(all_path[a]);
+									PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.JPEG , all_path[a]+".jpg");
+									pics.add(pb);
+							}
+
 							pdata = new PostData("share", "postStatus",
 									"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""+ 
 									System.currentTimeMillis() / 1000+ "\", \"status\":\""
-									+StringUtils.gbEncoding(statusContent.getText().toString())+"\"}", upfiles);
+									+StringUtils.gbEncoding(statusContent.getText().toString())+"\"}", pics);
 						}else{
 							pdata = new PostData("share", "postStatus",
 									"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""

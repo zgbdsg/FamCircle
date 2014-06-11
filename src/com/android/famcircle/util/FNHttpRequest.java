@@ -32,6 +32,14 @@ import android.util.Log;
 //var timestamp= (new Date()).valueOf();   //$timestamp = $_GET ["timestamp"];
 //var nonce=Math.random();  //$
 public class FNHttpRequest {
+	public FNHttpRequest() {
+		super();
+	}
+	public FNHttpRequest(String userId, String password) {
+		super();
+		this.userId = userId;
+		this.password = password;
+	}
 	private String userId="xxxx"; //从客户端数据库获取密码
 	private String password="pureHtml";
 	private long timeStamp;
@@ -77,7 +85,7 @@ public class FNHttpRequest {
 			// 　　UrlEncodedFormEntity只有一个Body，还是使用UrlEncode处理过的内容。如：key1=******&key2=******&key3=******
 			
 			
-			if (postData.uploadFiles != null && !postData.uploadFiles.isEmpty()) {
+			if ((postData.uploadFiles != null && !postData.uploadFiles.isEmpty()) || (postData.pics != null && !postData.pics.isEmpty()) ) {
 				MultipartEntity mpEntity = new MultipartEntity(); //支持文件传输
 				
 				StringBody objIdBody = new StringBody(postData.objId); 
@@ -95,6 +103,10 @@ public class FNHttpRequest {
 					File file=new File(fullPath);
 					FileBody cbFile = new FileBody(file);
 					mpEntity.addPart("ups[]", cbFile);   // <input type="file" name="ups[]" /> 对应的
+				}
+				
+				for(PictureBody  picBody : postData.pics){
+					mpEntity.addPart("ups[]", picBody);   // <input type="file" name="ups[]" /> 对应的
 				}
 				
 				httpPost.setEntity(mpEntity);
@@ -129,6 +141,7 @@ public class FNHttpRequest {
 			localClientProtocolException.printStackTrace();
 			return "网络异常";
 		} catch (UnsupportedEncodingException e) {
+			Log.e("HttpClient", "网络异常"+e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -141,21 +154,6 @@ public class FNHttpRequest {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-//		PostData pdata=new PostData("recipe", "insertRecipe", "this is a recipe");
-		
-//		PostData pdata1=new PostData("recipe", "query");
-//		String json1=new FNHttpRequest().doPost(pdata1);
-		
-		ArrayList<String> upfiles=new ArrayList<String>();
-		upfiles.add("D:/D_misc/pngtest.png");
-		upfiles.add("D:/D_misc/opj_logo.png");
-		PostData pdata=new PostData("recipe", "testUploads", " { \"userId\" : \"xxxx\",  \"comment\" : \"Very beatiful!\" }", upfiles );
-		String json=new FNHttpRequest().doPost(pdata);
-		
-		System.out.println(json);
-	}
 
 	
 }

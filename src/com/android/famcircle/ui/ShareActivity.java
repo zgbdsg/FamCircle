@@ -19,9 +19,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -42,6 +44,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleLis
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 
 public class ShareActivity  extends BaseActivity {
@@ -54,6 +57,7 @@ public class ShareActivity  extends BaseActivity {
 	String statusResult;
 	List<HashMap<String, Object>> listMap;
 	ListView statuslist;
+	View headview;
 	PullToRefreshListView mPullRefreshListView;
 	StatusListAdapter myadapter;
 	public static Handler myhandler;
@@ -134,7 +138,7 @@ public class ShareActivity  extends BaseActivity {
 		initialUserProfile();
 		initialStatuses();
 		
-		View headview = LayoutInflater.from(this).inflate(R.layout.activity_share_header, null);
+		headview = LayoutInflater.from(this).inflate(R.layout.activity_share_header, null);
 		statuslist.addHeaderView(headview);
 		
 		//listMap = getStatusListMaps("");
@@ -150,17 +154,21 @@ public class ShareActivity  extends BaseActivity {
 	            	
 	            	switch (msg.arg1) {
 					case 1:
+						//for onclik event
 						commentPopupWindow.dismiss();
 						break;
 					case 2:
+						//for  init the status
 						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
 		            	myadapter.notifyDataSetChanged();
+		            	updateProfile();
 						break;
 					case 3:
+						//for pull refresh
 						List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
 						List<HashMap<String, Object>> resultList = getStatusListMaps(statusResult);
 						
@@ -180,6 +188,7 @@ public class ShareActivity  extends BaseActivity {
 						mPullRefreshListView.onRefreshComplete();
 						break;
 					case 4:
+						// for zan and reply
 						myadapter.notifyDataSetChanged();
 						break;
 					default:
@@ -388,4 +397,13 @@ public class ShareActivity  extends BaseActivity {
 		return listmap;
 	}
 	
+	private void updateProfile() {
+		// TODO Auto-generated method stub
+
+		TextView userNameView = (TextView) headview.findViewById(R.id.username);
+		userNameView.setText(userName);
+		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
+		ImageLoader.getInstance().displayImage("http://114.215.180.229/famnotes/Uploads/smallPic/"+userId+"/"+logoUrl, avatar);
+		
+	}
 }

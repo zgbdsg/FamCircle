@@ -37,6 +37,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.ui.StatusOfPersonActivity;
@@ -56,13 +58,14 @@ public class StatusListAdapter extends BaseAdapter{
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			super.handleMessage(msg);
-			if(msg.arg1 == 1){
+			if(msg.arg1 == 2){
+				commentPopupWindow.dismiss();
+			}else if(msg.arg1 == 1){
 				commentPopupWindow.dismiss();
 				int loc = msg.arg2;
 				Bundle data = msg.getData();
 				List<StatusZanInfo> zanList = (List<StatusZanInfo>) dataList.get(loc).get("zaninfo");
-				if(zanList == null)
-					zanList = new ArrayList<StatusZanInfo>();
+
 				StatusZanInfo addZan = new StatusZanInfo();
 				Log.i("zanFromName", data.getString("fromUsrName"));
 				addZan.setFromUsrId(data.getString("fromUsrId"));
@@ -74,11 +77,27 @@ public class StatusListAdapter extends BaseAdapter{
 				refreshMsg.setTarget(ShareActivity.myhandler);
 				
 				refreshMsg.sendToTarget();
-				
 			}else if(msg.arg1 == 0){
 				ShareActivity share = (ShareActivity)context;
 				final RelativeLayout replyWindow = share.replyWindow;
 				replyWindow.performClick();
+				
+				int loc = msg.arg2;
+				Bundle data = msg.getData();
+				List<StatusReplyInfo> replyList = (List<StatusReplyInfo>) dataList.get(loc).get("replyinfo");
+				StatusReplyInfo replyInfo = new StatusReplyInfo();
+				replyInfo.setFromUsrId(data.getString("fromUsrId"));
+				replyInfo.setFromUsrName(data.getString("fromUsrName"));
+				replyInfo.setReply(data.getString("reply"));
+				replyInfo.setToUsrId(data.getString("toUsrId"));
+				replyInfo.setToUsrName(data.getString("toUsrName"));
+				
+				replyList.add(replyInfo);
+				Message refreshMsg = new Message();
+				refreshMsg.arg1 = 4;
+				refreshMsg.setTarget(ShareActivity.myhandler);
+				
+				refreshMsg.sendToTarget();
 			}
 		}
 		
@@ -317,8 +336,9 @@ public class StatusListAdapter extends BaseAdapter{
 							@Override
 							public void onClick(View arg0) {
 								// TODO Auto-generated method stub
-								sendReply(ShareActivity.userId , statInfo.getUsrId(),statInfo.getStatusId(),
-										StringUtils.gbEncoding(replyContent.getText().toString()));
+								int loc=(Integer) arg0.getTag();
+								sendReply(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
+										StringUtils.gbEncoding(replyContent.getText().toString()) , replyContent.getText().toString());
 							}
 						});
 					}
@@ -372,8 +392,13 @@ public class StatusListAdapter extends BaseAdapter{
 				Log.i("zan info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
 				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":1, \"reply\":\"\"}");
 				String json=new FNHttpRequest().doPost(pdata).trim();
+				
+				JSONObject result = JSON.parseObject(json);
 				Message msg = new Message();
-				msg.arg1 = 1;
+				if(result.getString("errMesg").equals("Already Zan!"))
+					msg.arg1 = 2;
+				else
+					msg.arg1 = 1;
 				msg.arg2 = pos;
 				Bundle data = new Bundle();
 				Log.i("zanFromName", zanFromName);
@@ -388,7 +413,7 @@ public class StatusListAdapter extends BaseAdapter{
 		}.execute("");
 	}
 	
-	public void sendReply(final String fromUsrId, final String toUsrId ,final String statusId,final String replyContent){
+	public void sendReply(final int loc, final String fromUsrId, final String replyFromName, final String toUsrId ,final String replyToName,final String statusId,final String replyContent, final String content){
 		new AsyncTask<String, String, String>() {
 
 			@Override
@@ -399,6 +424,15 @@ public class StatusListAdapter extends BaseAdapter{
 				String json=new FNHttpRequest().doPost(pdata).trim();
 				Message msg = new Message();
 				msg.arg1 = 0 ;
+				msg.arg2 = loc;
+				Bundle data = new Bundle();
+				data.putString("fromUsrName", replyFromName);
+				data.putString("fromUsrId", fromUsrId);
+				data.putString("toUsrName", replyToName);
+				data.putString("toUsrId", toUsrId);
+				data.putString("reply", content);
+				
+				msg.setData(data);
 				handler.sendMessage(msg);
 				System.out.println(json);
 

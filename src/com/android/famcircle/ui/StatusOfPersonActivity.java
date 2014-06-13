@@ -242,12 +242,17 @@ public class StatusOfPersonActivity extends BaseActivity {
 			
 			for (int j = 0; j < statusesOfTime.size(); j++) {
 				JSONObject status = (JSONObject)statusesOfTime.get(j);
+				textArray[j] = status.getString("status");
+				creatTime[j] = status.getString("creatTime");
 				
 				if(status.getString("resrc_type").equals("0")){
 					picArray[j] = "";
 					bigPics[j] = null;
 				}else{
 					JSONArray picUrls = status.getJSONObject("resrc").getJSONArray("picArray");
+					picArray[j] = "";
+					if(picUrls.size() == 0)
+						continue;
 					picArray[j] = jsonResult.getIntValue("usrId") + "/"+picUrls.getString(0);
 					
 					bigPics[j] = new String[picUrls.size()];
@@ -255,9 +260,6 @@ public class StatusOfPersonActivity extends BaseActivity {
 						bigPics[j][k] = jsonResult.getIntValue("usrId") + "/"+picUrls.getString(k);
 					}
 				}
-				textArray[j] = status.getString("status");
-				
-				creatTime[j] = status.getString("creatTime");
 			}
 
 			personStatusInfo.setBigPicpath(jsonResult.getString("bigPicPath"));

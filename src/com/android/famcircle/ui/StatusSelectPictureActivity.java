@@ -97,6 +97,7 @@ public class StatusSelectPictureActivity extends BaseActivity{
 		gridGallery = (GridView) findViewById(R.id.gridGallery);
 		gridGallery.setFastScrollEnabled(true);
 		adapter = new GalleryAdapter(getApplicationContext(), imageLoader);
+		
 		PauseOnScrollListener listener = new PauseOnScrollListener(imageLoader,
 				true, true);
 		gridGallery.setOnScrollListener(listener);
@@ -205,9 +206,16 @@ public class StatusSelectPictureActivity extends BaseActivity{
 
 					int dataColumnIndex = imagecursor
 							.getColumnIndex(MediaStore.Images.Media.DATA);
-
+					
 					item.sdcardPath = imagecursor.getString(dataColumnIndex);
-
+					
+					for(int a=0;a<StatusPicsSendActivity.dataT.size();a++){
+						if(item.sdcardPath.equals(StatusPicsSendActivity.dataT.get(a).sdcardPath)){
+							item.isSeleted = true;
+							break;
+						}
+					}
+					
 					galleryList.add(item);
 				}
 			}

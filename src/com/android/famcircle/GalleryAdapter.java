@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.famcircle.ui.StatusOfPersonActivity;
+import com.android.famcircle.ui.StatusPicsSendActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
@@ -97,6 +99,11 @@ public class GalleryAdapter extends BaseAdapter {
 		return dataT;
 	}
 
+	public void addData(ArrayList<CustomGallery> files){
+		this.data.addAll(files);
+		notifyDataSetChanged();
+	}
+	
 	public void addAll(ArrayList<CustomGallery> files) {
 
 		try {

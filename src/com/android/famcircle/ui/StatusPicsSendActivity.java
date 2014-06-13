@@ -1,6 +1,7 @@
 package com.android.famcircle.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -39,6 +40,7 @@ public class StatusPicsSendActivity extends BaseActivity{
 	private GridView gridGallery;
 	private GalleryAdapter adapter;
 	private ProgressDialog progress;
+	public static ArrayList<CustomGallery> dataT;
 	private ImageLoader  imageLoader = ImageLoader.getInstance();
 	private Handler handler;
 	
@@ -47,6 +49,7 @@ public class StatusPicsSendActivity extends BaseActivity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.status_send_pics);
+		dataT = new ArrayList<CustomGallery>();
 		progress = new ProgressDialog(this);
 		progress.setCancelable(false);
 		progress.setCanceledOnTouchOutside(false);
@@ -123,15 +126,15 @@ public class StatusPicsSendActivity extends BaseActivity{
 					}
 
 					pdata = new PostData("share", "postStatus",
-							"{\"usrId\":2, \"grpId\":1, \"creatTime\":\""+ 
+							"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""+ 
 							System.currentTimeMillis() / 1000+ "\", \"status\":\""
 							+StringUtils.gbEncoding(statusContent.getText().toString())+"\"}", pics);
 				}else{
 					pdata = new PostData("share", "postStatus",
-							"{\"usrId\":2, \"grpId\":1, \"creatTime\":\""
+							"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""
 									+ System.currentTimeMillis() / 1000
-									+ "\", \"status\":\"Post Msg on "
-									+ System.currentTimeMillis() / 1000 + "\"}");
+									+ "\", \"status\":\""
+									+ StringUtils.gbEncoding(statusContent.getText().toString()) + "\"}");
 				}
 				Log.i("postdata", pdata.toString());
 				String json = new FNHttpRequest().doPost(pdata).trim();
@@ -150,11 +153,12 @@ public class StatusPicsSendActivity extends BaseActivity{
 		super.onActivityResult(requestCode, resultCode, data);
 			all_path = data.getStringArrayExtra("all_path");
 
-			ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
-
+			//ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
+			dataT.clear();
 			for (String string : all_path) {
 				CustomGallery item = new CustomGallery();
 				item.sdcardPath = string;
+				item.isSeleted = true;
 				dataT.add(item);
 			}
 			gridGallery.setVisibility(0);

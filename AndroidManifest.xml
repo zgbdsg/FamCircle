@@ -45,7 +45,7 @@
         </activity>
         
         <activity android:name="com.android.famcircle.ui.StatusPicsSendActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar">
+            	  android:theme="@android:style/Theme.Holo.Light">
             <!-- VIEW一定需要吗 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

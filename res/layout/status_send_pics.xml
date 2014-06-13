@@ -5,23 +5,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-    <FrameLayout
-        android:id="@+id/send_pics_banner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_title_higher"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/status_pics_send"
-            android:layout_gravity="right|center_vertical"
-            android:text="@string/status_send" />
-
-    </FrameLayout>
-    
 	<EditText android:id="@+id/status_pics_text_content"
 	    	  android:layout_width="fill_parent"
 	    	  android:layout_height="wrap_content"
@@ -52,6 +35,15 @@
             android:verticalSpacing="-15dp"
             tools:listitem="@layout/item_grid_image" >
         </GridView>
+
+	</LinearLayout>
+	
+	<LinearLayout android:orientation="horizontal"
+	    		  android:layout_width="wrap_content"
+	    		  android:layout_height="wrap_content"
+	    		  android:layout_marginLeft="10dp"
+	    	 	  android:layout_marginRight="10dp"
+	    	      android:layout_marginTop="5dp">
 	    <Button android:id="@+id/add_pics"
 	        	android:layout_width="wrap_content"
 	        	android:layout_height="wrap_content"

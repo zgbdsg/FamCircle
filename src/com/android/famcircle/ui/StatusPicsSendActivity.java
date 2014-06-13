@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -78,65 +80,71 @@ public class StatusPicsSendActivity extends BaseActivity{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				gridGallery.setVisibility(8);
-				adapter.clear();
+				//gridGallery.setVisibility(8);
+				//adapter.clear();
+				if(adapter.getCount() == 9)
+					return;
 				Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
 				startActivityForResult(i, 200);
 			}
 		});
 		
-		statusSend = (TextView)findViewById(R.id.status_pics_send);
+/*		statusSend = (TextView)findViewById(R.id.status_pics_send);
 		statusSend.setOnClickListener(new OnClickListener() {
 			
 			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				new AsyncTask<String, String, String>() {
-
-					@Override
-					protected String doInBackground(String... params) {
-						// TODO Auto-generated method stub
-						Message mg1 = new Message();
-						mg1.arg1 = 0;
-						handler.sendMessage(mg1);
-						PostData pdata = null;
-						if(all_path != null) {
-							ArrayList<PictureBody> pics = new ArrayList<PictureBody>();
-							
-							for(int a=0;a<all_path.length;a++){
-									Log.i("file path:", all_path[a]);
-									Bitmap tmpmap = ImageUtils.compImageBySize(all_path[a]);
-									PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.JPEG , all_path[a]+".jpg");
-									pics.add(pb);
-							}
-
-							pdata = new PostData("share", "postStatus",
-									"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""+ 
-									System.currentTimeMillis() / 1000+ "\", \"status\":\""
-									+StringUtils.gbEncoding(statusContent.getText().toString())+"\"}", pics);
-						}else{
-							pdata = new PostData("share", "postStatus",
-									"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""
-											+ System.currentTimeMillis() / 1000
-											+ "\", \"status\":\"Post Msg on "
-											+ System.currentTimeMillis() / 1000 + "\"}");
-						}
-						Log.i("postdata", pdata.toString());
-						String json = new FNHttpRequest().doPost(pdata).trim();
-						Log.i("send status result", json);
-						if(json.startsWith("{\"errCode\" : 0,")){
-							Message mg2 = new Message();
-							mg2.arg1 = 1;
-							handler.sendMessage(mg2);
-						}
-						return null;
-					}
-				}.execute("");
+				sendStatusWithPics();
 			}
-		});
+		});*/
 	}
 	
+	
+	public void sendStatusWithPics(){
+		new AsyncTask<String, String, String>() {
+
+			@Override
+			protected String doInBackground(String... params) {
+				// TODO Auto-generated method stub
+				Message mg1 = new Message();
+				mg1.arg1 = 0;
+				handler.sendMessage(mg1);
+				PostData pdata = null;
+				if(all_path != null) {
+					ArrayList<PictureBody> pics = new ArrayList<PictureBody>();
+					
+					for(int a=0;a<all_path.length;a++){
+							Log.i("file path:", all_path[a]);
+							Bitmap tmpmap = ImageUtils.compImageBySize(all_path[a]);
+							PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.JPEG , all_path[a]+".jpg");
+							pics.add(pb);
+					}
+
+					pdata = new PostData("share", "postStatus",
+							"{\"usrId\":2, \"grpId\":1, \"creatTime\":\""+ 
+							System.currentTimeMillis() / 1000+ "\", \"status\":\""
+							+StringUtils.gbEncoding(statusContent.getText().toString())+"\"}", pics);
+				}else{
+					pdata = new PostData("share", "postStatus",
+							"{\"usrId\":2, \"grpId\":1, \"creatTime\":\""
+									+ System.currentTimeMillis() / 1000
+									+ "\", \"status\":\"Post Msg on "
+									+ System.currentTimeMillis() / 1000 + "\"}");
+				}
+				Log.i("postdata", pdata.toString());
+				String json = new FNHttpRequest().doPost(pdata).trim();
+				Log.i("send status result", json);
+				if(json.startsWith("{\"errCode\" : 0,")){
+					Message mg2 = new Message();
+					mg2.arg1 = 1;
+					handler.sendMessage(mg2);
+				}
+				return null;
+			}
+		}.execute("");
+	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -155,5 +163,26 @@ public class StatusPicsSendActivity extends BaseActivity{
 	
 	public void destroySelf(){
 		this.finish();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.picssend, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.btn_send_status) {
+			sendStatusWithPics();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

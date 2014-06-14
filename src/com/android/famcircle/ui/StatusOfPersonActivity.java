@@ -238,6 +238,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 			String[] picArray = new String[statusesOfTime.size()];
 			String[] textArray = new String[statusesOfTime.size()];
 			String[] creatTime = new String[statusesOfTime.size()];
+			String[] numOfPics = new String[statusesOfTime.size()];
 			String[][] bigPics = new String[statusesOfTime.size()][];
 			
 			for (int j = 0; j < statusesOfTime.size(); j++) {
@@ -250,10 +251,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 					bigPics[j] = null;
 				}else{
 					JSONArray picUrls = status.getJSONObject("resrc").getJSONArray("picArray");
-					picArray[j] = "";
-					if(picUrls.size() == 0)
-						continue;
-					picArray[j] = jsonResult.getIntValue("usrId") + "/"+picUrls.getString(0);
+					String thumbUrl = status.getString("thumb");
+					numOfPics[j] = "共有"+picUrls.size()+"张";
+					picArray[j] = jsonResult.getIntValue("usrId") + "/"+thumbUrl;
 					
 					bigPics[j] = new String[picUrls.size()];
 					for(int k=0;k<picUrls.size();k++){
@@ -264,6 +264,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 
 			personStatusInfo.setBigPicpath(jsonResult.getString("bigPicPath"));
 			personStatusInfo.setSmallPicPath(jsonResult.getString("smallPicPath"));
+			personStatusInfo.setNumOfPics(numOfPics);
 			personStatusInfo.setStatusPic(picArray);
 			personStatusInfo.setStatusTexts(textArray);
 			personStatusInfo.setCreatTime(creatTime);

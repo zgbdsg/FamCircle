@@ -105,7 +105,7 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 		
 		holder.statusTime.setText(personStatusInfo.getStatusTime());
 		PersonalStatusListAdapter statusListAdapter = new PersonalStatusListAdapter(layoutInflater, options,
-				personStatusInfo.getSmallPicPath(), personStatusInfo.getStatusTexts(), personStatusInfo.getStatusPic());
+				personStatusInfo.getSmallPicPath(), personStatusInfo.getStatusTexts(), personStatusInfo.getStatusPic(),personStatusInfo.getNumOfPics());
 		holder.listview.setAdapter(statusListAdapter);
 		holder.listview.setTag(position);
 		holder.listview.setOnItemClickListener(new OnItemClickListener() {
@@ -146,6 +146,7 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 class PersonalStatusListAdapter extends BaseAdapter{
 	String[] statusTexts;
 	String[] statusPic;
+	String[] numOfPics;
 	String smallPicPath;
 	DisplayImageOptions options;
 	LayoutInflater layoutInflater; 
@@ -154,13 +155,15 @@ class PersonalStatusListAdapter extends BaseAdapter{
 		TextView text_status;
 		ImageView pics;
 		TextView pics_discript;
+		TextView numOfPics;
 		LinearLayout pics_status;
 	}
 	
-	public PersonalStatusListAdapter(LayoutInflater layoutInflater,DisplayImageOptions options,String smallPicPath,String[] statusTexts,String[] statusPic){
+	public PersonalStatusListAdapter(LayoutInflater layoutInflater,DisplayImageOptions options,String smallPicPath,String[] statusTexts,String[] statusPic,String[] numOfPics){
 		this.statusTexts = statusTexts;
 		this.statusPic = statusPic;
 		this.smallPicPath = smallPicPath;
+		this.numOfPics = numOfPics;
 		this.layoutInflater = layoutInflater;
 		this.options = options;
 	}
@@ -195,6 +198,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 			listHolder.pics_discript = (TextView)convertView.findViewById(R.id.pics_discript);
 			listHolder.pics_status = (LinearLayout)convertView.findViewById(R.id.pics_status);
 			listHolder.text_status = (TextView)convertView.findViewById(R.id.text_status);
+			listHolder.numOfPics = (TextView)convertView.findViewById(R.id.num_of_pics);
 			
 			convertView.setTag(listHolder);
 		}
@@ -207,6 +211,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 			listHolder.text_status.setVisibility(View.GONE);
 			listHolder.pics_status.setVisibility(View.VISIBLE);
 			listHolder.pics_discript.setText(statusTexts[position]);
+			listHolder.numOfPics.setText(numOfPics[position]);
 			ImageLoader.getInstance().displayImage("http://114.215.180.229"+smallPicPath+statusPic[position], listHolder.pics,options,null);
 		}
 		

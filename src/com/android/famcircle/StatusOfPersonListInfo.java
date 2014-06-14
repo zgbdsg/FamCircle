@@ -12,6 +12,7 @@ public class StatusOfPersonListInfo{
 	private String[][] bigPics;
 	private String smallPicPath;
 	private String bigPicpath;
+	private String[] numOfPics;
 	
 	public String[] getCreatTime() {
 		return creatTime;
@@ -55,5 +56,10 @@ public class StatusOfPersonListInfo{
 	public void setBigPics(String[][] bigPics) {
 		this.bigPics = bigPics;
 	}
-	
+	public String[] getNumOfPics() {
+		return numOfPics;
+	}
+	public void setNumOfPics(String[] numOfPics) {
+		this.numOfPics = numOfPics;
+	}
 }

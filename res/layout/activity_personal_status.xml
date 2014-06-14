@@ -10,7 +10,7 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent" 
 	        android:background="#ffffff"
-	        android:dividerHeight="2dp"
+	        android:dividerHeight="12dp"
 	        android:layout_marginBottom="5dp"
 	        android:fadingEdge="none"
 	        android:fastScrollEnabled="false"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    		  xmlns:applist="http://schemas.android.com/apk/res-auto"
     		android:layout_width="fill_parent"
 		    android:layout_height="fill_parent"
 		    android:layout_gravity="center"
@@ -32,13 +33,13 @@
 			    		  android:layout_marginBottom="8dp"
 			    		  android:layout_weight="7"
 			    		  android:orientation="vertical">
-			    <com.android.famcircle.FamcirleListView
+			    <com.android.famcircle.linearlistview.LinearListView
 			               android:id="@+id/list_of_statuses_at_the_time"
-			        	   android:layout_width="fill_parent"
-		             	   android:layout_height="fill_parent"
-		             	   android:scrollbars="none"
-		             	   android:dividerHeight="8dp"
+			        	   android:layout_width="match_parent"
+    					   android:layout_height="match_parent"
+		             	   android:orientation="vertical"
 					       android:paddingLeft="4dp"
+					       applist:dividerThickness="8dp"
 		             	   android:layout_marginTop="4dp"
 					       android:divider="@null" />
 			</LinearLayout>

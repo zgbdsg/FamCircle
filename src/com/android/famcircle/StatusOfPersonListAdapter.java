@@ -1,31 +1,26 @@
 package com.android.famcircle;
 
-import java.util.HashMap;
 import java.util.List;
-
-import com.android.famcircle.ui.StatusImagePagerActivity;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.opengl.Visibility;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
+
+import com.android.famcircle.linearlistview.LinearListView;
+import com.android.famcircle.linearlistview.LinearListView.OnItemClickListener;
+import com.android.famcircle.ui.StatusImagePagerActivity;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusOfPersonListAdapter extends BaseAdapter{
 	Handler handler = new Handler(){
@@ -40,7 +35,7 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 	
 	private  class  ViewHolder {
 		TextView statusTime;
-		ListView listview;
+		LinearListView listview;
 	}
 	
 	private List<Object> dataList;
@@ -98,7 +93,7 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 			convertView = layoutInflater.inflate(R.layout.personal_status_list_item, null);
 			holder = new ViewHolder();
 			holder.statusTime = (TextView)convertView.findViewById(R.id.day_of_time);
-			holder.listview = (ListView)convertView.findViewById(R.id.list_of_statuses_at_the_time);
+			holder.listview = (LinearListView)convertView.findViewById(R.id.list_of_statuses_at_the_time);
 			
 			convertView.setTag(holder);
 		}
@@ -108,10 +103,12 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 				personStatusInfo.getSmallPicPath(), personStatusInfo.getStatusTexts(), personStatusInfo.getStatusPic(),personStatusInfo.getNumOfPics());
 		holder.listview.setAdapter(statusListAdapter);
 		holder.listview.setTag(position);
+		holder.listview.setDividerThickness(R.dimen.padding_large);
 		holder.listview.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			public void onItemClick(LinearListView parent, View view, int position,
+					long id) {
 				// TODO Auto-generated method stub
 				int num = (Integer)parent.getTag();
 				StatusOfPersonListInfo statInfo=(StatusOfPersonListInfo)dataList.get(num);
@@ -213,6 +210,8 @@ class PersonalStatusListAdapter extends BaseAdapter{
 			listHolder.pics_discript.setText(statusTexts[position]);
 			listHolder.numOfPics.setText(numOfPics[position]);
 			ImageLoader.getInstance().displayImage("http://114.215.180.229"+smallPicPath+statusPic[position], listHolder.pics,options,null);
+		
+			
 		}
 		
 		return convertView;

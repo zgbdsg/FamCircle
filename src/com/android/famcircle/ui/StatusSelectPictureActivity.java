@@ -132,6 +132,7 @@ public class StatusSelectPictureActivity extends BaseActivity{
 					@Override
 					public void run() {
 						adapter.addAll(getGalleryPhotos());
+						adapter.setSelectedNum(StatusPicsSendActivity.dataT.size());
 						checkImageStatus();
 					}
 				});

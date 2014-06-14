@@ -34,6 +34,17 @@ public class GalleryAdapter extends BaseAdapter {
 		// clearCache();
 	}
 
+	
+	public int getSelectedNum() {
+		return selectedNum;
+	}
+
+
+	public void setSelectedNum(int selectedNum) {
+		this.selectedNum = selectedNum;
+	}
+
+
 	@Override
 	public int getCount() {
 		return data.size();

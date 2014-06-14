@@ -85,8 +85,7 @@ public class StatusPicsSendActivity extends BaseActivity{
 				// TODO Auto-generated method stub
 				//gridGallery.setVisibility(8);
 				//adapter.clear();
-				if(adapter.getCount() == 9)
-					return;
+
 				Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
 				startActivityForResult(i, 200);
 			}

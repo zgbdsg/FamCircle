@@ -10,8 +10,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.famcircle.ui.StatusOfPersonActivity;
-import com.android.famcircle.ui.StatusPicsSendActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
@@ -20,8 +18,8 @@ public class GalleryAdapter extends BaseAdapter {
 	private Context mContext;
 	private LayoutInflater infalter;
 	private ArrayList<CustomGallery> data = new ArrayList<CustomGallery>();
-	private int selectedNum = 0;
-	private int maxSelectedNum = 9;
+	public int selectedNum = 0;
+	public int maxSelectedNum = 9;
 	ImageLoader imageLoader;
 
 	private boolean isActionMultiplePick;

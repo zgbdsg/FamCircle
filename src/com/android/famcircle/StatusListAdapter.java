@@ -45,7 +45,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusListAdapter extends BaseAdapter{
 	int[] location;
-	private Handler activityHandler;
 	
 	Handler handler = new Handler(){
 
@@ -127,7 +126,6 @@ public class StatusListAdapter extends BaseAdapter{
 		// TODO Auto-generated constructor stub
 		this.dataList = data;
 		this.context = context;
-		this.activityHandler = activityHandler;
 		layoutInflater = (LayoutInflater)LayoutInflater.from(context);
 		
 		Options sampleOpt = new Options();

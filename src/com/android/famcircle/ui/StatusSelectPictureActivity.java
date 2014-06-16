@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -121,6 +122,7 @@ public class StatusSelectPictureActivity extends BaseActivity{
 
 		btnGalleryOk = (Button) findViewById(R.id.btnGalleryOk);
 		btnGalleryOk.setOnClickListener(mOkClickListener);
+		btnGalleryOk.setText("完成("+adapter.selectedNum+"/"+adapter.maxSelectedNum+")");
 
 		new Thread() {
 
@@ -173,7 +175,8 @@ public class StatusSelectPictureActivity extends BaseActivity{
 		@Override
 		public void onItemClick(AdapterView<?> l, View v, int position, long id) {
 			adapter.changeSelection(v, position);
-
+			Log.i("selectedBtn text :", btnGalleryOk.getText().toString());
+			btnGalleryOk.setText("完成("+adapter.selectedNum+"/"+adapter.maxSelectedNum+")");
 		}
 	};
 

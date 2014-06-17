@@ -36,6 +36,7 @@ import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
+import com.android.famcircle.util.ACache;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -53,6 +54,8 @@ public class ShareActivity  extends BaseActivity {
 	public static String userName;
 	public static String logoUrl;
 	public static String groupId;
+	
+	private ACache mCache;
 	
 	String statusResult;
 	List<HashMap<String, Object>> listMap;
@@ -82,6 +85,7 @@ public class ShareActivity  extends BaseActivity {
 		
 		AppManager.getInstance().addActivity(this);
 		context = this;
+		mCache = ACache.get(this);
 		Log.i("activity ", "shared!!!!!!");
 		replyWindow = (RelativeLayout)findViewById(R.id.relative_pop_up_input_window);
 		replyWindow.setOnClickListener(new OnClickListener() {
@@ -134,9 +138,6 @@ public class ShareActivity  extends BaseActivity {
 		});
 				
 		statuslist = mPullRefreshListView.getRefreshableView();
-
-		initialUserProfile();
-		initialStatuses();
 		
 		headview = LayoutInflater.from(this).inflate(R.layout.activity_share_header, null);
 		statuslist.addHeaderView(headview);
@@ -193,10 +194,11 @@ public class ShareActivity  extends BaseActivity {
 						break;
 					case 5:
 						//for status send finished;
+						currentMode = 1;
 						mPullRefreshListView.setRefreshing();
 						break;
 					default:
-						onLoading.dismiss();
+						//onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
@@ -212,6 +214,26 @@ public class ShareActivity  extends BaseActivity {
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 
+		
+		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
+		if(userProfile != null){
+			userId = userProfile.getString("usrId");
+			userName = userProfile.getString("name");
+			logoUrl = userProfile.getString("avatar");
+			groupId = userProfile.getString("grpId");
+			updateProfile();
+			Log.i("cache", "find cache usrId"+userId);
+		}else{
+			initialUserProfile();
+		}
+		statusResult = mCache.getAsString("statusResult");
+		if(statusResult == null)
+			initialStatuses();
+		else{
+			isNeedRefresh = false;
+			Message message = new Message();
+			myhandler.sendMessage(message);
+		}
 	}
 
 	@Override
@@ -286,7 +308,7 @@ public class ShareActivity  extends BaseActivity {
 		// TODO Auto-generated method stub
 
 		new AsyncTask<String, String, String >() {
-
+			
 			@Override
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
@@ -304,6 +326,7 @@ public class ShareActivity  extends BaseActivity {
 					logoUrl = userProfile.getString("avatar");
 					groupId = userProfile.getString("grpId");
 					Log.i("groupId", groupId);
+					mCache.put("userProfile", userProfile);
 				}
 				return null;
 			}
@@ -324,6 +347,11 @@ public class ShareActivity  extends BaseActivity {
 				statusResult = json;
 				//listMap = getStatusListMaps(json);
 				//onLoading.dismiss();
+				JSONObject allResult = JSON.parseObject(json);
+
+				if(allResult.getInteger("errCode") == 0){
+					mCache.put("statusResult", statusResult);
+				}
 				Message message = new Message();
 				message.arg1 = 2;
 				myhandler.sendMessage(message);
@@ -403,7 +431,7 @@ public class ShareActivity  extends BaseActivity {
 	
 	private void updateProfile() {
 		// TODO Auto-generated method stub
-
+		
 		TextView userNameView = (TextView) headview.findViewById(R.id.username);
 		userNameView.setText(userName);
 		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);

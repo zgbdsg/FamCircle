@@ -29,6 +29,7 @@ import com.android.famcircle.R;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
+import com.android.famcircle.util.ACache;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -51,6 +52,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 	private String userName;
 	private String logoUrl;
 	private String groupId;
+	private ACache mCache;
 	private View headview;;
 	private CustomProgressDialog onLoading;
 	private boolean isNeedRefresh;
@@ -65,6 +67,8 @@ public class StatusOfPersonActivity extends BaseActivity {
 
 		AppManager.getInstance().addActivity(this);
 		context = this;
+		mCache = ACache.get(this);
+		
 		mPullRefreshListView = (PullToRefreshListView) findViewById(R.id.statuslist);
 		mPullRefreshListView.setMode(Mode.PULL_FROM_END);
 
@@ -150,8 +154,24 @@ public class StatusOfPersonActivity extends BaseActivity {
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 		
-		initialUserProfile();
-		initialStatuses();
+		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
+		if(userProfile != null){
+			userName = userProfile.getString("name");
+			logoUrl = userProfile.getString("avatar");
+			groupId = userProfile.getString("grpId");
+			updateProfile();
+			Log.i("cache", "find cache userName  "+userName);
+		}else{
+			initialUserProfile();
+		}
+		statusResult = mCache.getAsString("statusOfPersonResult");
+		if(statusResult == null)
+			initialStatuses();
+		else{
+			isNeedRefresh = false;
+			Message message = new Message();
+			myhandler.sendMessage(message);
+		}
 
 	}
 
@@ -199,8 +219,11 @@ public class StatusOfPersonActivity extends BaseActivity {
 				//Log.i("initialStatuses  :", json);
 
 				statusResult = json;
-				//listMap = getStatusListMaps(json);
-				//onLoading.dismiss();
+				JSONObject allResult = JSON.parseObject(json);
+
+				if(allResult.getInteger("errCode") == 0){
+					mCache.put("statusOfPersonResult", statusResult);
+				}
 				Message message = new Message();
 				message.arg1 = 0;
 				myhandler.sendMessage(message);
@@ -298,6 +321,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 					logoUrl = userProfile.getString("avatar");
 					groupId = userProfile.getString("grpId");
 					Log.i("groupId", groupId);
+					mCache.put("userProfile", userProfile);
 				}
 				return null;
 			}

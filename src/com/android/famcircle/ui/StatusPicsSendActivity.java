@@ -65,6 +65,11 @@ public class StatusPicsSendActivity extends BaseActivity{
 					break;
 				case 1:
 					progress.dismiss();
+					Message refreshMsg = new Message();
+					refreshMsg.arg1 = 5;
+					refreshMsg.setTarget(ShareActivity.myhandler);
+					
+					refreshMsg.sendToTarget();
 					destroySelf();
 					break;
 				default:

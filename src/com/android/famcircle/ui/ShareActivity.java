@@ -191,6 +191,10 @@ public class ShareActivity  extends BaseActivity {
 						// for zan and reply
 						myadapter.notifyDataSetChanged();
 						break;
+					case 5:
+						//for status send finished;
+						mPullRefreshListView.setRefreshing();
+						break;
 					default:
 						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);

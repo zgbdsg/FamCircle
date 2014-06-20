@@ -13,13 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.famcircle.R;
+import com.android.famcircle.util.ACache;
 
 public class MainActivity extends Activity {
-
+	private ACache mCache;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mCache = ACache.get(this);
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -55,6 +58,8 @@ public class MainActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		}else if(id == R.id.action_clearcache){
+			mCache.clear();
 		}
 		return super.onOptionsItemSelected(item);
 	}

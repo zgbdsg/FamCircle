@@ -3,21 +3,25 @@ package com.android.famcircle.ui;
 import uk.co.senab.photoview.PhotoViewAttacher;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.famcircle.HackyViewPager;
 import com.android.famcircle.R;
-import com.android.famcircle.R.drawable;
-import com.android.famcircle.R.id;
-import com.android.famcircle.R.layout;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -33,17 +37,30 @@ public class StatusImagePagerActivity extends BaseActivity {
 	private static final String STATE_POSITION = "STATE_POSITION";
 
 	DisplayImageOptions options;
-
+	LinearLayout points;
+	String[] imageUrls;
+	ImageView[] pointsArray;
 	ViewPager pager;
+	Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+				super.handleMessage(msg);
+				if(msg != null){
+					updatePointIndex(msg.arg1);
+				}
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.status_image_pager);
+		setContentView(R.layout.activity_status_image_pager);
 
 		Bundle bundle = getIntent().getExtras();
 		assert bundle != null;
-		String[] imageUrls = bundle.getStringArray("images");
+		imageUrls = bundle.getStringArray("images");
 		int pagerPosition = bundle.getInt("position", 0);
 
 		if (savedInstanceState != null) {
@@ -64,6 +81,49 @@ public class StatusImagePagerActivity extends BaseActivity {
 		pager = (HackyViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));
 		pager.setCurrentItem(pagerPosition);
+		
+		pager.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				Message msg = new Message();
+				msg.arg1 = arg0;
+				handler.sendMessage(msg);
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		points = (LinearLayout)findViewById(R.id.points);
+		pointsArray = new ImageView[imageUrls.length];
+		
+		for(int i=0;i<imageUrls.length;i++){
+			pointsArray[i] = new ImageView(this);
+			pointsArray[i].setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			pointsArray[i].setPadding(15, 0, 0, 0);
+			pointsArray[i].setScaleType(ScaleType.MATRIX);
+			
+			if(i==pagerPosition){
+				pointsArray[i].setImageResource(R.drawable.point_selected);
+			}else{
+				pointsArray[i].setImageResource(R.drawable.point_not_selected);
+			}
+			Log.i("points is null :", ""+(points==null));	
+			points.addView(pointsArray[i]);
+		}
+		
+		
 	}
 
 	@Override
@@ -99,7 +159,7 @@ public class StatusImagePagerActivity extends BaseActivity {
 			final PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
 			
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
-
+			
 			ImageLoader.getInstance().displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
 				public void onLoadingStarted(String imageUri, View view) {
@@ -142,7 +202,7 @@ public class StatusImagePagerActivity extends BaseActivity {
 			
 			return imageLayout;
 		}
-
+		
 		@Override
 		public boolean isViewFromObject(View view, Object object) {
 			return view.equals(object);
@@ -155,6 +215,17 @@ public class StatusImagePagerActivity extends BaseActivity {
 		@Override
 		public Parcelable saveState() {
 			return null;
+		}
+	}
+
+	public void updatePointIndex(int position) {
+		// TODO Auto-generated method stub
+		for(int i=0;i<imageUrls.length;i++){
+			if(i==position){
+				pointsArray[i].setImageResource(R.drawable.point_selected);
+			}else{
+				pointsArray[i].setImageResource(R.drawable.point_not_selected);
+			}
 		}
 	}
 }

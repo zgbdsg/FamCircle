@@ -4,6 +4,7 @@
     <string name="app_name">FamCircle</string>
     <string name="hello_world">进入FamCircle</string>
     <string name="action_settings">Settings</string>
+    <string name="action_clearcache">ClearCache</string>
     
         <!-- share -->
     <string name="no_data"></string>

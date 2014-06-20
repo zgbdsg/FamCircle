@@ -1,7 +1,6 @@
 package com.android.famcircle;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,14 +20,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +33,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.android.famcircle.linearlistview.LinearListView;
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.ui.StatusOfPersonActivity;
@@ -50,7 +45,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusListAdapter extends BaseAdapter{
 	int[] location;
-	private Handler activityHandler;
 	
 	Handler handler = new Handler(){
 
@@ -107,7 +101,7 @@ public class StatusListAdapter extends BaseAdapter{
 	private  class  ViewHolder {
 		ImageView userLogo;
 		TextView userName;
-		GridView statusPics;
+		LinearListView statusPics;
 		TextView publish_time;
 		TextView status;
 		ImageButton comment;
@@ -132,7 +126,6 @@ public class StatusListAdapter extends BaseAdapter{
 		// TODO Auto-generated constructor stub
 		this.dataList = data;
 		this.context = context;
-		this.activityHandler = activityHandler;
 		layoutInflater = (LayoutInflater)LayoutInflater.from(context);
 		
 		Options sampleOpt = new Options();
@@ -186,7 +179,7 @@ public class StatusListAdapter extends BaseAdapter{
 			convertView = layoutInflater.inflate(R.layout.status_item_layout, null);
 			holder = new ViewHolder();
 			holder.publish_time = (TextView)convertView.findViewById(R.id.publish_time);
-			holder.statusPics = (StatusGridView)convertView.findViewById(R.id.status_content_pics);
+			holder.statusPics = (LinearListView)convertView.findViewById(R.id.status_content_pics);
 			holder.userLogo = (ImageView)convertView.findViewById(R.id.user_logo);
 			holder.userName = (TextView)convertView.findViewById(R.id.username);
 			holder.status = (TextView)convertView.findViewById(R.id.status_content_text);
@@ -224,31 +217,11 @@ public class StatusListAdapter extends BaseAdapter{
 			 holder.statusPics.setVisibility(8);
 		}else if(resrc_type.equals("1")){
 			holder.statusPics.setVisibility(0);
-			GridViewAdapter myGridViewAdapter = new GridViewAdapter(statusInfo.getPicArray(),layoutInflater,statusInfo,options);
+			GridViewAdapter myGridViewAdapter = new GridViewAdapter(context,statusInfo.getPicArray(),layoutInflater,statusInfo,options);
 			holder.statusPics.setAdapter(myGridViewAdapter);
 			holder.statusPics.setTag(position);
-			switch (statusInfo.getPicArray().length) {
-			case 1:
-				holder.statusPics.setNumColumns(1);
-				View itemFrame = (View)layoutInflater.inflate(R.layout.item_grid_image,null);
-				FrameLayout gridItemFrame = (FrameLayout)itemFrame.findViewById(R.id.item_frame);
-				itemFrame.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-				break;
-			case 2:
-				holder.statusPics.setNumColumns(2);
-				break;
-			case 4:
-				holder.statusPics.setNumColumns(2);
-				break;
-			default:
-				holder.statusPics.setNumColumns(3);
-				break;
-			}
 			
-			if(statusInfo.getPicArray().length > 9)
-				holder.statusPics.setNumColumns((int)Math.sqrt(statusInfo.getPicArray().length));
-			
-			holder.statusPics.setOnItemClickListener(new OnItemClickListener() {
+/*			holder.statusPics.setOnItemClickListener(new OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					int num = (Integer)parent.getTag();
@@ -260,7 +233,7 @@ public class StatusListAdapter extends BaseAdapter{
 					Log.i("start pager", "");
 					startImagePagerActivity(position,statInfo.getStatusId() , bigImageUrl);
 				}
-			});
+			});*/
 		}
 		
 		holder.all_reply_component.setVisibility(8);
@@ -364,14 +337,6 @@ public class StatusListAdapter extends BaseAdapter{
 		
 		return convertView;
 	}
-		
-	private void startImagePagerActivity(int position,String statusId, String[] imageUrls) {
-		Intent intent = new Intent(context, StatusImagePagerActivity.class);
-		intent.putExtra("statusId", statusId);
-		intent.putExtra("images", imageUrls);
-		intent.putExtra("position", position);
-		context.startActivity(intent);
-	}
 
 	private void startStatusOfPersonActivity(String  usrId) {
 		Intent intent = new Intent(context, StatusOfPersonActivity.class);
@@ -444,25 +409,41 @@ public class StatusListAdapter extends BaseAdapter{
 
 class GridViewAdapter extends BaseAdapter{
 	String[] imageUrls;
+	String[] bigImageUrl;
 	LayoutInflater layoutInflater; 
 	StatusListInfo statusInfo;
 	DisplayImageOptions options;
+	Context context;
 	
 	class GridHolder{
-		ImageView iamgeView;
-		FrameLayout itemFrame;
+		ImageView iamgeView1;
+		ImageView iamgeView2;
+		ImageView iamgeView3;
+		ImageView realImage;
+		LinearLayout itemsInLine;
 	}
 	
-	public GridViewAdapter(String[] imageurls,LayoutInflater layoutInflater,StatusListInfo statusInfo,DisplayImageOptions options){
+	public GridViewAdapter(Context context ,String[] imageurls,LayoutInflater layoutInflater,StatusListInfo statusInfo,DisplayImageOptions options){
+		this.context = context;
 		this.imageUrls = imageurls;
 		this.layoutInflater = layoutInflater;
 		this.statusInfo = statusInfo;
 		this.options = options;
+		
+		bigImageUrl = new String[imageUrls.length];
+		for(int i=0;i<imageUrls.length;i ++)
+			bigImageUrl[i] = "http://114.215.180.229"+statusInfo.getBigPicPath()+imageUrls[i];
+
 	}
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return imageUrls.length;
+		if(imageUrls.length < 4)
+			return 1;
+		else if(imageUrls.length < 7)
+			return 2;
+		else
+			return 3;
 	}
 
 	@Override
@@ -481,25 +462,121 @@ class GridViewAdapter extends BaseAdapter{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		GridHolder gridHolder;
+
+		final String statusId = statusInfo.getStatusId();
 		if(convertView != null) {
 			gridHolder = (GridHolder) convertView.getTag();
 		}else {
 			convertView = layoutInflater.inflate(R.layout.item_grid_image, parent,false);
 			gridHolder = new GridHolder();
-			gridHolder.iamgeView = (ImageView) convertView.findViewById(R.id.grid_image_item);
-			gridHolder.itemFrame = (FrameLayout)convertView.findViewById(R.id.item_frame);
+			gridHolder.iamgeView1 = (ImageView) convertView.findViewById(R.id.grid_image_item_1);
+			gridHolder.iamgeView2 = (ImageView) convertView.findViewById(R.id.grid_image_item_2);
+			gridHolder.iamgeView3 = (ImageView) convertView.findViewById(R.id.grid_image_item_3);
+			gridHolder.realImage = (ImageView) convertView.findViewById(R.id.grid_image_realitem);
+			gridHolder.itemsInLine = (LinearLayout)convertView.findViewById(R.id.items_line);
 			convertView.setTag(gridHolder);
 		}
 		
+		gridHolder.iamgeView1.setTag(position);
+		gridHolder.iamgeView2.setTag(position);
+		gridHolder.iamgeView3.setTag(position);
+		gridHolder.realImage.setTag(position);
+		
+		gridHolder.iamgeView1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				int pos = (Integer) v.getTag();
+				if(imageUrls.length ==4)
+					startImagePagerActivity(pos*2,statusId, bigImageUrl);
+				else
+					startImagePagerActivity(pos*3,statusId, bigImageUrl);
+			}
+		});
+		
+		gridHolder.iamgeView2.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						int pos = (Integer) v.getTag();
+						if(imageUrls.length ==4)
+							startImagePagerActivity(pos*2+1,statusId, bigImageUrl);
+						else
+							startImagePagerActivity(pos*3+1,statusId, bigImageUrl);
+					}
+				});
+		
+		gridHolder.iamgeView3.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				int pos = (Integer) v.getTag();
+				startImagePagerActivity(pos*3+2,statusId, bigImageUrl);
+			}
+		});
+		
+		gridHolder.realImage.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				startImagePagerActivity(0,statusId, bigImageUrl);
+			}
+		});
+		
 		if(imageUrls.length == 1){
-			gridHolder.itemFrame.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+			gridHolder.iamgeView1.setVisibility(View.GONE);
+			gridHolder.iamgeView2.setVisibility(View.GONE);
+			gridHolder.iamgeView3.setVisibility(View.GONE);
+			gridHolder.realImage.setVisibility(View.VISIBLE);
+			ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[0], gridHolder.realImage,options,null);
+			
+			return convertView;
 		}
 		//gridHolder.iamgeView.setScaleType(ImageView.ScaleType.FIT_XY);
 		//imageView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position], gridHolder.iamgeView,options,null);
+		
+		if(imageUrls.length == 4) {
+			gridHolder.iamgeView3.setVisibility(View.GONE);
+			ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*2], gridHolder.iamgeView1,options,null);
+			ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position+1], gridHolder.iamgeView2,options,null);
+			
+		}else {
+			switch (imageUrls.length - (position*3+3)) {
+			case -2:
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
+				gridHolder.iamgeView3.setVisibility(View.GONE);
+				gridHolder.iamgeView2.setVisibility(View.GONE);
+				break;
+
+			case -1:
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3+1], gridHolder.iamgeView2,options,null);
+				gridHolder.iamgeView3.setVisibility(View.GONE);
+				break;
+				
+			default:
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3+1], gridHolder.iamgeView2,options,null);
+				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3+2], gridHolder.iamgeView3,options,null);
+				
+				break;
+			}
+		}
 		return convertView;
 	}
 	
+	
+	public void startImagePagerActivity(int position,String statusId, String[] imageUrls) {
+		Intent intent = new Intent(context, StatusImagePagerActivity.class);
+		intent.putExtra("statusId", statusId);
+		intent.putExtra("images", imageUrls);
+		intent.putExtra("position", position);
+		context.startActivity(intent);
+	}
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 

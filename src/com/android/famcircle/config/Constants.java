@@ -5,19 +5,24 @@ import android.os.Environment;
 
 public class Constants {
 	/**
-	 ******************************************* 参数设置信息�?�� ******************************************
+	 ******************************************* 参数设置信息开始 ******************************************
 	 */
 
 	// 应用名称
-	public static String APP_NAME = "";
+	public final static String APP_NAME = "FamNotes";
+	public static boolean isFamNotes(){
+		return "FamNotes".endsWith(APP_NAME);
+	}
 
+	public final static String Usage_System = "System";
+	
 	// 图片路径
 	public static final String IMAGE_URL = "http://58.211.5.34:8080/studioms/staticmedia/images/#";
 
 	// 视频路径
 	public static final String VIDEO_URL = "http://58.211.5.34:8080/studioms/staticmedia/video/#";
 
-	// 保存参数文件夹名�?
+	// 保存参数文件夹名称
 	public static final String SHARED_PREFERENCE_NAME = "itau_jingdong_prefs";
 
 	// SDCard路径
@@ -30,7 +35,7 @@ public class Constants {
 	// 缓存图片路径
 	public static final String BASE_IMAGE_CACHE = BASE_PATH + "cache/images/";
 
-	// �?��分享的图�?
+	// 需要分享的图片
 	public static final String SHARE_FILE = BASE_PATH + "QrShareImage.png";
 
 	// 手机IMEI号码
@@ -57,7 +62,7 @@ public class Constants {
 	// 分享失败
 	public static final int SHARE_ERROR = 0X3000;
 
-	// �?��执行
+	// 开始执行
 	public static final int EXECUTE_LOADING = 0X4000;
 
 	// 正在执行
@@ -72,10 +77,10 @@ public class Constants {
 	// 加载数据失败
 	public static final int LOAD_DATA_ERROR = 0X8000;
 
-	// 动�?加载数据
+	// 动态加载数据
 	public static final int SET_DATA = 0X9000;
 
-	// 未登�?
+	// 未登录
 	public static final int NONE_LOGIN = 0X10000;
 
 	/**

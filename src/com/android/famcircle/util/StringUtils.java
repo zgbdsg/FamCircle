@@ -1,6 +1,7 @@
 package com.android.famcircle.util;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -362,7 +363,7 @@ public class StringUtils {
 
 	/**
 	 * 
-	 * 判断�?��字符串是不是数字
+	 * 判断一个字符串是不是数字
 	 */
 
 	public static boolean isNumber(String str) {
@@ -428,7 +429,7 @@ public class StringUtils {
 
 	/**
 	 * 
-	 * 获取手机IMEI�?
+	 * 获取手机IMEI码
 	 */
 
 	public static String getPhoneIMEI(Activity aty) {
@@ -519,4 +520,152 @@ public class StringUtils {
 
 	}
 
+	
+	public static int toInt(String str){
+		if(str==null || str.length()==0)
+			return 0;
+		str=str.trim();
+		return Integer.parseInt(str);
+	}
+	
+	public static BigDecimal toBigDecimal(String str){
+		if(str==null || str.length()==0)
+			return new BigDecimal(0.00);
+		
+		return new BigDecimal(str.trim());
+	}
+	
+	public static String toYyyyMMdd(String rq){
+		return rq.replaceAll("-|/", "");
+	}
+	
+	public static String stdStr(Object o){
+		if(o==null)
+			return "";
+		
+		if(o instanceof String)
+			return ((String)o).trim();
+		
+		return String.valueOf(o);
+	}	
+	public static String std金额(Object obj){
+		if(obj!=null || obj instanceof BigDecimal)
+			return std金额((BigDecimal)obj);
+		
+    	String src=stdStr(obj);
+    	return std金额(src);
+	}	
+	public static String std金额(String m1){
+		if(m1==null)
+			return "0.00";
+		
+		m1=m1.trim();
+		if(m1.length()==0)
+			return "0.00";
+		
+		if(isZero(m1))
+			return "0.00";
+		
+		BigDecimal bd=new BigDecimal(m1);
+//    	//System.out.println(bd.toString());
+//    	String std金额=bd.toString();
+//    	
+//    	int dotIndex=std金额.indexOf(".");
+//    	if(dotIndex==-1)
+//    		return std金额+".00";
+
+    	String rs=String.format("%.2f", bd);
+    	return rs;
+	}
+	
+	public static String std金额(BigDecimal bd){
+    	String rs=String.format("%.2f", bd);
+    	return rs;
+	}	
+	
+	public static String addStr金额(String m1, String m2){
+		BigDecimal bd1=toBigDecimal(m1);
+		BigDecimal bd2=toBigDecimal(m2);
+		
+		BigDecimal bd3=bd1.add(bd2);
+		
+		return std金额(bd3);
+	}
+	public static BigDecimal addStr金额(BigDecimal bd1, String m2){
+		BigDecimal bd2=toBigDecimal(m2);
+		
+		BigDecimal bd3=bd1.add(bd2);
+		
+		return bd3;
+	}
+	public static String addStr金额(String m1, BigDecimal bd2){
+		BigDecimal bd1=toBigDecimal(m1);
+		
+		BigDecimal bd3=bd1.add(bd2);
+		
+		return std金额(bd3);
+	}
+	
+	public static boolean isPositive(String m0){
+			BigDecimal bd=new BigDecimal(m0);
+			BigDecimal feng1=new BigDecimal("0.01");
+			int rs=bd.compareTo(feng1);
+			return rs>0;
+	}
+	public static boolean isPositive(BigDecimal bd){
+		BigDecimal feng1=new BigDecimal("0.01");
+		int rs=bd.compareTo(feng1);
+		return rs>0;
+}	
+	
+	public static boolean isZero(String m0){
+		//都对 "000000000.00", ".00", m0="0";
+			BigDecimal bd=new BigDecimal(m0);
+			int rs=bd.compareTo(BigDecimal.ZERO);
+			return 0==rs;
+	}
+	public static boolean isZero(BigDecimal bd){
+		try{
+			BigDecimal feng1=new BigDecimal("0.01");
+			int rs=bd.abs().compareTo(feng1);
+			return rs<=0;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	public static boolean isGtEqZero(BigDecimal bd){
+		try{
+			int rs=bd.compareTo(BigDecimal.ZERO);
+			return rs>=0;
+		}catch (Exception e) {
+			return false;
+		}
+	}	
+	
+//	public static boolean isNullOrWhiteSpace(String str){
+//		if(str==null)
+//			return true;
+//		
+//		if(str.trim().length()==0)
+//			return true;
+//		
+//		return false;
+//	}
+	
+	public static String getFileNameFromPath(String path){
+		if(isEmpty(path))
+			return null;
+		
+		path=path.trim();
+		
+		if(path.endsWith("/"))
+			return null;
+		
+		int idx=path.lastIndexOf('/');
+		if(idx==-1)
+			return path;
+		
+		return path.substring(idx+1);
+		
+	}
 }

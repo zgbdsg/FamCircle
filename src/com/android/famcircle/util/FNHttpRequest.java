@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -23,7 +24,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-//import org.apache.commons.codec.digest.DigestUtils;
+
+import com.famnotes.android.config.Constants;
 
 import android.util.Log;
 
@@ -32,21 +34,29 @@ import android.util.Log;
 //var timestamp= (new Date()).valueOf();   //$timestamp = $_GET ["timestamp"];
 //var nonce=Math.random();  //$
 public class FNHttpRequest {
-	public FNHttpRequest() {
-		super();
+	private String userId; //从客户端数据库获取密码
+	private String password;
+	public FNHttpRequest(String usage) {
+		if("System".equals(usage)) {
+			this.userId="xxxx"; //从客户端数据库获取密码
+			this.password="pureHtml";
+		}
 	}
-	public FNHttpRequest(String userId, String password) {
+	public FNHttpRequest(String userId, String password, int grpId) {
 		super();
 		this.userId = userId;
 		this.password = password;
+		this.grpId=grpId;
 	}
-	private String userId="xxxx"; //从客户端数据库获取密码
-	private String password="pureHtml";
+
+
+	private int grpId=0;
 	private long timeStamp;
 	private double nonce;
 	private HttpResponse localHttpResponse;
 	private String signature;
-	private String localUrl = "http://114.215.180.229/famnotes/index.php/WS/boot?";
+	private String localUrl = "http://192.168.0.73/famnotes/index.php/WS/boot?"; //"http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
+//	private String localUrl = "http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
     HttpContext httpContext;
     
     
@@ -57,7 +67,7 @@ public class FNHttpRequest {
 		signature = StringDigest.sha1(userId + password + timeStamp + nonce);
 	}
 	
-	public String doPost(PostData postData){
+	public String doPost(PostData postData) throws Exception{
 		try{
 			initialParameters();
 			
@@ -65,7 +75,8 @@ public class FNHttpRequest {
 			localUrl += "&timestamp=" + timeStamp;
 			localUrl += "&nonce=" + nonce;
 			localUrl += "&signature=" + signature;
-			localUrl += "&XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=14005670183461"; //debug PHP跟踪需要
+			localUrl += "&grpId=" + grpId;
+			localUrl += "&XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=14014148248011"; //debug PHP跟踪需要
 			
 			Log.d("FNHttpRequest", localUrl);
 			HttpPost httpPost = new HttpPost(localUrl);
@@ -134,18 +145,22 @@ public class FNHttpRequest {
 			localHttpResponse = httpclient.execute(httpPost); // ?DefaultHttpClient 已被淘汰了
 			if (localHttpResponse.getStatusLine().getStatusCode() == 200) {
 				String result = EntityUtils.toString(localHttpResponse.getEntity());
-				System.out.println(result);
+				//System.out.println(result);
 				return result;
 			}
-		} catch (ClientProtocolException localClientProtocolException) {
-			localClientProtocolException.printStackTrace();
-			return "网络异常";
-		} catch (UnsupportedEncodingException e) {
+//		} catch (ClientProtocolException localClientProtocolException) {
+//			localClientProtocolException.printStackTrace();
+//			return "网络异常";
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			return "网络异常";
+//		}
+		} catch (Exception e) {
 			Log.e("HttpClient", "网络异常"+e.getMessage());
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "网络异常";
+			throw e;
 		}
 		return null;
 		
@@ -154,6 +169,34 @@ public class FNHttpRequest {
 	/**
 	 * @param args
 	 */
-
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+//		PostData pdata=new PostData("recipe", "insertRecipe", "this is a recipe");
+		
+//		PostData pdata1=new PostData("recipe", "query");
+//		String json1=new FNHttpRequest().doPost(pdata1);
+		
+		ArrayList<String> upfiles=new ArrayList<String>();
+		upfiles.add("D:/D_misc/pngtest.png");
+		upfiles.add("D:/D_misc/opj_logo.png");
+		PostData pdata=new PostData("recipe", "testUploads", " { \"userId\" : \"xxxx\",  \"comment\" : \"Very beatiful!\" }", upfiles );
+		String json = null;
+		try {
+			json = new FNHttpRequest(Constants.Usage_System).doPost(pdata);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println(json);
+	}
 	
+	
+	public int getGrpId() {
+		return grpId;
+	}
+	public void setGrpId(int grpId) {
+		this.grpId = grpId;
+	}
+
 }

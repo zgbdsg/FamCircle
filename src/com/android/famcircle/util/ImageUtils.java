@@ -1,20 +1,12 @@
 package com.android.famcircle.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
 
 public class ImageUtils {
 	/**
-	 * 根据宽度等比例缩放图�?
+	 * 根据宽度等比例缩放图片
 	 * 
 	 * @param defaultBitmap
 	 * @param width
@@ -43,7 +35,7 @@ public class ImageUtils {
 			baos.reset();//重置baos即清空baos
 			image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
 			options -= 10;//每次都减少10
-		}
+}
 		ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
 		Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
 		return bitmap;

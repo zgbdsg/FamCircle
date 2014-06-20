@@ -29,4 +29,14 @@ public class PostData {
 			this.pics=uploadFiles;
 		}
 	}
+
+	public PostData(String objId, String method,  String dataVal, ArrayList<String> uploadFiles){
+		this.objId = objId;
+		this.method = method;
+		this.dataVal = dataVal; //json业务数据包
+		
+		if(uploadFiles!=null){
+			this.uploadFiles=uploadFiles;
+		}
+	}
 }

@@ -20,23 +20,35 @@ public class PostData {
 		this.dataVal = dataVal; //json业务数据包
 	}
 
-	public PostData(String objId, String method,  String dataVal, ArrayList<PictureBody> uploadFiles){
+	public PostData(String objId, String method,  String dataVal, ArrayList<PictureBody> pics){
 		this.objId = objId;
 		this.method = method;
 		this.dataVal = dataVal; //json业务数据包
 		
-		if(uploadFiles!=null){
-			this.pics=uploadFiles;
+		if(pics!=null){
+			this.pics=pics;
 		}
 	}
 
-	public PostData(String objId, String method,  String dataVal, ArrayList<String> uploadFiles){
-		this.objId = objId;
-		this.method = method;
-		this.dataVal = dataVal; //json业务数据包
+	public static PostData newPostDataByPics(String objId, String method,  String dataVal, ArrayList<PictureBody> pics){
+		PostData  post=new PostData(objId, method);
+		post.dataVal = dataVal; //json业务数据包
 		
-		if(uploadFiles!=null){
-			this.uploadFiles=uploadFiles;
+		if(post.pics!=null){
+			post.pics=pics;
 		}
+		
+		return post;
+	}
+	
+	public static PostData newPostDataByFiles(String objId, String method,  String dataVal, ArrayList<String> uploadFiles){
+		PostData  post=new PostData(objId, method);
+		post.dataVal = dataVal; //json业务数据包
+		
+		if(post.uploadFiles!=null){
+			post.uploadFiles=uploadFiles;
+		}
+		
+		return post;
 	}
 }

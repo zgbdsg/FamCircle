@@ -166,30 +166,6 @@ public class FNHttpRequest {
 		
 	}
 	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-//		PostData pdata=new PostData("recipe", "insertRecipe", "this is a recipe");
-		
-//		PostData pdata1=new PostData("recipe", "query");
-//		String json1=new FNHttpRequest().doPost(pdata1);
-		
-		ArrayList<String> upfiles=new ArrayList<String>();
-		upfiles.add("D:/D_misc/pngtest.png");
-		upfiles.add("D:/D_misc/opj_logo.png");
-		PostData pdata=new PostData("recipe", "testUploads", " { \"userId\" : \"xxxx\",  \"comment\" : \"Very beatiful!\" }", upfiles );
-		String json = null;
-		try {
-			json = new FNHttpRequest(Constants.Usage_System).doPost(pdata);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		System.out.println(json);
-	}
 	
 	
 	public int getGrpId() {

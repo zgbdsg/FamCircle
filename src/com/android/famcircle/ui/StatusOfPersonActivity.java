@@ -23,15 +23,16 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.android.famcircle.AppManager;
 import com.android.famcircle.CustomProgressDialog;
 import com.android.famcircle.R;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
-import com.android.famcircle.util.ACache;
-import com.android.famcircle.util.FNHttpRequest;
-import com.android.famcircle.util.PostData;
+import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.util.ACache;
+import com.famnotes.android.util.FNHttpRequest;
+import com.famnotes.android.util.PostData;
+import com.famnotes.android.vo.User;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
@@ -65,7 +66,6 @@ public class StatusOfPersonActivity extends BaseActivity {
 		Bundle info = this.getIntent().getExtras();
 		usrId = info.getString("usrId");
 
-		AppManager.getInstance().addActivity(this);
 		context = this;
 		mCache = ACache.get(this);
 		
@@ -190,11 +190,12 @@ public class StatusOfPersonActivity extends BaseActivity {
 		protected String doInBackground(Integer... params) {
 			// Simulates a background job.
 			String result = "";
+			try{
 			StatusOfPersonListInfo personStatusInfo = (StatusOfPersonListInfo) listMap.get(listMap.size()-1);
 			String[] creatTime = personStatusInfo.getCreatTime();
 			String lastCreatTime = creatTime[creatTime.length-1];
 			PostData pdata=new PostData("share", "getStatusByUsrId","{\"usrId\":"+usrId+ ", \"type\":"+0+", \"creatTime\":"+lastCreatTime+"}");
-			result=new FNHttpRequest().doPost(pdata).trim();
+			result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			
 			Log.i("refresh data :", result);
 			statusResult = result;
@@ -203,6 +204,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 			Message message = new Message();
 			message.arg1 = 1;
 			myhandler.sendMessage(message);
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
 			return result;
 		}
 	}
@@ -214,8 +218,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
 				statusResult = "";
+				try{
 				PostData pdata=new PostData("share","getStatusByUsrId","{\"usrId\":"+usrId+ ", \"type\":"+0+"}");
-				String json=new FNHttpRequest().doPost(pdata);
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
 				//Log.i("initialStatuses  :", json);
 
 				statusResult = json;
@@ -227,6 +232,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 				Message message = new Message();
 				message.arg1 = 0;
 				myhandler.sendMessage(message);
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				return null;
 			}
 		}.execute("");
@@ -308,9 +316,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 			@Override
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
-				
+				try{
 				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":"+usrId+"}");
-				String json=new FNHttpRequest().doPost(pdata);
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
 				Log.i("initialUserProfile  :", json);
 				
 				JSONObject jsonResult = JSON.parseObject(json);
@@ -322,6 +330,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 					groupId = userProfile.getString("grpId");
 					Log.i("groupId", groupId);
 					mCache.put("userProfile", userProfile);
+				}
+				}catch(Exception ex){
+					ex.printStackTrace();
 				}
 				return null;
 			}

@@ -27,6 +27,7 @@ import com.android.famcircle.GalleryAdapter;
 import com.android.famcircle.R;
 import com.android.famcircle.R.id;
 import com.android.famcircle.R.layout;
+import com.famnotes.android.base.BaseActivity;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;

@@ -37,9 +37,10 @@ import com.android.famcircle.linearlistview.LinearListView;
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.ui.StatusOfPersonActivity;
-import com.android.famcircle.util.FNHttpRequest;
-import com.android.famcircle.util.PostData;
-import com.android.famcircle.util.StringUtils;
+import com.famnotes.android.util.FNHttpRequest;
+import com.famnotes.android.util.PostData;
+import com.famnotes.android.util.StringUtils;
+import com.famnotes.android.vo.User;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -354,9 +355,10 @@ public class StatusListAdapter extends BaseAdapter{
 			@Override
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
+				try{
 				Log.i("zan info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
 				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":1, \"reply\":\"\"}");
-				String json=new FNHttpRequest().doPost(pdata).trim();
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 				
 				JSONObject result = JSON.parseObject(json);
 				Message msg = new Message();
@@ -372,7 +374,9 @@ public class StatusListAdapter extends BaseAdapter{
 				msg.setData(data);
 				handler.sendMessage(msg);
 				System.out.println(json);
-
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				return null;
 			}
 		}.execute("");
@@ -384,9 +388,10 @@ public class StatusListAdapter extends BaseAdapter{
 			@Override
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
+				try{
 				Log.i("reply  info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
 				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":0, \"reply\":\""+replyContent+"\"}");
-				String json=new FNHttpRequest().doPost(pdata).trim();
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 				Message msg = new Message();
 				msg.arg1 = 0 ;
 				msg.arg2 = loc;
@@ -400,7 +405,9 @@ public class StatusListAdapter extends BaseAdapter{
 				msg.setData(data);
 				handler.sendMessage(msg);
 				System.out.println(json);
-
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				return null;
 			}
 		}.execute("");

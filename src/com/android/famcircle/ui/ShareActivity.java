@@ -29,16 +29,17 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.android.famcircle.AppManager;
 import com.android.famcircle.CustomProgressDialog;
 import com.android.famcircle.R;
 import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
-import com.android.famcircle.util.ACache;
-import com.android.famcircle.util.FNHttpRequest;
-import com.android.famcircle.util.PostData;
+import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.util.ACache;
+import com.famnotes.android.util.FNHttpRequest;
+import com.famnotes.android.util.PostData;
+import com.famnotes.android.vo.User;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
@@ -83,7 +84,6 @@ public class ShareActivity  extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
 		
-		AppManager.getInstance().addActivity(this);
 		context = this;
 		mCache = ACache.get(this);
 		Log.i("activity ", "shared!!!!!!");
@@ -272,6 +272,7 @@ public class ShareActivity  extends BaseActivity {
 		protected String doInBackground(Integer... params) {
 			// Simulates a background job.
 			String result = "";
+			try{
 			if(params[0] == 0){
 				/*from end*/
 				String statusId = "-1";
@@ -280,7 +281,7 @@ public class ShareActivity  extends BaseActivity {
 					statusId = statusInfo.getStatusId();
 				}
 				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":0}");
-				result=new FNHttpRequest().doPost(pdata).trim();
+				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}else if(params[0] == 1){
 				/*from start*/
 				String statusId = "-1";
@@ -289,7 +290,7 @@ public class ShareActivity  extends BaseActivity {
 					statusId = statusInfo.getStatusId();
 				}
 				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":1}");
-				result=new FNHttpRequest().doPost(pdata).trim();
+				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}
 			
 			Log.i("refresh data :", result);
@@ -299,6 +300,9 @@ public class ShareActivity  extends BaseActivity {
 			Message message = new Message();
 			message.arg1 = 3;
 			myhandler.sendMessage(message);
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
 			return result;
 		}
 
@@ -312,9 +316,9 @@ public class ShareActivity  extends BaseActivity {
 			@Override
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
-				
+				try{
 				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":1}");
-				String json=new FNHttpRequest().doPost(pdata);
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
 				Log.i("initialUserProfile  :", json);
 				
 				JSONObject jsonResult = JSON.parseObject(json);
@@ -328,6 +332,9 @@ public class ShareActivity  extends BaseActivity {
 					Log.i("groupId", groupId);
 					mCache.put("userProfile", userProfile);
 				}
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				return null;
 			}
 		}.execute("");
@@ -340,8 +347,9 @@ public class ShareActivity  extends BaseActivity {
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
 				statusResult = "";
+				try{
 				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1}");
-				String json=new FNHttpRequest().doPost(pdata);
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
 				//Log.i("initialStatuses  :", json);
 
 				statusResult = json;
@@ -355,6 +363,9 @@ public class ShareActivity  extends BaseActivity {
 				Message message = new Message();
 				message.arg1 = 2;
 				myhandler.sendMessage(message);
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				return null;
 			}
 		}.execute("");

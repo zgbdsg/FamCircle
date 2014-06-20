@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.famcircle.R;
-import com.android.famcircle.util.ACache;
+import com.famnotes.android.util.ACache;
 
 public class MainActivity extends Activity {
 	private ACache mCache;

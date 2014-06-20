@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:padding="4dip"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent" android:layout_height="match_parent">
+
+        <TextView
+             android:id="@+id/members_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="left"
+            android:text="Family members："
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+<!-- 
+    <fragment  
+   	   android:name="com.famnotes.android.ui.FamMemberFragment" 
+	    android:id="@+id/fragment1" 
+	    android:layout_weight="0.5" 
+	    android:layout_width="0dp" 
+	    android:layout_height="200dp" />  
+     -->
+     
+        <!--   <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="name"
+                    android:layout_marginLeft="20dp"
+                    android:textColor="@color/skyblue"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="phone"
+                    android:textColor="@color/skyblue"
+                    android:textSize="@dimen/medium_text_size"
+                    android:textStyle="normal" />
+            </LinearLayout>
+        </LinearLayout> -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/members_title"
+            android:layout_above="@+id/login_bottom_layout"
+            android:background="@color/white" >
+
+            <ListView
+                android:id="@+id/member_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+        
+        
+<!--         <RelativeLayout
+	        android:id="@+id/login_bottom_layout"
+	        android:layout_width="fill_parent"
+	        android:layout_height="45dp"
+	        android:layout_alignParentBottom="true"
+	        android:background="@drawable/title_bar" >
+	
+	        <Button
+	            android:id="@+id/login_forward_btn"
+	            android:layout_width="170dp"
+	            android:layout_height="wrap_content"
+	            android:layout_centerVertical="true"
+	            android:layout_alignParentRight="true"
+	            android:background="@drawable/bottom_btn_forward"
+	            android:onClick="login_forward"
+	            android:text="Go on forward"
+	            android:textColor="#fff"
+	            android:textSize="14sp" />
+	    </RelativeLayout> -->
+	    
+	    <RelativeLayout 
+	        android:id="@+id/login_bottom_layout"
+	        android:layout_width="fill_parent"
+	        android:layout_height="45dp"
+	        android:layout_alignParentBottom="true"
+	    	>
+
+	     <Button
+	         android:id="@+id/btn_get_veritycode"
+	         android:layout_width="110dp"
+	         android:layout_height="40dp"
+	         android:layout_alignParentRight="true"
+	         android:layout_alignParentTop="true"
+	         android:background="@drawable/btn_blue"
+	         android:onClick="enter_system"
+	         android:text="Enter"
+	         android:textColor="#ffffff"
+	         android:textSize="14sp" />
+
+	</RelativeLayout>
+
+</RelativeLayout>

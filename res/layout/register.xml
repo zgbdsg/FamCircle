@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#eee"
+    android:orientation="vertical" 
+    android:gravity="center_horizontal">
+    <RelativeLayout 
+        android:id="@+id/login_top_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/title_bar">
+        <Button
+            android:id="@+id/login_reback_btn"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="返回"
+            android:textSize="14sp"
+            android:textColor="#fff"
+            android:onClick="login_back"
+            android:background="@drawable/title_btn_back"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Register"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+        
+    </RelativeLayout>
+
+	<EditText
+	    android:id="@+id/login_cellno"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/login_top_layout"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    android:layout_marginTop="15dp"
+	    android:background="@drawable/login_editbox"
+	    android:hint="cell no."
+	    android:singleLine="true"
+	    android:textColor="#000"
+	    android:textSize="15sp" />
+
+	<EditText
+	    android:id="@+id/login_email"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/login_cellno"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    android:layout_marginTop="15dp"
+	    android:background="@drawable/login_editbox"
+	    android:hint="UserName"
+	    android:singleLine="true"
+	    android:textColor="#000"
+	    android:textSize="15sp" />
+
+	<EditText
+	    android:id="@+id/login_grp_name"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/login_email"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    android:layout_marginTop="15dp"
+	    android:background="@drawable/login_editbox"
+	    android:hint="Group Name ( at will )"
+	    android:singleLine="true"
+	    android:textColor="#000"
+	    android:textSize="15sp" />
+		
+	<EditText
+	    android:id="@+id/login_passwd_edit"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/login_grp_name"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    android:layout_marginTop="15dp"
+	    android:background="@drawable/login_editbox"
+	    android:hint="Password"
+	    android:password="true"
+	    android:singleLine="true"
+	    android:textColor="#000"
+	    android:textSize="15sp" />
+	
+	<EditText
+	    android:id="@+id/login_passwd2_edit"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/login_passwd_edit"
+	    android:layout_marginLeft="20dp"
+	    android:layout_marginRight="20dp"
+	    android:layout_marginTop="15dp"
+	    android:background="@drawable/login_editbox"
+	    android:hint="Password(Input again)"
+	    android:password="true"
+	    android:singleLine="true"
+	    android:textColor="#000"
+	    android:textSize="15sp" />
+	
+
+	
+	<RelativeLayout 
+	    android:id="@+id/veritycode"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="15dp"
+	    android:layout_below="@+id/login_passwd2_edit"
+	    >
+
+	     <Button
+	         android:id="@+id/btn_get_veritycode"
+	         android:layout_width="110dp"
+	         android:layout_height="40dp"
+	         android:layout_alignParentLeft="true"
+	         android:layout_alignParentTop="true"
+	         android:layout_marginLeft="21dp"
+	         android:background="@drawable/btn_blue"
+	         android:onClick="register_getVerifyCode"
+	         android:text="Get VerifyCode"
+	         android:textColor="#ffffff"
+	         android:textSize="14sp" />
+
+	     	<EditText
+			    android:id="@+id/login_VerifyCode"
+			    android:layout_width="160dp"
+			    android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+		        android:layout_alignParentTop="true"
+			    android:layout_marginRight="20dp"
+			    android:background="@drawable/login_editbox"
+			    android:hint="Verify Code"
+			    android:singleLine="true"
+			    android:textColor="#000"
+			    android:textSize="15sp" />
+	</RelativeLayout>
+	
+	<RelativeLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="15dp"
+	    android:layout_below="@+id/veritycode"
+	    >
+
+	     <Button
+	         android:id="@+id/login_commit_btn"
+	         android:layout_width="90dp"
+	         android:layout_height="40dp"
+	         android:layout_alignParentRight="true"
+	         android:layout_alignParentTop="true"
+	         android:layout_marginRight="21dp"
+	         android:background="@drawable/btn_style_green"
+	         android:onClick="register_famnotes"
+	         android:text="Commit"
+	         android:textColor="#ffffff"
+	         android:textSize="18sp" />
+
+	</RelativeLayout>
+</RelativeLayout>

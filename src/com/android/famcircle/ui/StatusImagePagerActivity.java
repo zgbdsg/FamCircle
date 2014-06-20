@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.android.famcircle.HackyViewPager;
 import com.android.famcircle.R;
+import com.famnotes.android.base.BaseActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;

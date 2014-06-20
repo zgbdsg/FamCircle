@@ -24,11 +24,13 @@ import com.android.famcircle.Action;
 import com.android.famcircle.CustomGallery;
 import com.android.famcircle.GalleryAdapter;
 import com.android.famcircle.R;
-import com.android.famcircle.util.FNHttpRequest;
-import com.android.famcircle.util.ImageUtils;
-import com.android.famcircle.util.PictureBody;
-import com.android.famcircle.util.PostData;
-import com.android.famcircle.util.StringUtils;
+import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.util.FNHttpRequest;
+import com.famnotes.android.util.ImageUtils;
+import com.famnotes.android.util.PictureBody;
+import com.famnotes.android.util.PostData;
+import com.famnotes.android.util.StringUtils;
+import com.famnotes.android.vo.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class StatusPicsSendActivity extends BaseActivity{
@@ -115,6 +117,7 @@ public class StatusPicsSendActivity extends BaseActivity{
 			@Override
 			protected String doInBackground(String... params) {
 				// TODO Auto-generated method stub
+				try{
 				Message mg1 = new Message();
 				mg1.arg1 = 0;
 				handler.sendMessage(mg1);
@@ -141,12 +144,15 @@ public class StatusPicsSendActivity extends BaseActivity{
 									+ StringUtils.gbEncoding(statusContent.getText().toString()) + "\"}");
 				}
 				Log.i("postdata", pdata.toString());
-				String json = new FNHttpRequest().doPost(pdata).trim();
+				String json = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 				Log.i("send status result", json);
 				if(json.startsWith("{\"errCode\" : 0,")){
 					Message mg2 = new Message();
 					mg2.arg1 = 1;
 					handler.sendMessage(mg2);
+				}
+				}catch(Exception ex){
+					ex.printStackTrace();
 				}
 				return null;
 			}

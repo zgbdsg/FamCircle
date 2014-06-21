@@ -280,7 +280,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":0}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":0}");
 				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}else if(params[0] == 1){
 				/*from start*/
@@ -289,7 +289,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1,\"statusId\":"+statusId+",\"flag\":1}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":1}");
 				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}
 			
@@ -348,7 +348,7 @@ public class ShareActivity  extends BaseActivity {
 				// TODO Auto-generated method stub
 				statusResult = "";
 				try{
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":1}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+"}");
 				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
 				//Log.i("initialStatuses  :", json);
 

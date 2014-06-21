@@ -19,7 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -28,8 +28,6 @@ import com.android.famcircle.R;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
-import com.famnotes.android.config.Constants;
-import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.vo.User;

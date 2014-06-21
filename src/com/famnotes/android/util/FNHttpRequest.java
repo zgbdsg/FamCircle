@@ -1,18 +1,14 @@
 package com.famnotes.android.util;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -25,20 +21,19 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import com.famnotes.android.config.Constants;
-
 import android.util.Log;
+//import org.apache.commons.codec.digest.DigestUtils;
 
 //var userid ='xxxx'; // $_GET ["userid"];
 //var password='pureHtml'; //read from db;
 //var timestamp= (new Date()).valueOf();   //$timestamp = $_GET ["timestamp"];
 //var nonce=Math.random();  //$
 public class FNHttpRequest {
-	private String userId; //�ӿͻ�����ݿ��ȡ����
+	private String userId; //从客户端数据库获取密码
 	private String password;
 	public FNHttpRequest(String usage) {
 		if("System".equals(usage)) {
-			this.userId="xxxx"; //�ӿͻ�����ݿ��ȡ����
+			this.userId="xxxx"; //从客户端数据库获取密码
 			this.password="pureHtml";
 		}
 	}
@@ -55,7 +50,7 @@ public class FNHttpRequest {
 	private double nonce;
 	private HttpResponse localHttpResponse;
 	private String signature;
-	private String localUrl = "http://192.168.0.73/famnotes/index.php/WS/boot?"; //"http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
+	private String localUrl = "http://114.215.180.229/famnotes/index.php/WS/boot?"; //"http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
 //	private String localUrl = "http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
     HttpContext httpContext;
     
@@ -76,28 +71,28 @@ public class FNHttpRequest {
 			localUrl += "&nonce=" + nonce;
 			localUrl += "&signature=" + signature;
 			localUrl += "&grpId=" + grpId;
-			localUrl += "&XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=14014148248011"; //debug PHP������Ҫ
+			localUrl += "&XDEBUG_SESSION_START=ECLIPSE_DBGP&KEY=14014148248011"; //debug PHP跟踪需要
 			
 			Log.d("FNHttpRequest", localUrl);
 			HttpPost httpPost = new HttpPost(localUrl);
-			// HTTP Post֮multipart/form-data��application/x-www-form-urlencoded
-			// ����HttpPost�����������ֿ�Post��������壬�ֱ���MultipartEntity��UrlEncodedFormEntity���������ߵĹ��Ժ����������½��ͺͱ���
+			// HTTP Post之multipart/form-data和application/x-www-form-urlencoded
+			// 关于HttpPost，有这样两种可Post的数据载体，分别是MultipartEntity和UrlEncodedFormEntity，对这两者的共性和异性做如下解释和备忘：
 			//
-			// ���ԣ�
-			// 1��������HTTP��POST����
-			// 2��ʵ���˽ӿ�HttpEntity
+			// 共性：
+			// 1、都属于HTTP的POST范畴
+			// 2、实现了接口HttpEntity
 			//
-			// ���ԣ�
-			// 1��Content-Type��ͬ���ֱ��ǣ�Content-Type:multipart/form-data;
-			// boundary=***********��
+			// 异性：
+			// 1、Content-Type不同。分别是：Content-Type:multipart/form-data;
+			// boundary=***********，
 			// Content-Type:application/x-www-form-urlencoded
-			// 2��RequestBody��ͬ
-			// ����MultipartEntity���ж����ݶ���ɣ�������ݶ����Լ���Content-Type��ContentBody
-			// ����UrlEncodedFormEntityֻ��һ��Body������ʹ��UrlEncode���������ݡ��磺key1=******&key2=******&key3=******
+			// 2、RequestBody不同
+			// 　　MultipartEntity是有多个数据段组成，各个数据段有自己的Content-Type和ContentBody
+			// 　　UrlEncodedFormEntity只有一个Body，还是使用UrlEncode处理过的内容。如：key1=******&key2=******&key3=******
 			
 			
 			if ((postData.uploadFiles != null && !postData.uploadFiles.isEmpty()) || (postData.pics != null && !postData.pics.isEmpty()) ) {
-				MultipartEntity mpEntity = new MultipartEntity(); //֧���ļ�����
+				MultipartEntity mpEntity = new MultipartEntity(); //支持文件传输
 				
 				StringBody objIdBody = new StringBody(postData.objId); 
 				mpEntity.addPart("objId", objIdBody);
@@ -113,11 +108,11 @@ public class FNHttpRequest {
 				for(String fullPath : postData.uploadFiles){
 					File file=new File(fullPath);
 					FileBody cbFile = new FileBody(file);
-					mpEntity.addPart("ups[]", cbFile);   // <input type="file" name="ups[]" /> ��Ӧ��
+					mpEntity.addPart("ups[]", cbFile);   // <input type="file" name="ups[]" /> 对应的
 				}
 				
 				for(PictureBody  picBody : postData.pics){
-					mpEntity.addPart("ups[]", picBody);   // <input type="file" name="ups[]" /> ��Ӧ��
+					mpEntity.addPart("ups[]", picBody);   // <input type="file" name="ups[]" /> 对应的
 				}
 				
 				httpPost.setEntity(mpEntity);
@@ -142,7 +137,7 @@ public class FNHttpRequest {
 
 			HttpClient httpclient = new DefaultHttpClient();
 			httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-			localHttpResponse = httpclient.execute(httpPost); // ?DefaultHttpClient �ѱ���̭��
+			localHttpResponse = httpclient.execute(httpPost); // ?DefaultHttpClient 已被淘汰了
 			if (localHttpResponse.getStatusLine().getStatusCode() == 200) {
 				String result = EntityUtils.toString(localHttpResponse.getEntity());
 				//System.out.println(result);
@@ -150,15 +145,15 @@ public class FNHttpRequest {
 			}
 //		} catch (ClientProtocolException localClientProtocolException) {
 //			localClientProtocolException.printStackTrace();
-//			return "�����쳣";
+//			return "网络异常";
 //		} catch (UnsupportedEncodingException e) {
 //			e.printStackTrace();
 //		} catch (IOException e) {
 //			e.printStackTrace();
-//			return "�����쳣";
+//			return "网络异常";
 //		}
 		} catch (Exception e) {
-			Log.e("HttpClient", "�����쳣"+e.getMessage());
+			Log.e("HttpClient", "网络异常"+e.getMessage());
 			e.printStackTrace();
 			throw e;
 		}

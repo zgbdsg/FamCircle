@@ -1,6 +1,7 @@
 package com.famnotes.android.boot;
 
-import com.famnotes.android.config.Constants;
+
+import com.android.famcircle.config.Constants;
 import com.famnotes.android.util.ImageLoaderConfig;
 
 

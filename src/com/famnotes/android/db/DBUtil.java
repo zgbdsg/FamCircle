@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 
 public class DBUtil {
-	final public static String dbPath="/data/data/com.famnotes.android.famnotes/famnotes.db";
+	final public static String dbPath="/data/data/com.android.famcircle/famnotes.db";
 	
 	public static boolean detectDatabase() {
 		File dbFile=new File(dbPath);
@@ -157,8 +157,7 @@ public class DBUtil {
 	public static SQLiteDatabase openDatabase() throws Exception {
 		SQLiteDatabase sld = null;
 		try {
-			sld = SQLiteDatabase.openDatabase("/data/data/com.famnotes.android.famnotes//famnotes.db",
-					null, SQLiteDatabase.OPEN_READWRITE);
+			sld = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
 
 		} catch (Exception e) {
 			Log.d("error", e.toString() + "=============open===============");

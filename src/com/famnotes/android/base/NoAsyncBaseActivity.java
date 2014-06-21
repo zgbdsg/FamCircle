@@ -13,7 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.famnotes.android.config.Constants;
+import com.android.famcircle.config.Constants;
 import com.famnotes.android.util.ImageLoaderConfig;
 import com.nostra13.universalimageloader.core.ImageLoader;
 

@@ -314,9 +314,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 				Log.i("initialUserProfile  :", json);
 				
 				JSONObject jsonResult = JSON.parseObject(json);
-				JSONArray tmpArray = jsonResult.getJSONArray("results");
+				//JSONArray tmpArray = jsonResult.getJSONArray("results");
 				if(jsonResult.getInteger("errCode") == 0) {
-					JSONObject userProfile = (JSONObject) tmpArray.get(0);
+					JSONObject userProfile = ((JSONObject) jsonResult.get("results")).getJSONObject("0");
 					userName = userProfile.getString("name");
 					logoUrl = userProfile.getString("avatar");
 					groupId = userProfile.getString("grpId");

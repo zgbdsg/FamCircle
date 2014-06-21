@@ -36,6 +36,7 @@ import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
+import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.util.ACache;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
@@ -260,7 +261,7 @@ public class ShareActivity  extends BaseActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.btn_send_status) {
-			Intent i = new Intent(getApplicationContext(), StatusPicsSendActivity.class);
+			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
 			startActivity(i);
 			return true;
 		}
@@ -318,9 +319,9 @@ public class ShareActivity  extends BaseActivity {
 				Log.i("initialUserProfile  :", json);
 				
 				JSONObject jsonResult = JSON.parseObject(json);
-				JSONArray tmpArray = jsonResult.getJSONArray("results");
+				//JSONArray tmpArray = jsonResult.getJSONArray("results");
 				if(jsonResult.getInteger("errCode") == 0) {
-					JSONObject userProfile = (JSONObject) tmpArray.get(0);
+					JSONObject userProfile = ((JSONObject) jsonResult.get("results")).getJSONObject("0");
 					userId = userProfile.getString("usrId");
 					userName = userProfile.getString("name");
 					logoUrl = userProfile.getString("avatar");

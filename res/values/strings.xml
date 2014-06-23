@@ -13,6 +13,7 @@
     <string name="comment">评论</string>
     <string name="zan_text">赞</string>
     <string name="status_send">发布</string>
+    <string name="OrderByTime">OrderByTime</string>
 	
     <string name="loadingData">数据获取中。。。。。</string>
 </resources>

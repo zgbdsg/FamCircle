@@ -95,6 +95,10 @@
             android:name="com.android.famcircle.picselect.PhotoDisplayActivity"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
+        <activity
+            android:name="com.android.famcircle.orderlist.OrderStatusListActivity"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
     </application>
 
 </manifest>

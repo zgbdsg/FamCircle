@@ -36,6 +36,7 @@ import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
+import com.android.famcircle.orderlist.OrderStatusListActivity;
 import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.util.ACache;
 import com.android.famcircle.util.FNHttpRequest;
@@ -262,6 +263,10 @@ public class ShareActivity  extends BaseActivity {
 		int id = item.getItemId();
 		if (id == R.id.btn_send_status) {
 			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
+			startActivity(i);
+			return true;
+		}else if(id == R.id.orderbytime){
+			Intent i = new Intent(getApplicationContext(), OrderStatusListActivity.class);
 			startActivity(i);
 			return true;
 		}

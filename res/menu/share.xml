@@ -5,4 +5,9 @@
           android:icon="@drawable/ic_action_camera"
           android:title="@string/hello_world"
           android:showAsAction="always"/>
+	
+	<item android:id="@+id/orderbytime"
+          android:title="@string/OrderByTime"
+          android:showAsAction="never"/>
+	
 </menu>

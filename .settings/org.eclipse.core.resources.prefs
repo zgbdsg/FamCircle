@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding//src/com/android/famcircle/ExpressionUtil.java=UTF-8
 encoding//src/com/android/famcircle/StatusListAdapter.java=GBK
+encoding//src/com/android/famcircle/orderlist/GridViewAdapter.java=UTF-8
+encoding//src/com/android/famcircle/orderlist/MyGridView.java=UTF-8
 encoding//src/com/android/famcircle/picselect/ImageSelectActivity.java=UTF-8
 encoding//src/com/android/famcircle/util/FNHttpRequest.java=GBK
 encoding//src/com/android/famcircle/util/PostData.java=GBK

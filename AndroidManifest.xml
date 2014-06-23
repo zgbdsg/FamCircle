@@ -97,7 +97,8 @@
         </activity>
         <activity
             android:name="com.android.famcircle.orderlist.OrderStatusListActivity"
-            android:theme="@android:style/Theme.NoTitleBar" >
+            android:label="@string/orderlist"
+            android:theme="@android:style/Theme.Holo.Light">
         </activity>
     </application>
 

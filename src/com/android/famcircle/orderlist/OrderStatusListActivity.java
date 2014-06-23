@@ -6,15 +6,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -23,13 +23,13 @@ import com.android.famcircle.R;
 import com.android.famcircle.util.FNHttpRequest;
 import com.android.famcircle.util.PostData;
 
-public class OrderStatusListActivity extends Activity implements OnClickListener {
+public class OrderStatusListActivity extends Activity{
 
 	MySectionIndexer mIndexer;
 
 	PicListAdapter mAdapter;
 	PinnedHeaderListView mListView;
-	TextView back;
+//	TextView back;
 	String[] tagName;
 	public static Handler handler;
 	String tagFormat = "MM-dd-yyyy";
@@ -48,11 +48,13 @@ public class OrderStatusListActivity extends Activity implements OnClickListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_order_list);
-
-		back = (TextView) findViewById(R.id.back_title);
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
+		//back = (TextView) findViewById(R.id.back_title);
 		mListView = (PinnedHeaderListView) findViewById(R.id.mListView);
 
-		back.setOnClickListener(this);
+//		back.setOnClickListener(this);
 		
 		requestData(0);
 		
@@ -130,8 +132,37 @@ public class OrderStatusListActivity extends Activity implements OnClickListener
 			}
 		}.start();
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.orderlist, menu);
+		return true;
+	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			if (mAdapter.getLevel() > 0) {
+				mAdapter.lowLevel();
+				
+				Message msg = new Message();
+				msg.what = 1;
+				msg.arg2 =mAdapter.getLevel();
+				handler.sendMessage(msg);
+			}else{
+				finish();
+			}
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+/*	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.back_title) {
 			
@@ -149,7 +180,7 @@ public class OrderStatusListActivity extends Activity implements OnClickListener
 			}
 		}
 		
-	}
+	}*/
 	
 	private List<OrderListTag>  getOrderListTag(String string) {
 		// TODO Auto-generated method stub

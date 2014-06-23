@@ -195,15 +195,16 @@ class RegisterTask  extends BaseAsyncTask<Register, String, Integer>{
 		if(jsonResult.getInteger("errCode") != 0) {
 			throw new Exception("Register fails ! "+jsonResult.getString("errMesg")); 
 		}
-			
+		
+		int userId=jsonResult.getInteger("id"); 
 		int grpId=jsonResult.getInteger("results"); 
 		if(grpId<=0){
 			throw new Exception("Register fails ! "+jsonResult.getString("errMesg"));
 		}
 	
 		
-		String userId=reqJsonMsg[1], userName=reqJsonMsg[2], password=reqJsonMsg[3];
-		User user=new User(userId, userName, grpId, password, 1); 
+		String loginId=reqJsonMsg[1], userName=reqJsonMsg[2], password=reqJsonMsg[3];
+		User user=new User(userId, loginId, userName, grpId, password, 1); 
 		long rowid=DBUtil.insertUser(user);
 		if(rowid<=0){
 			throw new Exception("Register fails ! Cannot insertUser to local db.");

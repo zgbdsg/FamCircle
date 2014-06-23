@@ -57,9 +57,17 @@ public class LoginTask extends BaseAsyncTask<Login, String, Void>{
 			}
 
 			//login success
+			JSONObject userJSON = jsonResult.getJSONObject("user");
+			//User.Current=new User(userJSON.getIntValue("id"), params[0], userJSON.getString("name"),  ??? , params[1], 0 );
 			User.Current=new User();
+			User.Current.id=userJSON.getIntValue("id");
 			User.Current.loginId=params[0];
 			User.Current.password =params[1];
+			User.Current.name=userJSON.getString("name");
+			User.Current.grpId=userJSON.getIntValue("grpId"); //?还无用， 要选了后面的Groups.lGroup才有效
+			User.Current.setAvatar(userJSON.getString("avatar"));
+			
+			
 			
 			JSONArray groupArray = jsonResult.getJSONArray("results");
 			ArrayList<Group> lGrp=new ArrayList<Group>();

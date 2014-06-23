@@ -9,12 +9,14 @@ public class Constants {
 	 */
 
 	// 应用名称
-	public final static String APP_NAME = "FamNotes";
+	public final static String APP_NAME = "FamPhoto";
 	public static boolean isFamNotes(){
 		return "FamNotes".endsWith(APP_NAME);
 	}
 
 	public final static String Usage_System = "System";
+	
+	public final static String Server = "114.215.180.229";
 	
 	// 图片路径
 	public static final String IMAGE_URL = "http://58.211.5.34:8080/studioms/staticmedia/images/#";

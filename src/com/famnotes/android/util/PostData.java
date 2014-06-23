@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class PostData {
 	public  String objId, method;
-	public  String dataVal;//jsonҵ����ݰ�
+	public  String dataVal;//json业锟斤拷锟斤拷莅锟�
 	
 	public ArrayList<String> uploadFiles=new ArrayList<String>();
 	public ArrayList<PictureBody> pics=new ArrayList<PictureBody>();
@@ -17,13 +17,13 @@ public class PostData {
 		super();
 		this.objId = objId;
 		this.method = method;
-		this.dataVal = dataVal; //jsonҵ����ݰ�
+		this.dataVal = dataVal; //json业锟斤拷锟斤拷莅锟�
 	}
 
 	public PostData(String objId, String method,  String dataVal, ArrayList<PictureBody> pics){
 		this.objId = objId;
 		this.method = method;
-		this.dataVal = dataVal; //jsonҵ����ݰ�
+		this.dataVal = dataVal; //json业锟斤拷锟斤拷莅锟�
 		
 		if(pics!=null){
 			this.pics=pics;
@@ -32,7 +32,7 @@ public class PostData {
 
 	public static PostData newPostDataByPics(String objId, String method,  String dataVal, ArrayList<PictureBody> pics){
 		PostData  post=new PostData(objId, method);
-		post.dataVal = dataVal; //jsonҵ����ݰ�
+		post.dataVal = dataVal; //json业锟斤拷锟斤拷莅锟�
 		
 		if(post.pics!=null){
 			post.pics=pics;
@@ -43,7 +43,7 @@ public class PostData {
 	
 	public static PostData newPostDataByFiles(String objId, String method,  String dataVal, ArrayList<String> uploadFiles){
 		PostData  post=new PostData(objId, method);
-		post.dataVal = dataVal; //jsonҵ����ݰ�
+		post.dataVal = dataVal; //json业锟斤拷锟斤拷莅锟�
 		
 		if(post.uploadFiles!=null){
 			post.uploadFiles=uploadFiles;

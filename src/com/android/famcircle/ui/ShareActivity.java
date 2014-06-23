@@ -35,6 +35,7 @@ import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
+import com.android.famcircle.config.Constants;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
@@ -51,15 +52,15 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class ShareActivity  extends BaseActivity {
 	
-	public static String userId;
+	public static String userId;    //?  int userId; 
 	public static String userName;
 	public static String logoUrl;
-	public static String groupId;
+	public static String groupId; //? int groupId; 
 	
 	private ACache mCache;
 	
-	String statusResult;
-	List<HashMap<String, Object>> listMap;
+	String statusResult; //getStatusXXXX()  返回的json数据包
+	List<HashMap<String, Object>> listMap; //statusResult的解析结果, 其中HashMap<String, Object>就是一个Status的所有结构
 	ListView statuslist;
 	View headview;
 	PullToRefreshListView mPullRefreshListView;
@@ -72,7 +73,7 @@ public class ShareActivity  extends BaseActivity {
 	
 	private CustomProgressDialog onLoading;
 	Boolean isNeedRefresh;
-	int currentMode;
+	int currentMode; ///getStatusXXXX ‘s flag， 表示刷新模式，上拉 or 下拉
 	
 	Context context;
 	PopupWindow commentPopupWindow;
@@ -173,10 +174,10 @@ public class ShareActivity  extends BaseActivity {
 						List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
 						List<HashMap<String, Object>> resultList = getStatusListMaps(statusResult);
 						
-						if(currentMode == 0){
+						if(currentMode == 0){ //上拉
 							allList.addAll(listMap);
 							allList.addAll(resultList);
-						}else{
+						}else{ //下拉
 							allList.addAll(resultList);
 							allList.addAll(listMap);
 						}
@@ -214,17 +215,25 @@ public class ShareActivity  extends BaseActivity {
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 
-		
-		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
-		if(userProfile != null){
-			userId = userProfile.getString("usrId");
-			userName = userProfile.getString("name");
-			logoUrl = userProfile.getString("avatar");
-			groupId = userProfile.getString("grpId");
+//成为历史了  kx73		
+//		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
+//		if(userProfile != null){
+//			userId = userProfile.getString("usrId");
+//			userName = userProfile.getString("name");
+//			logoUrl = userProfile.getString("avatar");
+//			groupId = userProfile.getString("grpId");
+//			updateProfile();
+//			Log.i("cache", "find cache usrId"+userId);
+//		}else{
+//			initialUserProfile();
+//		}
+		{
+			userId =String.valueOf(User.Current.id);
+			userName=User.Current.name;
+			logoUrl=User.Current.avatar;
+			groupId=String.valueOf(User.Current.grpId);
 			updateProfile();
 			Log.i("cache", "find cache usrId"+userId);
-		}else{
-			initialUserProfile();
 		}
 		statusResult = mCache.getAsString("statusResult");
 		if(statusResult == null)
@@ -269,7 +278,7 @@ public class ShareActivity  extends BaseActivity {
 	private class GetDataTask extends AsyncTask<Integer, Void, String> {
 
 		@Override
-		protected String doInBackground(Integer... params) {
+		protected String doInBackground(Integer... params) { //i.e. currentMode
 			// Simulates a background job.
 			String result = "";
 			try{
@@ -308,37 +317,36 @@ public class ShareActivity  extends BaseActivity {
 
 	}
 	
-	private void initialUserProfile() {
-		// TODO Auto-generated method stub
-
-		new AsyncTask<String, String, String >() {
-			
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				try{
-				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":1}");
-				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-				Log.i("initialUserProfile  :", json);
-				
-				JSONObject jsonResult = JSON.parseObject(json);
-				JSONArray tmpArray = jsonResult.getJSONArray("results");
-				if(jsonResult.getInteger("errCode") == 0) {
-					JSONObject userProfile = (JSONObject) tmpArray.get(0);
-					userId = userProfile.getString("usrId");
-					userName = userProfile.getString("name");
-					logoUrl = userProfile.getString("avatar");
-					groupId = userProfile.getString("grpId");
-					Log.i("groupId", groupId);
-					mCache.put("userProfile", userProfile);
-				}
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute("");
-	}
+//	private void initialUserProfile() {
+//		
+//		new AsyncTask<String, String, String >() {
+//			
+//			@Override
+//			protected String doInBackground(String... params) {
+//				// TODO Auto-generated method stub
+//				try{
+//				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":1}");
+//				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
+//				Log.i("initialUserProfile  :", json);
+//				
+//				JSONObject jsonResult = JSON.parseObject(json);
+//				JSONArray tmpArray = jsonResult.getJSONArray("results");
+//				if(jsonResult.getInteger("errCode") == 0) {
+//					JSONObject userProfile = (JSONObject) tmpArray.get(0);
+//					userId = userProfile.getString("usrId");
+//					userName = userProfile.getString("name");
+//					logoUrl = userProfile.getString("avatar");
+//					groupId = userProfile.getString("grpId");
+//					Log.i("groupId", groupId);
+//					mCache.put("userProfile", userProfile);
+//				}
+//				}catch(Exception ex){
+//					ex.printStackTrace();
+//				}
+//				return null;
+//			}
+//		}.execute("");
+//	}
 
 	private void initialStatuses() {
 		new AsyncTask<String, String, String >() {
@@ -446,7 +454,7 @@ public class ShareActivity  extends BaseActivity {
 		TextView userNameView = (TextView) headview.findViewById(R.id.username);
 		userNameView.setText(userName);
 		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
-		ImageLoader.getInstance().displayImage("http://114.215.180.229/famnotes/Uploads/smallPic/"+userId+"/"+logoUrl, avatar);
+		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/smallPic/"+userId+"/"+logoUrl, avatar);
 		
 	}
 }

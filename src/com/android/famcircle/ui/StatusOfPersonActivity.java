@@ -28,6 +28,7 @@ import com.android.famcircle.R;
 import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
+import com.android.famcircle.config.Constants;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
@@ -345,7 +346,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		TextView userNameView = (TextView) headview.findViewById(R.id.username);
 		userNameView.setText(userName);
 		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
-		ImageLoader.getInstance().displayImage("http://114.215.180.229/famnotes/Uploads/smallPic/"+usrId+"/"+logoUrl, avatar);
+		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/smallPic/"+usrId+"/"+logoUrl, avatar);
 		
 	}
 }

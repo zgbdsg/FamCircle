@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.android.famcircle.config.Constants;
 import com.android.famcircle.linearlistview.LinearListView;
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
@@ -197,7 +198,7 @@ public class StatusListAdapter extends BaseAdapter{
 		Date dt = new Date(Long.parseLong(statusInfo.getCreatTime()+"000"));
 		SimpleDateFormat df=new SimpleDateFormat("MM‘¬dd»’   a hhµ„"); 
 		holder.publish_time.setText(df.format(dt));
-		ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+statusInfo.getAvatar(), holder.userLogo,options,null);
+		ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+statusInfo.getAvatar(), holder.userLogo,options,null);
 		holder.userLogo.setTag(position);
 		holder.userLogo.setOnClickListener(new OnClickListener() {
 			
@@ -230,7 +231,7 @@ public class StatusListAdapter extends BaseAdapter{
 					String[] imageUrls = statInfo.getPicArray();
 					String[] bigImageUrl = new String[imageUrls.length];
 					for(int i=0;i<imageUrls.length;i ++)
-						bigImageUrl[i] = "http://114.215.180.229"+statInfo.getBigPicPath()+imageUrls[i];
+						bigImageUrl[i] = "http://"+Constants.Server+""+statInfo.getBigPicPath()+imageUrls[i];
 					Log.i("start pager", "");
 					startImagePagerActivity(position,statInfo.getStatusId() , bigImageUrl);
 				}
@@ -439,7 +440,7 @@ class GridViewAdapter extends BaseAdapter{
 		
 		bigImageUrl = new String[imageUrls.length];
 		for(int i=0;i<imageUrls.length;i ++)
-			bigImageUrl[i] = "http://114.215.180.229"+statusInfo.getBigPicPath()+imageUrls[i];
+			bigImageUrl[i] = "http://"+Constants.Server+""+statusInfo.getBigPicPath()+imageUrls[i];
 
 	}
 	@Override
@@ -539,7 +540,7 @@ class GridViewAdapter extends BaseAdapter{
 			gridHolder.iamgeView2.setVisibility(View.GONE);
 			gridHolder.iamgeView3.setVisibility(View.GONE);
 			gridHolder.realImage.setVisibility(View.VISIBLE);
-			ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[0], gridHolder.realImage,options,null);
+			ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[0], gridHolder.realImage,options,null);
 			
 			return convertView;
 		}
@@ -548,27 +549,27 @@ class GridViewAdapter extends BaseAdapter{
 		
 		if(imageUrls.length == 4) {
 			gridHolder.iamgeView3.setVisibility(View.GONE);
-			ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*2], gridHolder.iamgeView1,options,null);
-			ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position+1], gridHolder.iamgeView2,options,null);
+			ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*2], gridHolder.iamgeView1,options,null);
+			ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position+1], gridHolder.iamgeView2,options,null);
 			
 		}else {
 			switch (imageUrls.length - (position*3+3)) {
 			case -2:
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
+				ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
 				gridHolder.iamgeView3.setVisibility(View.GONE);
 				gridHolder.iamgeView2.setVisibility(View.GONE);
 				break;
 
 			case -1:
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3+1], gridHolder.iamgeView2,options,null);
+				ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
+				ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*3+1], gridHolder.iamgeView2,options,null);
 				gridHolder.iamgeView3.setVisibility(View.GONE);
 				break;
 				
 			default:
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3+1], gridHolder.iamgeView2,options,null);
-				ImageLoader.getInstance().displayImage("http://114.215.180.229"+statusInfo.getSmallPicPath()+imageUrls[position*3+2], gridHolder.iamgeView3,options,null);
+				ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*3], gridHolder.iamgeView1,options,null);
+				ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*3+1], gridHolder.iamgeView2,options,null);
+				ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+statusInfo.getSmallPicPath()+imageUrls[position*3+2], gridHolder.iamgeView3,options,null);
 				
 				break;
 			}

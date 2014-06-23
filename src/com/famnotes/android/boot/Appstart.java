@@ -130,7 +130,8 @@ class AppstartTask  extends BaseAsyncTask<Appstart, Void, Integer>{
 						JSONObject  userJSON=(JSONObject) userArray.get(i);
 						//User iUser=JSON.toJavaObject(userJSON, User.class);
 						//(String userId, String userName, int grpId, String password, int flag)
-						User iUser=new User(userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
+						User iUser=new User(userJSON.getIntValue("id"), userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
+						iUser.setAvatar(userJSON.getString("avatar"));
 						User.Members.add(iUser);
 					}
 					

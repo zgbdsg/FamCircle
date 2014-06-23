@@ -3,7 +3,10 @@ package com.android.famcircle.ui;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.famcircle.R;
+import com.famnotes.android.base.AppManager;
+import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.ACache;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MainActivity extends Activity {
 	private ACache mCache;
@@ -61,6 +67,53 @@ public class MainActivity extends Activity {
 		}else if(id == R.id.action_clearcache){
 			mCache.clear();
 		}
+		
+//		if (id == R.id.menu_exit) {
+//
+//			showAlertDialog("退出程序", "Exit Famnotes2014？", "确定", new OnClickListener() {
+//	
+//				@Override
+//				public void onClick(DialogInterface dialog, int which) {
+//					// TODO Auto-generated method stub
+//					AppManager.getInstance().AppExit(getApplicationContext());
+//					ImageLoader.getInstance().clearMemoryCache();
+//				}
+//			}, "取消", new OnClickListener() {
+//	
+//				@Override
+//				public void onClick(DialogInterface dialog, int which) {
+//					// TODO Auto-generated method stub
+//					dialog.dismiss();
+//				}
+//			});
+//
+//	 ｝
+//
+//	//case R.id.menu_help:
+//	  case R.id.menu_clear:
+//		  new AlertDialog.Builder(this).setTitle("Delete User Data").setMessage("Delete User Data, then Exit")
+//			.setPositiveButton("OK",  new OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//						try {
+//							DBUtil.clearDatabase();
+//						} catch (Exception e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						AppManager.getInstance().AppExit(getApplicationContext());//System.exit(0);
+//					}
+//				})
+//			.setNegativeButton("CANCEL", new OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//					}
+//				})
+//			.show();
+//		  
+//		break;
 		return super.onOptionsItemSelected(item);
 	}
 

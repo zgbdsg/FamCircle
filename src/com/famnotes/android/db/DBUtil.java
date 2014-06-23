@@ -41,6 +41,7 @@ public class DBUtil {
 				user.loginId=getString(cur, "loginId");
 				user.name=getString(cur, "name");
 				user.password=getString(cur, "password");
+				user.avatar=getString(cur, "avatar");
 				user.flag=getInt(cur, "flag");
 				return user;
 			}
@@ -90,6 +91,7 @@ public class DBUtil {
 			cvs.put("loginId", user.loginId);
 			cvs.put("name", user.name);
 			cvs.put("password", user.password);
+			cvs.put("avatar", user.avatar);
 			cvs.put("flag", user.flag);
 			cvs.put("type", user.type);
 			cvs.put("flag", user.flag);
@@ -132,17 +134,18 @@ public class DBUtil {
 			sld = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
 			
 			String sql = "CREATE TABLE IF NOT EXISTS `fn_user` ("  +
-								  "`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,"  +
-								  "`grpId` integer,"  +
-								  "`loginId` varchar(32),"  +
-								  "`name` varchar(255),"  +
-								  "`email` varchar(255),"  +
-								  "`cellno` varchar(255),"  +
-								  "`password` varchar(255),"  +
-								  "`type` integer,"  +
-								  "`flag` integer,"  +
-								  "`role` integer"  +
-								");" ;
+					  "`id` integer NOT NULL PRIMARY KEY,"  + //"`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,"  +
+					  "`grpId` integer,"  +
+					  "`loginId` varchar(32),"  +
+					  "`name` varchar(255),"  +
+					  "`email` varchar(255),"  +
+					  "`cellno` varchar(255),"  +
+					  "`password` varchar(255),"  +
+					  "`avatar` varchar(255),"  +
+					  "`type` integer,"  +
+					  "`flag` integer,"  +
+					  "`role` integer"  +
+					");" ;
 			sld.execSQL(sql);
 			return true;
 		} catch (Exception e) {

@@ -21,6 +21,8 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import com.android.famcircle.config.Constants;
+
 import android.util.Log;
 //import org.apache.commons.codec.digest.DigestUtils;
 
@@ -50,7 +52,7 @@ public class FNHttpRequest {
 	private double nonce;
 	private HttpResponse localHttpResponse;
 	private String signature;
-	private String localUrl = "http://114.215.180.229/famnotes/index.php/WS/boot?"; //"http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
+	private String localUrl = "http://"+Constants.Server+"/famnotes/index.php/WS/boot?"; //"http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
 //	private String localUrl = "http://xbinfo.sinaapp.com/famnotes/index.php/WS/boot?";
     HttpContext httpContext;
     

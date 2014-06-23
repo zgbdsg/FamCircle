@@ -30,7 +30,8 @@ public class User implements java.io.Serializable {
 	public User(){
 	}
 
-	public User(String loginId, String userName, int grpId, String password, int flag) {
+	public User(int id, String loginId, String userName, int grpId, String password, int flag) {
+		this.id=id;
 		this.loginId=loginId;
 		this.name=userName;
 		this.grpId=grpId;
@@ -40,9 +41,17 @@ public class User implements java.io.Serializable {
 
 	public int id=0, type=0, flag=0, role=0;
 	public int grpId=0;
-	public String loginId, name, password;
+	public String loginId, name, password,avatar;
 	
 	
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
 	public int getId() {
 		return id;
 	}

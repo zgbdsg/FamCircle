@@ -148,7 +148,7 @@ public class OrderStatusListActivity extends Activity{
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == android.R.id.home) {
-			if (mAdapter.getLevel() > 0) {
+			if (currentLevel> 0) {
 				mAdapter.lowLevel();
 				
 				Message msg = new Message();

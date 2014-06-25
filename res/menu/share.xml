@@ -6,9 +6,12 @@
           android:title="@string/hello_world"
           android:showAsAction="always"/>
 	
+	<item android:id="@+id/orderbytime"
+          android:title="@string/OrderByTime"
+          android:showAsAction="never"/>
+
 	<item android:id="@+id/btn_group_setting"
           android:icon="@drawable/btn_setting"
           android:title="@string/action_settings"
-          android:showAsAction="always"/>
-		
+          android:showAsAction="always"/>	
 </menu>

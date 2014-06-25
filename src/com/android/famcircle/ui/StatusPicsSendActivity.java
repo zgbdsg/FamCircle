@@ -1,7 +1,6 @@
 package com.android.famcircle.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -25,6 +24,7 @@ import com.android.famcircle.CustomGallery;
 import com.android.famcircle.GalleryAdapter;
 import com.android.famcircle.R;
 import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.ImageUtils;
 import com.famnotes.android.util.PictureBody;
@@ -45,12 +45,14 @@ public class StatusPicsSendActivity extends BaseActivity{
 	public static ArrayList<CustomGallery> dataT;
 	private ImageLoader  imageLoader = ImageLoader.getInstance();
 	private Handler handler;
+	private ACache mCache;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.status_send_pics);
+		mCache = ACache.get(this);
 		dataT = new ArrayList<CustomGallery>();
 		progress = new ProgressDialog(this);
 		progress.setCancelable(false);
@@ -70,7 +72,7 @@ public class StatusPicsSendActivity extends BaseActivity{
 					Message refreshMsg = new Message();
 					refreshMsg.arg1 = 5;
 					refreshMsg.setTarget(ShareActivity.myhandler);
-					
+					mCache.clear();
 					refreshMsg.sendToTarget();
 					destroySelf();
 					break;

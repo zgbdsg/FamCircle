@@ -3,7 +3,7 @@ package com.android.famcircle.ui;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-//import java.util.HashMap;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.CustomProgressDialog;
 import com.android.famcircle.R;
-//import com.android.famcircle.StatusListInfo;
+import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
 import com.android.famcircle.config.Constants;

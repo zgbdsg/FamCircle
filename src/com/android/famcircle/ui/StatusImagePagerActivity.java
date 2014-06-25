@@ -120,7 +120,7 @@ public class StatusImagePagerActivity extends BaseActivity {
 			}else{
 				pointsArray[i].setImageResource(R.drawable.point_not_selected);
 			}
-			Log.i("points is null :", ""+(points==null));	
+
 			points.addView(pointsArray[i]);
 		}
 		

@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 		}
 		
 		if (id == R.id.menu_exit) {
-			new AlertDialog.Builder(this).setTitle("").setMessage("é€€å‡ºå—ï¼Ÿ")
+			new AlertDialog.Builder(this).setTitle("").setMessage("ÍË³öÂğ£¿")
 			.setPositiveButton("OK", new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

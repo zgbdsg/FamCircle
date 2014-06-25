@@ -37,6 +37,8 @@ import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
 import com.android.famcircle.config.Constants;
 import com.famnotes.android.base.BaseActivity;
+import com.android.famcircle.orderlist.OrderStatusListActivity;
+import com.android.famcircle.picselect.PublishedActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
@@ -60,8 +62,8 @@ public class ShareActivity  extends BaseActivity {
 	
 	private ACache mCache;
 	
-	String statusResult; //getStatusXXXX()  è¿”å›çš„jsonæ•°æ®åŒ…
-	List<HashMap<String, Object>> listMap; //statusResultçš„è§£æç»“æœ, å…¶ä¸­HashMap<String, Object>å°±æ˜¯ä¸€ä¸ªStatusçš„æ‰€æœ‰ç»“æ„
+	String statusResult; //getStatusXXXX()  ·µ»ØµÄjsonÊı¾İ°ü
+	List<HashMap<String, Object>> listMap; //statusResultµÄ½âÎö½á¹û, ÆäÖĞHashMap<String, Object>¾ÍÊÇÒ»¸öStatusµÄËùÓĞ½á¹¹
 	ListView statuslist;
 	View headview;
 	PullToRefreshListView mPullRefreshListView;
@@ -74,7 +76,7 @@ public class ShareActivity  extends BaseActivity {
 	
 	private CustomProgressDialog onLoading;
 	Boolean isNeedRefresh;
-	int currentMode; ///getStatusXXXX â€˜s flagï¼Œ è¡¨ç¤ºåˆ·æ–°æ¨¡å¼ï¼Œä¸Šæ‹‰ or ä¸‹æ‹‰
+	int currentMode; ///getStatusXXXX ¡®s flag£¬ ±íÊ¾Ë¢ĞÂÄ£Ê½£¬ÉÏÀ­ or ÏÂÀ­
 	
 	Context context;
 	PopupWindow commentPopupWindow;
@@ -175,10 +177,10 @@ public class ShareActivity  extends BaseActivity {
 						List<HashMap<String, Object>> allList = new ArrayList<HashMap<String,Object>>();
 						List<HashMap<String, Object>> resultList = getStatusListMaps(statusResult);
 						
-						if(currentMode == 0){ //ä¸Šæ‹‰
+						if(currentMode == 0){ //ÉÏÀ­
 							allList.addAll(listMap);
 							allList.addAll(resultList);
-						}else{ //ä¸‹æ‹‰
+						}else{ //ÏÂÀ­
 							allList.addAll(resultList);
 							allList.addAll(listMap);
 						}
@@ -216,7 +218,7 @@ public class ShareActivity  extends BaseActivity {
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 
-//æˆä¸ºå†å²äº†  kx73		
+//³ÉÎªÀúÊ·ÁË  kx73		
 //		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
 //		if(userProfile != null){
 //			userId = userProfile.getString("usrId");
@@ -270,12 +272,15 @@ public class ShareActivity  extends BaseActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.btn_send_status) {
-			Intent i = new Intent(getApplicationContext(), StatusPicsSendActivity.class);
+			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
+			startActivity(i);
+			return true;
+		}else if(id == R.id.orderbytime){
+			Intent i = new Intent(getApplicationContext(), OrderStatusListActivity.class);
 			startActivity(i);
 			return true;
 		}
-		
-		if(id==R.id.btn_group_setting){
+		else if(id==R.id.btn_group_setting){
 			openActivity(SettingActivity.class);
 			return true;
 		}
@@ -462,6 +467,5 @@ public class ShareActivity  extends BaseActivity {
 		
 		ImageView imageCover = (ImageView)headview.findViewById(R.id.imageCover);
 		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/group/"+groupId+"/"+Groups.selectGrp().getCoverPhoto(), imageCover); //
-		
 	}
 }

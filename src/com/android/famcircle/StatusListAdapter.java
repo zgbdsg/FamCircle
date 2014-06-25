@@ -74,6 +74,7 @@ public class StatusListAdapter extends BaseAdapter{
 				
 				refreshMsg.sendToTarget();
 			}else if(msg.arg1 == 0){
+				replyTextContent.setText("");
 				ShareActivity share = (ShareActivity)context;
 				final RelativeLayout replyWindow = share.replyWindow;
 				replyWindow.performClick();
@@ -99,6 +100,7 @@ public class StatusListAdapter extends BaseAdapter{
 		
 	};
 	PopupWindow commentPopupWindow;
+	EditText replyTextContent;
 	
 	private  class  ViewHolder {
 		ImageView userLogo;
@@ -305,7 +307,7 @@ public class StatusListAdapter extends BaseAdapter{
 						
 						Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
 						btnReplySend.setTag(loc);
-						final EditText replyContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+						replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
 						btnReplySend.setOnClickListener(new OnClickListener() {
 							
 							@Override
@@ -313,7 +315,7 @@ public class StatusListAdapter extends BaseAdapter{
 								// TODO Auto-generated method stub
 								int loc=(Integer) arg0.getTag();
 								sendReply(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
-										StringUtils.gbEncoding(replyContent.getText().toString()) , replyContent.getText().toString());
+										StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
 							}
 						});
 					}

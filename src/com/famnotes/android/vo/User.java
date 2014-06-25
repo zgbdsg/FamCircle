@@ -27,6 +27,16 @@ public class User implements java.io.Serializable {
 	public static User Current;
 	public static List<User> Members=new ArrayList<User>();
 	
+	public static User getUserById(int usrId){
+		if(usrId==Current.id)
+			return Current;
+		for(User usr :  Members){
+			if(usr.id==usrId)
+				return usr;
+		}
+		return null;
+	}
+	
 	public User(){
 	}
 

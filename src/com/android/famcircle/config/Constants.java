@@ -16,7 +16,7 @@ public class Constants {
 
 	public final static String Usage_System = "System";
 	
-	public final static String Server = "114.215.180.229";
+	public final static String Server ="192.168.0.110"; //"114.215.180.229";
 	
 	// 图片路径
 	public static final String IMAGE_URL = "http://58.211.5.34:8080/studioms/staticmedia/images/#";

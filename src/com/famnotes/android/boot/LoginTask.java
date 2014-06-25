@@ -73,7 +73,7 @@ public class LoginTask extends BaseAsyncTask<Login, String, Void>{
 			ArrayList<Group> lGrp=new ArrayList<Group>();
 			for(int i=0; i<groupArray.size(); i++) {
 				JSONObject  groupJSON=(JSONObject) groupArray.get(i);
-				Group grp=new Group(groupJSON.getInteger("grpId"),  groupJSON.getString("name"));
+				Group grp=new Group(groupJSON.getInteger("grpId"),  groupJSON.getString("name"), groupJSON.getString("coverPhoto"));
 				lGrp.add(grp);
 			}
 			Groups.lGroup=lGrp;

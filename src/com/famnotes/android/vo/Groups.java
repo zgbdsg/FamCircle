@@ -9,4 +9,17 @@ public class Groups {
 	public static int selectGrpId(){
 		return lGroup.get(selectIdx).grpId;
 	}
+	public static Group selectGrp(){
+		return lGroup.get(selectIdx);
+	}
+	public static Group select(int grpId){
+		for(int i=0; i<lGroup.size(); i++){
+			Group grp=lGroup.get(i);
+			if(grp.grpId==grpId){
+				selectIdx=i;
+				return grp;
+			}
+		}
+		return null;
+	}
 }

@@ -1,6 +1,8 @@
 package com.famnotes.android.boot;
 
 
+import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -18,6 +20,8 @@ import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
+import com.famnotes.android.vo.Group;
+import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 
 public class Appstart extends BaseActivity{
@@ -59,7 +63,7 @@ class AppstartHandler extends BaseAsyncTaskHandler<Appstart, Integer>{
 		// TODO Auto-generated method stub
 		new AlertDialog.Builder(getContext())
 		.setIcon(getContext().getResources().getDrawable(R.drawable.login_error_icon))
-		.setTitle("Sorry").setMessage("Create database fails！ App will exit.")
+		.setTitle("Sorry").setMessage(arg1.getMessage()+"！ App will exit.")
 			.setPositiveButton("OK", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -87,7 +91,6 @@ class AppstartHandler extends BaseAsyncTaskHandler<Appstart, Integer>{
 				//通过“过场”进入主界面
 				getContext().openActivity(LoadingActivity.class);
 				break;
-				
 		}
 		return true;
 	}
@@ -120,23 +123,40 @@ class AppstartTask  extends BaseAsyncTask<Appstart, Void, Integer>{
 			if(StringUtils.isEmpty(json_members))
 				return 1;
 			
-				JSONObject jsonObjectResult = JSON.parseObject(json_members);
-				if(jsonObjectResult.getInteger("errCode") != 0) {
-					return 1;	
-				}else{
-					JSONArray userArray = jsonObjectResult.getJSONArray("results");
-					User.Members.clear();
-					for(int i=0; i<userArray.size(); i++) {
-						JSONObject  userJSON=(JSONObject) userArray.get(i);
-						//User iUser=JSON.toJavaObject(userJSON, User.class);
-						//(String userId, String userName, int grpId, String password, int flag)
-						User iUser=new User(userJSON.getIntValue("id"), userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
-						iUser.setAvatar(userJSON.getString("avatar"));
-						User.Members.add(iUser);
-					}
-					
-					return 2;
+			JSONObject jsonObjectResult = JSON.parseObject(json_members);
+			if(jsonObjectResult.getInteger("errCode") != 0) {
+				return 1;	
+			}else{
+				JSONArray userArray = jsonObjectResult.getJSONArray("results");
+				User.Members.clear();
+				for(int i=0; i<userArray.size(); i++) {
+					JSONObject  userJSON=(JSONObject) userArray.get(i);
+					//User iUser=JSON.toJavaObject(userJSON, User.class);
+					//(String userId, String userName, int grpId, String password, int flag)
+					User iUser=new User(userJSON.getIntValue("id"), userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
+					iUser.setAvatar(userJSON.getString("avatar"));
+					User.Members.add(iUser);
 				}
+			}
+			
+			pdata=new PostData("user", "get_groups");
+			String json_groups = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata); 
+			JSONObject  grpJO = JSON.parseObject(json_groups);
+			if(grpJO.getInteger("errCode") != 0) {
+				throw new Exception("get_members fail"+grpJO.getInteger("errMesg"));
+			}else{
+				JSONArray groupArray = grpJO.getJSONArray("results");
+				ArrayList<Group> lGrp=new ArrayList<Group>();
+				for(int i=0; i<groupArray.size(); i++) {
+					JSONObject  groupJSON=(JSONObject) groupArray.get(i);
+					Group grp=new Group(groupJSON.getInteger("grpId"),  groupJSON.getString("name"), groupJSON.getString("coverPhoto"));
+					lGrp.add(grp);
+				}
+				Groups.lGroup=lGrp;
+				Groups.select(User.Current.grpId);
+				return 2;
+			}
+			
 		}
 	}
 	   

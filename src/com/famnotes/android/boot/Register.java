@@ -1,5 +1,7 @@
 package com.famnotes.android.boot;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +19,8 @@ import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
+import com.famnotes.android.vo.Group;
+import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 
 public class Register extends BaseActivity {
@@ -122,7 +126,7 @@ public class Register extends BaseActivity {
 		RegisterHandler handler=new RegisterHandler(this);
 		RegisterTask task=new RegisterTask();
 		task.connect(handler);
-		task.execute(reqJsonMsg, userId, userName, password);
+		task.execute(reqJsonMsg, userId, userName, password, groupName);
 		
 	}
 
@@ -200,11 +204,17 @@ class RegisterTask  extends BaseAsyncTask<Register, String, Integer>{
 		int grpId=jsonResult.getInteger("results"); 
 		if(grpId<=0){
 			throw new Exception("Register fails ! "+jsonResult.getString("errMesg"));
+		}else{
+			ArrayList<Group> lGrp=new ArrayList<Group>();
+			Group grp=new Group(grpId, reqJsonMsg[4], grpId+".png");
+			lGrp.add(grp);
+			Groups.lGroup=lGrp; Groups.selectIdx=0;
 		}
 	
 		
 		String loginId=reqJsonMsg[1], userName=reqJsonMsg[2], password=reqJsonMsg[3];
 		User user=new User(userId, loginId, userName, grpId, password, 1); 
+		user.setAvatar(userId+".png");
 		long rowid=DBUtil.insertUser(user);
 		if(rowid<=0){
 			throw new Exception("Register fails ! Cannot insertUser to local db.");

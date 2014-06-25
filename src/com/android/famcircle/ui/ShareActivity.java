@@ -40,6 +40,7 @@ import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
+import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
@@ -273,6 +274,11 @@ public class ShareActivity  extends BaseActivity {
 			startActivity(i);
 			return true;
 		}
+		
+		if(id==R.id.btn_group_setting){
+			openActivity(SettingActivity.class);
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 	private class GetDataTask extends AsyncTask<Integer, Void, String> {
@@ -449,12 +455,13 @@ public class ShareActivity  extends BaseActivity {
 	}
 	
 	private void updateProfile() {
-		// TODO Auto-generated method stub
-		
 		TextView userNameView = (TextView) headview.findViewById(R.id.username);
 		userNameView.setText(userName);
 		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
 		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/smallPic/"+userId+"/"+logoUrl, avatar);
+		
+		ImageView imageCover = (ImageView)headview.findViewById(R.id.imageCover);
+		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/group/"+groupId+"/"+Groups.selectGrp().getCoverPhoto(), imageCover); //
 		
 	}
 }

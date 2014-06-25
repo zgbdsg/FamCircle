@@ -142,7 +142,18 @@ public class FNHttpRequest {
 			localHttpResponse = httpclient.execute(httpPost); // ?DefaultHttpClient 已被淘汰了
 			if (localHttpResponse.getStatusLine().getStatusCode() == 200) {
 				String result = EntityUtils.toString(localHttpResponse.getEntity());
-				//System.out.println(result);
+				Log.d("FNHttpRequest", "Recv: "+result);
+				
+				int bIdx=result.indexOf( "{\"errCode\" :");
+				if(bIdx==-1){
+					bIdx=result.indexOf( "{\"errCode\":");
+				}
+				if(bIdx==-1){
+					return  "{\"errCode\" : -1, \"errMesg\" : \"return msg is null or illegal\"}";
+				}
+				if(bIdx>0)
+					result=result.substring(bIdx);
+					
 				return result;
 			}
 //		} catch (ClientProtocolException localClientProtocolException) {

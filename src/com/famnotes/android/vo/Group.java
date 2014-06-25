@@ -1,7 +1,5 @@
 package com.famnotes.android.vo;
 
-import java.util.List;
-
 public class Group implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -9,16 +7,25 @@ public class Group implements java.io.Serializable {
 	public Group(){
 	}
 	
-	public Group(int grpId, String name) {
+	public Group(int grpId, String name, String coverPhoto) {
 		super();
 		this.grpId = grpId;
 		this.name = name;
+		this.coverPhoto=coverPhoto;
 	}
 	
 	
 	public int grpId;
-	public String name;
+	public String name, coverPhoto;
 	
+	public String getCoverPhoto() {
+		return coverPhoto;
+	}
+
+	public void setCoverPhoto(String coverPhoto) {
+		this.coverPhoto = coverPhoto;
+	}
+
 	public int getGrpId() {
 		return grpId;
 	}

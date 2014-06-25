@@ -17,7 +17,12 @@ public abstract class BaseActivity  extends NoAsyncBaseActivity {
 		super.onCreate(savedInstanceState);
 	}
 
-
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		batchStop();
+	}
 	
 //=========================以下异步任务处理==========================================================
 	ArrayList<BaseTaskHandlerPair>  mTaskHandlerPair=new ArrayList<BaseTaskHandlerPair>();

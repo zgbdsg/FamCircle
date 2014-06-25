@@ -28,32 +28,8 @@ public class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
 	}
 
 	@Override
-	public boolean onTaskSuccess(Login context, Void result) {
-		if(Groups.lGroup.size()>1){ //要求客户选一个
-			ArrayList<String> lItem=new ArrayList<String>(Groups.lGroup.size());
-			for(Group grp : Groups.lGroup){
-				lItem.add(grp.name);
-			}
-			new AlertDialog.Builder(context).setTitle("您属于多个群，请选一个（日后可以切换）!")
-						.setSingleChoiceItems(lItem.toArray(new String[lItem.size()]), 0,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int which) {
-										Groups.selectIdx=which;
-										dialog.dismiss();
-									}
-								})
-						.setNegativeButton("取消", null)
-						.show();
-		}
-		
-		User.Current.grpId=Groups.selectGrpId();
-		User.Current.flag=1;
-		try{
-			DBUtil.insertUser(User.Current);
-		}catch(Exception ex){
-			context.DisplayLongToast(ex.toString());
-		}
-		BaseAsyncTask<Login, Void, Void>  memberTask=new BaseAsyncTask<Login, Void, Void>(){
+	public boolean onTaskSuccess(final Login context, Void result) {
+		final BaseAsyncTask<Login, Void, Void>  memberTask=new BaseAsyncTask<Login, Void, Void>(){
 			@Override
 			public Void run(Void... params) throws Exception {
 				//取当前群成员
@@ -81,7 +57,7 @@ public class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
 
 		};
 		
-		BaseAsyncTaskHandler<Login, Void> memberHandler=new BaseAsyncTaskHandler<Login, Void>(context) {
+		final BaseAsyncTaskHandler<Login, Void> memberHandler=new BaseAsyncTaskHandler<Login, Void>(context) {
 			
 			@Override
 			public boolean onTaskSuccess(Login context, Void result) {
@@ -100,14 +76,54 @@ public class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
 				
 				//通过“过场”进入主界面
 				context.openActivity(LoadingActivity.class);
-				context.finish();			
+				//context.finish();			
 				
 				return true;
 			}
 		};
 		
-		memberTask.connect(memberHandler);
-		memberTask.execute();
+		if(Groups.lGroup.size()>1){ //要求客户选一个
+			ArrayList<String> lItem=new ArrayList<String>(Groups.lGroup.size());
+			for(Group grp : Groups.lGroup){
+				lItem.add(grp.name);
+			}
+			
+			new AlertDialog.Builder(context).setTitle("您属于多个群，请选一个（日后可以切换）!")
+						.setSingleChoiceItems(lItem.toArray(new String[lItem.size()]), 0,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int which) {
+										Groups.selectIdx=which;
+										dialog.dismiss();
+										
+										User.Current.grpId=Groups.selectGrpId();
+										User.Current.flag=1;
+										try{
+											DBUtil.insertUser(User.Current);
+										}catch(Exception ex){
+											context.DisplayLongToast(ex.toString());
+										}
+										
+										
+										memberTask.connect(memberHandler);
+										memberTask.execute();
+									}
+								})
+						.setNegativeButton("取消", null)
+						.show();
+			
+		} else {
+			Groups.selectIdx=0;
+			User.Current.grpId=Groups.selectGrpId();
+			User.Current.flag=1;
+			try{
+				DBUtil.insertUser(User.Current);
+			}catch(Exception ex){
+				context.DisplayLongToast(ex.toString());
+			}
+			memberTask.connect(memberHandler);
+			memberTask.execute();
+		}
+		
 		
 		return true;
 	}

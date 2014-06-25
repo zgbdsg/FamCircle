@@ -3,7 +3,7 @@ package com.android.famcircle.ui;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.CustomProgressDialog;
 import com.android.famcircle.R;
-import com.android.famcircle.StatusListInfo;
+//import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
 import com.android.famcircle.config.Constants;
@@ -33,6 +33,7 @@ import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
+import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
@@ -50,7 +51,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 	private List< Object> listMap;
 	private String statusResult;
 	private Handler myhandler;
-	private String usrId ;
+	private int usrId ;
 	private String userName;
 	private String logoUrl;
 	private String groupId;
@@ -65,7 +66,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		setContentView(R.layout.activity_personal_status);
 
 		Bundle info = this.getIntent().getExtras();
-		usrId = info.getString("usrId");
+		usrId = Integer.parseInt(info.getString("usrId"));
 
 		context = this;
 		mCache = ACache.get(this);
@@ -155,16 +156,26 @@ public class StatusOfPersonActivity extends BaseActivity {
 		onLoading.setCanceledOnTouchOutside(true);
 		isNeedRefresh = true;
 		
-		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
-		if(userProfile != null){
-			userName = userProfile.getString("name");
-			logoUrl = userProfile.getString("avatar");
-			groupId = userProfile.getString("grpId");
+		//成为历史了  kx73		
+//		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
+//		if(userProfile != null){
+//			userName = userProfile.getString("name");
+//			logoUrl = userProfile.getString("avatar");
+//			groupId = userProfile.getString("grpId");
+//			updateProfile();
+//			Log.i("cache", "find cache userName  "+userName);
+//		}else{
+//			initialUserProfile();
+//		}
+		{
+			User usr=User.getUserById(usrId);
+			userName=usr.name;
+			logoUrl=usr.avatar;
+			groupId=String.valueOf(User.Current.grpId);
 			updateProfile();
-			Log.i("cache", "find cache userName  "+userName);
-		}else{
-			initialUserProfile();
+			Log.i("cache", "find cache usrId "+usrId);
 		}
+		
 		statusResult = mCache.getAsString("statusOfPersonResult");
 		if(statusResult == null)
 			initialStatuses();
@@ -195,7 +206,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 			StatusOfPersonListInfo personStatusInfo = (StatusOfPersonListInfo) listMap.get(listMap.size()-1);
 			String[] creatTime = personStatusInfo.getCreatTime();
 			String lastCreatTime = creatTime[creatTime.length-1];
-			PostData pdata=new PostData("share", "getStatusByUsrId","{\"usrId\":"+usrId+ ", \"type\":"+0+", \"creatTime\":"+lastCreatTime+"}");
+			PostData pdata=new PostData("share", "getStatusByUsrId","{\"usrId\":"+usrId+ ", \"grpId\":"+groupId+ ", \"type\":"+0+", \"creatTime\":"+lastCreatTime+"}");
 			result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			
 			Log.i("refresh data :", result);
@@ -309,36 +320,36 @@ public class StatusOfPersonActivity extends BaseActivity {
 		return listmap;
 	}
 	
-	private void initialUserProfile() {
-		// TODO Auto-generated method stub
-
-		new AsyncTask<String, String, String >() {
-
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				try{
-				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":"+usrId+"}");
-				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-				Log.i("initialUserProfile  :", json);
-				
-				JSONObject jsonResult = JSON.parseObject(json);
-				JSONArray tmpArray = jsonResult.getJSONArray("results");
-				if(jsonResult.getInteger("errCode") == 0) {
-					JSONObject userProfile = (JSONObject) tmpArray.get(0);
-					userName = userProfile.getString("name");
-					logoUrl = userProfile.getString("avatar");
-					groupId = userProfile.getString("grpId");
-					Log.i("groupId", groupId);
-					mCache.put("userProfile", userProfile);
-				}
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute("");
-	}
+//	private void initialUserProfile() {
+//		// TODO Auto-generated method stub
+//
+//		new AsyncTask<String, String, String >() {
+//
+//			@Override
+//			protected String doInBackground(String... params) {
+//				// TODO Auto-generated method stub
+//				try{
+//				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":"+usrId+"}");
+//				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
+//				Log.i("initialUserProfile  :", json);
+//				
+//				JSONObject jsonResult = JSON.parseObject(json);
+//				JSONArray tmpArray = jsonResult.getJSONArray("results");
+//				if(jsonResult.getInteger("errCode") == 0) {
+//					JSONObject userProfile = (JSONObject) tmpArray.get(0);
+//					userName = userProfile.getString("name");
+//					logoUrl = userProfile.getString("avatar");
+//					groupId = userProfile.getString("grpId");
+//					Log.i("groupId", groupId);
+//					mCache.put("userProfile", userProfile);
+//				}
+//				}catch(Exception ex){
+//					ex.printStackTrace();
+//				}
+//				return null;
+//			}
+//		}.execute("");
+//	}
 	
 	private void updateProfile() {
 		// TODO Auto-generated method stub
@@ -348,5 +359,19 @@ public class StatusOfPersonActivity extends BaseActivity {
 		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
 		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/smallPic/"+usrId+"/"+logoUrl, avatar);
 		
+		ImageView imageCover = (ImageView)headview.findViewById(R.id.imageCover);
+		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/group/"+groupId+"/"+Groups.selectGrp().getCoverPhoto(), imageCover); //
+				
+		
 	}
+//	private void updateProfile() {
+//		TextView userNameView = (TextView) headview.findViewById(R.id.username);
+//		userNameView.setText(userName);
+//		ImageView avatar = (ImageView)headview.findViewById(R.id.headicon);
+//		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/smallPic/"+userId+"/"+logoUrl, avatar);
+//		
+//		ImageView imageCover = (ImageView)headview.findViewById(R.id.imageCover);
+//		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/group/"+groupId+"/"+Groups.selectGrp().getCoverPhoto(), imageCover); //
+//		
+//	}	
 }

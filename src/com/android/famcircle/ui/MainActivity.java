@@ -68,52 +68,49 @@ public class MainActivity extends Activity {
 			mCache.clear();
 		}
 		
-//		if (id == R.id.menu_exit) {
-//
-//			showAlertDialog("退出程序", "Exit Famnotes2014？", "确定", new OnClickListener() {
-//	
-//				@Override
-//				public void onClick(DialogInterface dialog, int which) {
-//					// TODO Auto-generated method stub
-//					AppManager.getInstance().AppExit(getApplicationContext());
-//					ImageLoader.getInstance().clearMemoryCache();
-//				}
-//			}, "取消", new OnClickListener() {
-//	
-//				@Override
-//				public void onClick(DialogInterface dialog, int which) {
-//					// TODO Auto-generated method stub
-//					dialog.dismiss();
-//				}
-//			});
-//
-//	 ｝
-//
-//	//case R.id.menu_help:
-//	  case R.id.menu_clear:
-//		  new AlertDialog.Builder(this).setTitle("Delete User Data").setMessage("Delete User Data, then Exit")
-//			.setPositiveButton("OK",  new OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int which) {
-//						dialog.dismiss();
-//						try {
-//							DBUtil.clearDatabase();
-//						} catch (Exception e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//						AppManager.getInstance().AppExit(getApplicationContext());//System.exit(0);
-//					}
-//				})
-//			.setNegativeButton("CANCEL", new OnClickListener() {
-//					@Override
-//					public void onClick(DialogInterface dialog, int which) {
-//						dialog.dismiss();
-//					}
-//				})
-//			.show();
-//		  
-//		break;
+		if (id == R.id.menu_exit) {
+			new AlertDialog.Builder(this).setTitle("").setMessage("退出吗？")
+			.setPositiveButton("OK", new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					AppManager.getInstance().AppExit(getApplicationContext());
+					ImageLoader.getInstance().clearMemoryCache();
+				}
+			})
+			.setNegativeButton("CANCEL", new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.dismiss();
+				}
+			})
+			.show();
+		}
+
+		if (id ==R.id.menu_clear) {
+		  new AlertDialog.Builder(this).setTitle("Delete User Data").setMessage("Delete User Data, then Exit")
+			.setPositiveButton("OK",  new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						try {
+							DBUtil.clearDatabase();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						AppManager.getInstance().AppExit(getApplicationContext());//System.exit(0);
+					}
+				})
+			.setNegativeButton("CANCEL", new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				})
+			.show();
+		}
 		return super.onOptionsItemSelected(item);
 	}
 

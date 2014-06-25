@@ -1,21 +1,14 @@
 package com.famnotes.android.db;
 
 import java.io.File;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.famnotes.android.vo.User;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-//import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.famnotes.android.vo.User;
+//import android.database.sqlite.SQLiteOpenHelper;
 
 
 public class DBUtil {
@@ -87,6 +80,7 @@ public class DBUtil {
 				sldb.execSQL(sql);
 			}
 			ContentValues cvs=new ContentValues();
+			cvs.put("id", user.id);
 			cvs.put("grpId", user.grpId);
 			cvs.put("loginId", user.loginId);
 			cvs.put("name", user.name);
@@ -134,7 +128,7 @@ public class DBUtil {
 			sld = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
 			
 			String sql = "CREATE TABLE IF NOT EXISTS `fn_user` ("  +
-					  "`id` integer NOT NULL PRIMARY KEY,"  + //"`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,"  +
+					  "`id` integer NOT NULL PRIMARY KEY,"  +
 					  "`grpId` integer,"  +
 					  "`loginId` varchar(32),"  +
 					  "`name` varchar(255),"  +

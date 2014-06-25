@@ -34,6 +34,8 @@
 	                	  android:layout_gravity="left|top"
 	                	  android:layout_alignParentTop="true"
 	                	  android:textSize="15dp"
+	                	  android:maxLines="3"
+	                	  android:ellipsize="end"
 	                	  android:paddingLeft="5dp"
 	                	  android:id="@+id/pics_discript"
 	                	  android:text="test pics discript"/>

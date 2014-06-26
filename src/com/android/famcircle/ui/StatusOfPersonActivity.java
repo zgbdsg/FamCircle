@@ -231,9 +231,13 @@ public class StatusOfPersonActivity extends BaseActivity {
 				// TODO Auto-generated method stub
 				statusResult = "";
 				try{
-				PostData pdata=new PostData("share","getStatusByUsrId","{\"usrId\":"+usrId+ ", \"type\":"+0+"}");
+					JSONObject obj=new JSONObject();
+					obj.put("usrId", usrId);
+					obj.put("grpId", User.Current.grpId);
+					obj.put("type", 0); //? type 日月年
+					String reqJsonMsg=obj.toJSONString();
+				PostData pdata=new PostData("share","getStatusByUsrId", reqJsonMsg); //?"{\"usrId\":"+usrId+ ", \"grpId\":"+User.Current.grpId+", \"type\":"+0+"}"
 				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-				//Log.i("initialStatuses  :", json);
 
 				statusResult = json;
 				JSONObject allResult = JSON.parseObject(json);

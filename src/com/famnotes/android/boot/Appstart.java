@@ -102,9 +102,9 @@ class AppstartTask  extends BaseAsyncTask<Appstart, Void, Integer>{
 
 	@Override
 	public Integer run(Void... arg0) throws Exception {
-		boolean dbExist=DBUtil.detectDatabase();
-		if(!dbExist) {
-			boolean success=DBUtil.createDatabase();
+		int status=DBUtil.detectDatabase();  //boolean dbExist=DBUtil.detectDatabase();
+		if(status!=1) {
+			boolean success=DBUtil.createDatabase(status);
 			if(!success)
 				throw new Exception("fail createDatabase");
 			

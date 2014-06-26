@@ -7,17 +7,54 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.famnotes.android.util.StringUtils;
 import com.famnotes.android.vo.User;
 //import android.database.sqlite.SQLiteOpenHelper;
 
 
 public class DBUtil {
 	final public static String dbPath="/data/data/com.android.famcircle/famnotes.db";
-	
-	public static boolean detectDatabase() {
+	final public static int VER=1;
+//	public static boolean detectDatabase() {
+//		File dbFile=new File(dbPath);
+//		return dbFile.exists();
+//	}
+	public static int detectDatabase() {//0-不存在， 1-OK， 2-存在且版本表没有， 3-存在且版本低了
 		File dbFile=new File(dbPath);
+		if(!dbFile.exists())
+			return 0;
 		
-		return dbFile.exists();
+		//查版本
+		int vernum=0;
+		SQLiteDatabase sld = null;
+		Cursor cur = null;
+		try {
+			// 打开数据库
+			sld = openDatabase();
+			String sql = "select * from fn_ver";
+			cur = sld.rawQuery(sql, null);
+			if (cur.moveToNext()) {
+				vernum=getInt(cur, "vernum");
+			}
+		} catch (Exception e) {
+			Log.d("error", e.toString() + "=============getCurrentUser===============");
+			return 2;
+		} finally {
+			try {
+				cur.close();// 关闭结果集
+				closeDatabase(sld);// 关闭数据库
+			} catch (Exception e) {
+				Log.d("error", e.toString() + "=============getCurrentUser===============");
+			}
+		}
+		
+		if(vernum==0)
+			return 2;
+		
+		if(vernum<VER)
+			return 3;
+		
+		return 1;
 	}
 	public static User getCurrentUser() throws Exception {
 		SQLiteDatabase sld = null;
@@ -122,11 +159,28 @@ public class DBUtil {
 		return cur.getString(colIdx);
 	}
 	
-	public static boolean createDatabase() throws Exception {
+	public static boolean createDatabase(int status) throws Exception {
 		SQLiteDatabase sld = null;
 		try {
 			sld = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
 			
+			if(status>1){
+				sld.execSQL("DROP TABLE IF EXISTS `fn_ver`;");
+			
+			
+				String sqlVer = "CREATE TABLE IF NOT EXISTS `fn_ver` ("  +
+						  "`vernum` integer NOT NULL PRIMARY KEY,"  +
+						  "`memo` varchar(255)"  +
+						");" ;
+				sld.execSQL(sqlVer);
+				
+				ContentValues cvs=new ContentValues();
+				cvs.put("vernum", VER);
+				cvs.put("memo", StringUtils.getDataTime("yyyy-MM-dd HH:mm"));
+				sld.insert("fn_ver", null, cvs);
+			}
+			
+			sld.execSQL("DROP TABLE IF EXISTS `fn_user`;");
 			String sql = "CREATE TABLE IF NOT EXISTS `fn_user` ("  +
 					  "`id` integer NOT NULL PRIMARY KEY,"  +
 					  "`grpId` integer,"  +

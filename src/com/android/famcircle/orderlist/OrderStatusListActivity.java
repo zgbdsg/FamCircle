@@ -236,7 +236,7 @@ public class OrderStatusListActivity extends Activity{
 				for(int k=0;k<picList.size();k ++){
 					String picurl = picList.getString(k);
 					Picture pic = new Picture();
-					pic.setUrl("http://"+Constants.Server+smallPicPath +1+"/"+picurl);
+					pic.setUrl("http://"+Constants.Server+smallPicPath +User.Current.id+"/"+picurl);
 					picItemList.add(pic);
 				}
 			}

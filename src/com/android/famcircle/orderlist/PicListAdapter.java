@@ -143,7 +143,9 @@ public class PicListAdapter extends BaseAdapter implements
 		// TODO Auto-generated method stub
 		int realPosition = position;
 		int section = mIndexer.getSectionForPosition(realPosition);
-		String title = (String) mIndexer.getSections()[section];
+		String title = "";
+		if(mIndexer.getSections() != null && mIndexer.getSections().length != 0)
+			title = (String) mIndexer.getSections()[section];
 		((TextView) header.findViewById(R.id.group_title)).setText(title);
 	}
 

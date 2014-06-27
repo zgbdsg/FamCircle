@@ -84,10 +84,13 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				
 				Message refreshMsg = new Message();
 				refreshMsg.arg1 = 5;
-				refreshMsg.setTarget(ShareActivity.myhandler);
+//				refreshMsg.setTarget(ShareActivity.myhandler);
 				mCache.clear();
-				refreshMsg.sendToTarget();
+//				refreshMsg.sendToTarget();
 				
+				Intent intent = new Intent();
+				intent.putExtra("handlerCode", 5);
+				setResult(0, intent);
 				PublishedActivity.this.finish();
 				
 				break;

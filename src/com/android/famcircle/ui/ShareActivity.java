@@ -6,10 +6,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+//import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+//import android.os.Handler;
+//import android.os.Message;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +37,8 @@ import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
 import com.android.famcircle.config.Constants;
 import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.base.BaseAsyncTask;
+import com.famnotes.android.base.BaseAsyncTaskHandler;
 import com.android.famcircle.orderlist.OrderStatusListActivity;
 import com.android.famcircle.picselect.PublishedActivity;
 import com.famnotes.android.util.ACache;
@@ -68,13 +70,13 @@ public class ShareActivity  extends BaseActivity {
 	View headview;
 	PullToRefreshListView mPullRefreshListView;
 	StatusListAdapter myadapter;
-	public static Handler myhandler;
+	public static ShareHandler myhandler, myhandlerPull;
 	String[] imageUrls;
 	GridView statusPics;
 	//ImageView sendStatus;
 	DisplayImageOptions options;
 	
-	private CustomProgressDialog onLoading;
+//	private CustomProgressDialog onLoading;
 	Boolean isNeedRefresh;
 	int currentMode; ///getStatusXXXX ‘s flag， 表示刷新模式，上拉 or 下拉
 	
@@ -90,6 +92,7 @@ public class ShareActivity  extends BaseActivity {
 		
 		context = this;
 		mCache = ACache.get(this);
+		myhandler = new ShareHandler(this, true); myhandlerPull= new ShareHandler(this, false);
 		Log.i("activity ", "shared!!!!!!");
 		replyWindow = (RelativeLayout)findViewById(R.id.relative_pop_up_input_window);
 		replyWindow.setOnClickListener(new OnClickListener() {
@@ -123,10 +126,14 @@ public class ShareActivity  extends BaseActivity {
 				if(refreshView.getCurrentMode() == Mode.PULL_FROM_START) {
 					// Do work to refresh the list here.
 					currentMode = 1;
-					new GetDataTask().execute(1);
+					GetDataTask getDataTask = new GetDataTask();
+					getDataTask.connect(myhandlerPull);
+					getDataTask.execute(1);
 				}else if(refreshView.getCurrentMode() == Mode.PULL_FROM_END){
 					currentMode = 0;
-					new GetDataTask().execute(0);
+					GetDataTask getDataTask = new GetDataTask();
+					getDataTask.connect(myhandlerPull);
+					getDataTask.execute(0);
 				}
 				
 			}
@@ -147,24 +154,169 @@ public class ShareActivity  extends BaseActivity {
 		statuslist.addHeaderView(headview);
 		
 		//listMap = getStatusListMaps("");
-		myadapter = new StatusListAdapter(this, listMap , myhandler );
+		myadapter = new StatusListAdapter(this, listMap );
 		statuslist.setAdapter(myadapter);
 		
-		myhandler = new Handler(){
-			@Override
-	        public void handleMessage(Message msg) {
-	            // TODO Auto-generated method stub
-	            if(msg != null) {
-	            	Log.i("handler ", "get a message");
-	            	
-	            	switch (msg.arg1) {
+//		onLoading = new CustomProgressDialog(this);
+//		onLoading.setCancelable(true);
+//		onLoading.setCanceledOnTouchOutside(true);
+		isNeedRefresh = true;
+
+		//init user profile ;
+		userId =String.valueOf(User.Current.id);
+		userName=User.Current.name;
+		logoUrl=User.Current.avatar;
+		groupId=String.valueOf(User.Current.grpId);
+		updateProfile();
+		Log.i("cache", "find cache usrId"+userId);
+
+		statusResult = mCache.getAsString("statusResult"+User.Current.grpId+"---"+User.Current.id);
+		if(statusResult == null){
+			InitialStatuses initial = new InitialStatuses();
+			initial.connect(myhandler);
+			initial.execute("");
+		}else{
+			listMap = getStatusListMaps(statusResult);
+			Log.i("listMap length :", ""+listMap.size());
+        	myadapter.setDataList(listMap);
+        	isNeedRefresh = false;
+        	myadapter.notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	protected void onStart(){
+		super.onStart();
+
+//		if(isNeedRefresh)
+//			onLoading.show();
+		//myadapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.share, menu);
+		return true;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(data != null){
+			//?Integer handlerCode=data.getIntExtra("handlerCode", 5);
+			
+			listNotifyDataSetChanged();
+			
+		}
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.btn_send_status) {
+			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
+			startActivityForResult(i, 0);//startActivity(i);
+			return true;
+		}else if(id == R.id.orderbytime){
+			Intent i = new Intent(getApplicationContext(), OrderStatusListActivity.class);
+			startActivity(i);
+			return true;
+		}
+		else if(id==R.id.btn_group_setting){
+			openActivity(SettingActivity.class);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	class GetDataTask  extends BaseAsyncTask<ShareActivity, Integer, Integer>{
+		@Override
+		public Integer run(Integer... reqJsonMsg) throws Exception {
+			// Simulates a background job.
+			String result = "";
+			try{
+			if(reqJsonMsg[0] == 0){
+				/*from end*/
+				String statusId = "-1";
+				if(listMap.size() != 0){
+					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
+					statusId = statusInfo.getStatusId();
+				}
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":0}");
+				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
+			}else if(reqJsonMsg[0] == 1){
+				/*from start*/
+				String statusId = "-1";
+				if(listMap.size() != 0){
+					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
+					statusId = statusInfo.getStatusId();
+				}
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":1}");
+				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
+			}
+			
+			Log.i("refresh data :", result);
+			statusResult = result;
+
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			return 3;
+		}
+	}
+	
+	class InitialStatuses  extends BaseAsyncTask<ShareActivity, String, Integer>{
+		@Override
+		public Integer run(String... reqJsonMsg) throws Exception {
+				statusResult = "";
+				try{
+					PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+"}");
+					String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
+		
+					statusResult = json;
+					JSONObject allResult = JSON.parseObject(json);
+		
+					if(allResult.getInteger("errCode") == 0){
+						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
+					}
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
+				return 2;
+		}
+	}
+	
+	class ShareHandler extends BaseAsyncTaskHandler<ShareActivity, Integer>{
+
+		public ShareHandler(ShareActivity shareActivity, boolean showProgressBar) {
+			super(shareActivity, showProgressBar);
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public boolean onTaskFailed(ShareActivity context, Exception ex) {
+			// TODO Auto-generated method stub
+			context.DisplayLongToast(ex.toString());
+			return true;
+		}
+
+		@Override
+		public boolean onTaskSuccess(ShareActivity arg0, Integer rCode) {
+			// TODO Auto-generated method stub
+			switch(rCode){
 					case 1:
 						//for onclik event
 						commentPopupWindow.dismiss();
 						break;
 					case 2:
 						//for  init the status
-						onLoading.dismiss();
+//						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
@@ -188,207 +340,41 @@ public class ShareActivity  extends BaseActivity {
 						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 						myadapter.notifyDataSetChanged();
-
+		
 						// Call onRefreshComplete when the list has been refreshed.
 						mPullRefreshListView.onRefreshComplete();
 						break;
 					case 4:
 						// for zan and reply
-						myadapter.notifyDataSetChanged();
+						notifyDataSetChanged() ; //myadapter.notifyDataSetChanged();
 						break;
 					case 5:
 						//for status send finished;
-						currentMode = 1;
-						mPullRefreshListView.setRefreshing();
+						listNotifyDataSetChanged();
 						break;
 					default:
-						//onLoading.dismiss();
+//						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
 		            	myadapter.notifyDataSetChanged();
-						break;
-					}
-	            }
-	        }
-		};
-		onLoading = new CustomProgressDialog(this);
-		onLoading.setCancelable(true);
-		onLoading.setCanceledOnTouchOutside(true);
-		isNeedRefresh = true;
-
-//成为历史了  kx73		
-//		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
-//		if(userProfile != null){
-//			userId = userProfile.getString("usrId");
-//			userName = userProfile.getString("name");
-//			logoUrl = userProfile.getString("avatar");
-//			groupId = userProfile.getString("grpId");
-//			updateProfile();
-//			Log.i("cache", "find cache usrId"+userId);
-//		}else{
-//			initialUserProfile();
-//		}
-		{
-			userId =String.valueOf(User.Current.id);
-			userName=User.Current.name;
-			logoUrl=User.Current.avatar;
-			groupId=String.valueOf(User.Current.grpId);
-			updateProfile();
-			Log.i("cache", "find cache usrId"+userId);
-		}
-		statusResult = mCache.getAsString("statusResult");
-		if(statusResult == null)
-			initialStatuses();
-		else{
-			isNeedRefresh = false;
-			Message message = new Message();
-			myhandler.sendMessage(message);
+						break;	
+			}
+			return true;
 		}
 	}
 
-	@Override
-	protected void onStart(){
-		super.onStart();
-
-		if(isNeedRefresh)
-			onLoading.show();
-		//myadapter.notifyDataSetChanged();
+	public void notifyDataSetChanged(){
+		if(myadapter!=null)
+			myadapter.notifyDataSetChanged();
 	}
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.share, menu);
-		return true;
+	public void listNotifyDataSetChanged(){
+		currentMode = 1;
+		mPullRefreshListView.setRefreshing();
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.btn_send_status) {
-			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
-			startActivity(i);
-			return true;
-		}else if(id == R.id.orderbytime){
-			Intent i = new Intent(getApplicationContext(), OrderStatusListActivity.class);
-			startActivity(i);
-			return true;
-		}
-		else if(id==R.id.btn_group_setting){
-			openActivity(SettingActivity.class);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	private class GetDataTask extends AsyncTask<Integer, Void, String> {
-
-		@Override
-		protected String doInBackground(Integer... params) { //i.e. currentMode
-			// Simulates a background job.
-			String result = "";
-			try{
-			if(params[0] == 0){
-				/*from end*/
-				String statusId = "-1";
-				if(listMap.size() != 0){
-					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
-					statusId = statusInfo.getStatusId();
-				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":0}");
-				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-			}else if(params[0] == 1){
-				/*from start*/
-				String statusId = "-1";
-				if(listMap.size() != 0){
-					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
-					statusId = statusInfo.getStatusId();
-				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":1}");
-				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-			}
-			
-			Log.i("refresh data :", result);
-			statusResult = result;
-			//listMap = getStatusListMaps(json);
-			//onLoading.dismiss();
-			Message message = new Message();
-			message.arg1 = 3;
-			myhandler.sendMessage(message);
-			}catch(Exception ex){
-				ex.printStackTrace();
-			}
-			return result;
-		}
-
-	}
-	
-//	private void initialUserProfile() {
-//		
-//		new AsyncTask<String, String, String >() {
-//			
-//			@Override
-//			protected String doInBackground(String... params) {
-//				// TODO Auto-generated method stub
-//				try{
-//				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":1}");
-//				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-//				Log.i("initialUserProfile  :", json);
-//				
-//				JSONObject jsonResult = JSON.parseObject(json);
-//				JSONArray tmpArray = jsonResult.getJSONArray("results");
-//				if(jsonResult.getInteger("errCode") == 0) {
-//					JSONObject userProfile = (JSONObject) tmpArray.get(0);
-//					userId = userProfile.getString("usrId");
-//					userName = userProfile.getString("name");
-//					logoUrl = userProfile.getString("avatar");
-//					groupId = userProfile.getString("grpId");
-//					Log.i("groupId", groupId);
-//					mCache.put("userProfile", userProfile);
-//				}
-//				}catch(Exception ex){
-//					ex.printStackTrace();
-//				}
-//				return null;
-//			}
-//		}.execute("");
-//	}
-
-	private void initialStatuses() {
-		new AsyncTask<String, String, String >() {
-
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				statusResult = "";
-				try{
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+"}");
-				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-				//Log.i("initialStatuses  :", json);
-
-				statusResult = json;
-				//listMap = getStatusListMaps(json);
-				//onLoading.dismiss();
-				JSONObject allResult = JSON.parseObject(json);
-
-				if(allResult.getInteger("errCode") == 0){
-					mCache.put("statusResult", statusResult);
-				}
-				Message message = new Message();
-				message.arg1 = 2;
-				myhandler.sendMessage(message);
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute("");
-	}
 	private List<HashMap<String, Object>> getStatusListMaps(String string) {
 		// TODO Auto-generated method stub
 

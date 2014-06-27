@@ -7,9 +7,13 @@ import com.github.ignition.core.tasks.IgnitedAsyncTaskHandler;
 
 public abstract class BaseAsyncTaskHandler<ContextT extends BaseActivity, ReturnT> implements IgnitedAsyncTaskHandler<ContextT, Integer, ReturnT> {
     private ContextT context;
-
+    private boolean showProgressBar=true;
     public BaseAsyncTaskHandler(ContextT context) {
         this.context = context;
+    }
+    public BaseAsyncTaskHandler(ContextT context, boolean showProgressBar) {
+        this.context = context;
+        this.showProgressBar=showProgressBar;
     }
 
     @Override
@@ -41,26 +45,30 @@ public abstract class BaseAsyncTaskHandler<ContextT extends BaseActivity, Return
 		this.mPD.setIndeterminate(false);
 		this.mPD.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		this.mPD.show();
+			
 	}
 
 
 	@Override
 	public boolean onTaskStarted(ContextT context) {
-		showProgressDialog();
+		if(showProgressBar)
+			showProgressDialog();
         return true;
 	}
 
 
 	@Override
 	public boolean onTaskProgress(ContextT context, Integer... progress) {
-		mPD.setProgress(progress[0]);
+		if(showProgressBar)
+			mPD.setProgress(progress[0]);
 		return true;
 	}
 
 
 	@Override
 	public boolean onTaskCompleted(ContextT context, ReturnT result) {
-		mPD.dismiss();
+		if(showProgressBar)
+			mPD.dismiss();
 		return true;
 	}
 	

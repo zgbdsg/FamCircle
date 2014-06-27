@@ -38,6 +38,8 @@ import com.android.famcircle.linearlistview.LinearListView;
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.ui.StatusOfPersonActivity;
+import com.famnotes.android.base.BaseAsyncTask;
+import com.famnotes.android.base.BaseAsyncTaskHandler;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
@@ -48,12 +50,22 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class StatusListAdapter extends BaseAdapter{
 	int[] location;
 	
-	Handler handler = new Handler(){
+	class StatusListAdapterHandler extends BaseAsyncTaskHandler<ShareActivity, Message>{  //Handler handler = new Handler(){
+
+		public StatusListAdapterHandler(ShareActivity context) {
+			super(context);
+			// TODO Auto-generated constructor stub
+		}
 
 		@Override
-		public void handleMessage(Message msg) {
+		public boolean onTaskFailed(ShareActivity arg0, Exception arg1) {
 			// TODO Auto-generated method stub
-			super.handleMessage(msg);
+			return false;
+		}
+
+		@Override
+		public boolean onTaskSuccess(ShareActivity context, Message msg) {
+			// TODO Auto-generated method stub
 			if(msg.arg1 == 2){
 				commentPopupWindow.dismiss();
 			}else if(msg.arg1 == 1){
@@ -67,12 +79,8 @@ public class StatusListAdapter extends BaseAdapter{
 				addZan.setFromUsrId(data.getString("fromUsrId"));
 				addZan.setFromUsrName(data.getString("fromUsrName"));
 				zanList.add(addZan);
-				
-				Message refreshMsg = new Message();
-				refreshMsg.arg1 = 4;
-				refreshMsg.setTarget(ShareActivity.myhandler);
-				
-				refreshMsg.sendToTarget();
+
+				context.notifyDataSetChanged();
 			}else if(msg.arg1 == 0){
 				replyTextContent.setText("");
 				ShareActivity share = (ShareActivity)context;
@@ -90,17 +98,17 @@ public class StatusListAdapter extends BaseAdapter{
 				replyInfo.setToUsrName(data.getString("toUsrName"));
 				
 				replyList.add(replyInfo);
-				Message refreshMsg = new Message();
-				refreshMsg.arg1 = 4;
-				refreshMsg.setTarget(ShareActivity.myhandler);
-				
-				refreshMsg.sendToTarget();
-			}
+
+				context.notifyDataSetChanged();
+			}			
+			return true;
 		}
 		
-	};
+	}
+	
 	PopupWindow commentPopupWindow;
 	EditText replyTextContent;
+	StatusListAdapterHandler handler;
 	
 	private  class  ViewHolder {
 		ImageView userLogo;
@@ -125,7 +133,7 @@ public class StatusListAdapter extends BaseAdapter{
 	private List<StatusReplyInfo> statusReplyInfoList;
 	
 	public StatusListAdapter(Context context,
-			List<HashMap<String, Object>> data,Handler activityHandler) {
+			List<HashMap<String, Object>> data) {
 		
 		// TODO Auto-generated constructor stub
 		this.dataList = data;
@@ -225,29 +233,14 @@ public class StatusListAdapter extends BaseAdapter{
 			holder.statusPics.setAdapter(myGridViewAdapter);
 			holder.statusPics.setTag(position);
 			
-/*			holder.statusPics.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					int num = (Integer)parent.getTag();
-					final StatusListInfo statInfo=(StatusListInfo)dataList.get(num).get("statusInfo");
-					String[] imageUrls = statInfo.getPicArray();
-					String[] bigImageUrl = new String[imageUrls.length];
-					for(int i=0;i<imageUrls.length;i ++)
-						bigImageUrl[i] = "http://"+Constants.Server+""+statInfo.getBigPicPath()+imageUrls[i];
-					Log.i("start pager", "");
-					startImagePagerActivity(position,statInfo.getStatusId() , bigImageUrl);
-				}
-			});*/
 		}
 		
 		holder.all_reply_component.setVisibility(8);
 		holder.zanText.setText("");
 		holder.zanText.setVisibility(View.VISIBLE);
-		//Log.i("all_reply_component :", "vi "+holder.all_reply_component.getVisibility());
 
 		if(statusZanInfoList.size() > 0 || statusReplyInfoList.size() > 0){
 			holder.all_reply_component.setVisibility(0);
-			//Log.i("all_reply_component set after :", "vi "+holder.all_reply_component.getVisibility());
 		}
 		
 		if(statusZanInfoList.size() > 0) {
@@ -282,7 +275,9 @@ public class StatusListAdapter extends BaseAdapter{
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						int loc=(Integer) v.getTag();
-						sendZan(loc,ShareActivity.userId,statInfo.getUsrId(),statInfo.getStatusId(),ShareActivity.userName);
+						SendZan sendZan = new SendZan();
+						sendZan.connect(handler);
+						sendZan.execute(loc,ShareActivity.userId,statInfo.getUsrId(),statInfo.getStatusId(),ShareActivity.userName);
 					}
 				});
 				
@@ -314,7 +309,9 @@ public class StatusListAdapter extends BaseAdapter{
 							public void onClick(View arg0) {
 								// TODO Auto-generated method stub
 								int loc=(Integer) arg0.getTag();
-								sendReply(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
+								SendReply sendReply = new SendReply();
+								sendReply.connect(handler);
+								sendReply.execute(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
 										StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
 							}
 						});
@@ -350,72 +347,63 @@ public class StatusListAdapter extends BaseAdapter{
 	public void setDataList(List<HashMap<String, Object>> dataList) {
 		this.dataList = dataList;
 	}
-	
-	
-	public void sendZan(final int pos , final String fromUsrId, final String toUsrId ,final String statusId,final String zanFromName){
-		new AsyncTask<String, String, String>() {
-
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				try{
-				Log.i("zan info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
-				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":1, \"reply\":\"\"}");
-				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-				
-				JSONObject result = JSON.parseObject(json);
-				Message msg = new Message();
-				if(result.getString("errMesg").equals("Already Zan!"))
-					msg.arg1 = 2;
-				else
-					msg.arg1 = 1;
-				msg.arg2 = pos;
-				Bundle data = new Bundle();
-				Log.i("zanFromName", zanFromName);
-				data.putString("fromUsrName", zanFromName);
-				data.putString("fromUsrId", fromUsrId);
-				msg.setData(data);
-				handler.sendMessage(msg);
-				System.out.println(json);
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute("");
-	}
-	
-	public void sendReply(final int loc, final String fromUsrId, final String replyFromName, final String toUsrId ,final String replyToName,final String statusId,final String replyContent, final String content){
-		new AsyncTask<String, String, String>() {
-
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				try{
-				Log.i("reply  info:", fromUsrId+"  to "+toUsrId +" int status "+statusId);
-				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+statusId+ ", \"fromUsrId\":"+fromUsrId+", \"toUsrId\":"+toUsrId+", \"type\":0, \"reply\":\""+replyContent+"\"}");
-				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-				Message msg = new Message();
-				msg.arg1 = 0 ;
-				msg.arg2 = loc;
-				Bundle data = new Bundle();
-				data.putString("fromUsrName", replyFromName);
-				data.putString("fromUsrId", fromUsrId);
-				data.putString("toUsrName", replyToName);
-				data.putString("toUsrId", toUsrId);
-				data.putString("reply", content);
-				
-				msg.setData(data);
-				handler.sendMessage(msg);
-				System.out.println(json);
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute("");
-	}
 }
+	
+	
+	class SendZan  extends BaseAsyncTask<ShareActivity, Object, Message>{
+		@Override
+		public Message run(Object... params) throws Exception {
+			Message msg = new Message();
+			try{
+					Log.i("zan info:", params[1]+"  to "+params[2] +" int status "+params[3]);
+					PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[3]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[2]+", \"type\":1, \"reply\":\"\"}");
+					String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
+					
+					JSONObject result = JSON.parseObject(json);
+					if(result.getString("errMesg").equals("Already Zan!"))
+						msg.arg1 = 2;
+					else
+						msg.arg1 = 1;
+					msg.arg2 = (Integer) params[0];
+					Bundle data = new Bundle();
+					Log.i("zanFromName", (String) params[4]);
+					data.putString("fromUsrName", (String) params[4]);
+					data.putString("fromUsrId", (String) params[1]);
+		
+					System.out.println(json);
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			return msg;
+		}
+	}
+	
+	
+	class SendReply  extends BaseAsyncTask<ShareActivity, Object, Message>{
+		@Override
+		public Message run(Object... params) throws Exception {
+			Message msg = new Message();
+			try{
+				Log.i("reply  info:", params[1]+"  to "+params[2] +" int status "+params[3]);
+				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[3]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[2]+", \"type\":0, \"reply\":\""+params[6]+"\"}");
+				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
+	
+				msg.arg1 = 0 ;
+				msg.arg2 = (Integer) params[0];
+				Bundle data = new Bundle();
+				data.putString("fromUsrName", (String) params[2]);
+				data.putString("fromUsrId", (String) params[1]);
+				data.putString("toUsrName", (String) params[4]);
+				data.putString("toUsrId", (String) params[3]);
+				data.putString("reply", (String) params[7]);
+				
+				System.out.println(json);
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			return msg;
+		}
+	}
 
 class GridViewAdapter extends BaseAdapter{
 	String[] imageUrls;

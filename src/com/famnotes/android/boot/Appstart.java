@@ -92,6 +92,7 @@ class AppstartHandler extends BaseAsyncTaskHandler<Appstart, Integer>{
 				getContext().openActivity(LoadingActivity.class);
 				break;
 		}
+		arg0.finish();
 		return true;
 	}
 	

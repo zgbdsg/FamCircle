@@ -176,7 +176,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 			Log.i("cache", "find cache usrId "+usrId);
 		}
 		
-		statusResult = mCache.getAsString("statusOfPersonResult");
+		statusResult = mCache.getAsString("statusOfPersonResult"+groupId+"---"+usrId);
 		if(statusResult == null)
 			initialStatuses();
 		else{
@@ -243,7 +243,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 				JSONObject allResult = JSON.parseObject(json);
 
 				if(allResult.getInteger("errCode") == 0){
-					mCache.put("statusOfPersonResult", statusResult);
+					mCache.put("statusOfPersonResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
 				}
 				Message message = new Message();
 				message.arg1 = 0;

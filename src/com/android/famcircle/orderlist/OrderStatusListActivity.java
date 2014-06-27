@@ -212,7 +212,7 @@ public class OrderStatusListActivity extends Activity{
 			
 			String tag = "";
 			List<Picture> picItemList = new ArrayList<Picture>();
-			
+
 			String time = ((JSONObject)statusesOfTime.get(0)).getString("creatTime");
 			Date dt = new Date(Long.parseLong(time+"000"));
 //			SimpleDateFormat df;
@@ -230,13 +230,14 @@ public class OrderStatusListActivity extends Activity{
 			
 			for(int j=0;j<statusesOfTime.size();j ++){
 				JSONObject statusItem = (JSONObject) statusesOfTime.get(j);
+				String usrId = statusItem.getString("usrId");
 				JSONObject resrc = statusItem.getJSONObject("resrc");
 				JSONArray picList = resrc.getJSONArray("picArray");
 				
 				for(int k=0;k<picList.size();k ++){
 					String picurl = picList.getString(k);
 					Picture pic = new Picture();
-					pic.setUrl("http://"+Constants.Server+smallPicPath +User.Current.id+"/"+picurl);
+					pic.setUrl("http://"+Constants.Server+smallPicPath +usrId+"/"+picurl);
 					picItemList.add(pic);
 				}
 			}

@@ -238,7 +238,7 @@ public class ShareActivity  extends BaseActivity {
 			updateProfile();
 			Log.i("cache", "find cache usrId"+userId);
 		}
-		statusResult = mCache.getAsString("statusResult");
+		statusResult = mCache.getAsString("statusResult"+User.Current.grpId+"---"+User.Current.id);
 		if(statusResult == null)
 			initialStatuses();
 		else{
@@ -377,7 +377,7 @@ public class ShareActivity  extends BaseActivity {
 				JSONObject allResult = JSON.parseObject(json);
 
 				if(allResult.getInteger("errCode") == 0){
-					mCache.put("statusResult", statusResult);
+					mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
 				}
 				Message message = new Message();
 				message.arg1 = 2;

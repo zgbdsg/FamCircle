@@ -81,7 +81,7 @@ class AppstartHandler extends BaseAsyncTaskHandler<Appstart, Integer>{
 		switch(rCode){
 			case 0: //有库但无此人
 			case 1: //有此人, json包错				
-				getContext().openActivity(Welcome.class);
+				getContext().openActivity(PrepLogin.class);
 				break;
 			
 			case 2: //有此人, json包错				

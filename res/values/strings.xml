@@ -9,6 +9,7 @@
     <string name="menu_clear">ClearLocalData</string>
     <string name="menu_exit">退出</string>
     
+    <string name="choose_group_img">请选则一张较大图片</string>
         <!-- share -->
     <string name="no_data"></string>
     <string name="link_message">分享了一个链接</string>

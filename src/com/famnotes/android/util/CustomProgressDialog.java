@@ -1,4 +1,6 @@
-package com.android.famcircle;
+package com.famnotes.android.util;
+
+import com.android.famcircle.R;
 
 import android.app.ProgressDialog;
 import android.content.Context;

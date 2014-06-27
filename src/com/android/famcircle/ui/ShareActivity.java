@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.android.famcircle.CustomProgressDialog;
+import com.famnotes.android.util.CustomProgressDialog;
 import com.android.famcircle.R;
 import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;

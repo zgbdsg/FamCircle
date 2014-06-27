@@ -1,7 +1,8 @@
 package com.famnotes.android.base;
 
 //import com.famnotes.android.famnotes.R;
-import android.app.ProgressDialog;
+//import android.app.ProgressDialog;
+import com.famnotes.android.util.CustomProgressDialog;
 
 import com.github.ignition.core.tasks.IgnitedAsyncTaskHandler;
 
@@ -28,7 +29,7 @@ public abstract class BaseAsyncTaskHandler<ContextT extends BaseActivity, Return
     }
 
 //================================================================================
-	private ProgressDialog mPD;
+	private CustomProgressDialog mPD;
 	/**加载进度条*/
 	private void showProgressDialog() {
 		//ver 1
@@ -41,9 +42,11 @@ public abstract class BaseAsyncTaskHandler<ContextT extends BaseActivity, Return
 //		progressDialog.show();
 		
 		//ver 2
-		this.mPD = new ProgressDialog(context);
-		this.mPD.setIndeterminate(false);
-		this.mPD.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		this.mPD = new CustomProgressDialog(context);
+		this.mPD.setCancelable(true);
+		this.mPD.setCanceledOnTouchOutside(true);
+//		this.mPD.setIndeterminate(false);
+//		this.mPD.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		this.mPD.show();
 			
 	}

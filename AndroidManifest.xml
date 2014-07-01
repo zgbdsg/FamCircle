@@ -155,6 +155,11 @@
             android:label="@string/orderlist"
             android:theme="@android:style/Theme.Holo.Light">
         </activity>
+        
+        <activity
+            android:name="com.famnotes.android.boot.PrepLogin"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
     </application>
 
 </manifest>

@@ -33,7 +33,7 @@ public class PrepLogin extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.login_prep);
         
         mUser = (EditText)findViewById(R.id.login_user_edit);
         

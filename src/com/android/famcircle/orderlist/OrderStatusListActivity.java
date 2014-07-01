@@ -21,12 +21,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
+import com.android.famcircle.ui.ShareActivity;
+import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.base.BaseAsyncTask;
+import com.famnotes.android.base.BaseAsyncTaskHandler;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.vo.User;
 
 
-public class OrderStatusListActivity extends Activity{
+public class OrderStatusListActivity extends BaseActivity{
 
 	MySectionIndexer mIndexer;
 
@@ -34,7 +38,7 @@ public class OrderStatusListActivity extends Activity{
 	PinnedHeaderListView mListView;
 //	TextView back;
 	String[] tagName;
-	public static Handler handler;
+	public static OrderStatusListHandler handler;
 	String tagFormat = "MM-dd-yyyy";
 	int currentLevel = 0;
 /*	private String [][]tagName = {
@@ -56,88 +60,109 @@ public class OrderStatusListActivity extends Activity{
 		
 		//back = (TextView) findViewById(R.id.back_title);
 		mListView = (PinnedHeaderListView) findViewById(R.id.mListView);
-
-//		back.setOnClickListener(this);
 		
-		requestData(0);
+		RequestData requestData = new RequestData();
+		handler = new OrderStatusListHandler(this, false);
+		requestData.connect(handler);
+		requestData.execute(0);
 		
-		handler= new Handler(){
-
-			public void handleMessage(android.os.Message msg) {
-				switch (msg.what) {
-				case 0:
-					if(mAdapter==null){
-						mIndexer = new MySectionIndexer(tagName, counts);
-						mAdapter = new PicListAdapter(orderListTag, mIndexer, getApplicationContext(), tagName, maxLevel);
-						mListView.setAdapter(mAdapter);
-//						mListView.setOnScrollListener(mAdapter);
-						
-						//設置頂部固定頭部
-						mListView.setPinnedHeaderView(LayoutInflater.from(getApplicationContext()).inflate(  
-				                R.layout.order_list_group_item, mListView, false));  
-						
-					} else if(mAdapter!=null){
-//						mIndexer = new MySectionIndexer(tagName, counts);
-//						mAdapter.setIndexer(tagName, counts);
-						Log.v("halley", "handler tagName:" + tagName.length);
-						mAdapter.setData(orderListTag,tagName, counts);
-						if (orderListTag != null) {
-							Log.v("halley", "tagSize:" + orderListTag.size());
-						}
-						Log.v("halley", "counts_case0:" + counts.length);
-						mAdapter.notifyDataSetChanged();
-					}
-					
-					break;
-				case 1:
-					currentLevel = msg.arg2;
-					requestData(msg.arg2);
-					break;
-				default:
-					break;
-				}
-			};
-		};
 	}
 
-	public void requestData(final int requestLevel) {
-		new Thread() {
-			@Override
-			public void run() {
-				switch (requestLevel) {
-				case 0:
-					tagFormat = "yyyy" ;
-					break;
-				case 1:
-					tagFormat = "MM-yyyy";
-					break;
-				case 2:
-					tagFormat = "MM-dd-yyyy";
-					break;
-				case 3:
-					tagFormat = "MM-dd-yyyy";
-					break;
-				default:
-					tagFormat = "MM-dd-yyyy";
-					break;
-				}
-				String json=null;
-				try{
-				PostData pdata = new PostData("share", "searchTime","{\"grpId\":"+User.Current.grpId+", \"type\":"+requestLevel+"}");
-				 json = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				orderListTag = getOrderListTag(json);
-				counts = new int[orderListTag.size()];
-				Log.v("halley", "counts:run:" + counts.length + "   orderListTag.size:" + orderListTag.size());
-				for (int i = 0; i < counts.length; i++) {
-					counts[i] = 1;
+	class OrderStatusListHandler extends BaseAsyncTaskHandler<BaseActivity, Integer>{
+
+		public OrderStatusListHandler(OrderStatusListActivity context,
+				boolean showProgressBar) {
+			super(context, showProgressBar);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public boolean onTaskFailed(BaseActivity arg0, Exception arg1) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean onTaskSuccess(BaseActivity arg0, Integer arg1) {
+			// TODO Auto-generated method stub
+			switch (arg1) {
+			case 0:
+				if(mAdapter==null){
+					mIndexer = new MySectionIndexer(tagName, counts);
+					mAdapter = new PicListAdapter(orderListTag, mIndexer, getApplicationContext(), tagName, maxLevel);
+					mListView.setAdapter(mAdapter);
+//					mListView.setOnScrollListener(mAdapter);
+					
+					//設置頂部固定頭部
+					mListView.setPinnedHeaderView(LayoutInflater.from(getApplicationContext()).inflate(  
+			                R.layout.order_list_group_item, mListView, false));  
+					
+				} else if(mAdapter!=null){
+//					mIndexer = new MySectionIndexer(tagName, counts);
+//					mAdapter.setIndexer(tagName, counts);
+					Log.v("halley", "handler tagName:" + tagName.length);
+					mAdapter.setData(orderListTag,tagName, counts);
+					if (orderListTag != null) {
+						Log.v("halley", "tagSize:" + orderListTag.size());
+					}
+					Log.v("halley", "counts_case0:" + counts.length);
+					mAdapter.notifyDataSetChanged();
 				}
 				
-				handler.sendEmptyMessage(0);
+				break;
+
 			}
-		}.start();
+			return true;
+		}
+		
+	}
+	
+	class RequestData  extends BaseAsyncTask<BaseActivity, Integer, Integer>{
+
+		@Override
+		public Integer run(Integer... requestLevel) throws Exception {
+			// TODO Auto-generated method stub
+			switch (requestLevel[0]) {
+			case 0:
+				tagFormat = "yyyy" ;
+				break;
+			case 1:
+				tagFormat = "MM-yyyy";
+				break;
+			case 2:
+				tagFormat = "MM-dd-yyyy";
+				break;
+			case 3:
+				tagFormat = "MM-dd-yyyy";
+				break;
+			default:
+				tagFormat = "MM-dd-yyyy";
+				break;
+			}
+			String json=null;
+			try{
+			PostData pdata = new PostData("share", "searchTime","{\"grpId\":"+User.Current.grpId+", \"type\":"+requestLevel+"}");
+			 json = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			orderListTag = getOrderListTag(json);
+			counts = new int[orderListTag.size()];
+			Log.v("halley", "counts:run:" + counts.length + "   orderListTag.size:" + orderListTag.size());
+			for (int i = 0; i < counts.length; i++) {
+				counts[i] = 1;
+			}
+			
+			return 0;
+		}
+		
+	}
+	
+	
+	public void updateDataByLevel(int level){
+		RequestData requestData = new RequestData();
+		requestData.connect(handler);
+		requestData.execute(level);
 	}
 	
 	@Override
@@ -157,11 +182,14 @@ public class OrderStatusListActivity extends Activity{
 		if (id == android.R.id.home) {
 			if (currentLevel> 0) {
 				mAdapter.lowLevel();
+//				
+//				Message msg = new Message();
+//				msg.what = 1;
+//				msg.arg2 =mAdapter.getLevel();
+//				handler.sendMessage(msg);
 				
-				Message msg = new Message();
-				msg.what = 1;
-				msg.arg2 =mAdapter.getLevel();
-				handler.sendMessage(msg);
+				RequestData newData = new RequestData();
+				newData.execute(mAdapter.getLevel());
 			}else{
 				finish();
 			}
@@ -169,25 +197,7 @@ public class OrderStatusListActivity extends Activity{
 		}
 		return super.onOptionsItemSelected(item);
 	}
-/*	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.back_title) {
-			
-			//重新赋值
-			if (mAdapter.getLevel() > 0) {
-				mAdapter.lowLevel();
-//				orderListTag.clear();
-				
-				Message msg = new Message();
-				msg.what = 1;
-				msg.arg2 =mAdapter.getLevel();
-				handler.sendMessage(msg);
-			}else{
-				finish();
-			}
-		}
-		
-	}*/
+
 	
 	private List<OrderListTag>  getOrderListTag(String string) {
 		// TODO Auto-generated method stub

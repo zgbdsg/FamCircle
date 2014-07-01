@@ -28,7 +28,12 @@ import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
 import com.android.famcircle.config.Constants;
+import com.android.famcircle.ui.ShareActivity.GetDataTask;
+import com.android.famcircle.ui.ShareActivity.InitialStatuses;
+import com.android.famcircle.ui.ShareActivity.ShareHandler;
 import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.base.BaseAsyncTask;
+import com.famnotes.android.base.BaseAsyncTaskHandler;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.CustomProgressDialog;
 import com.famnotes.android.util.FNHttpRequest;
@@ -50,7 +55,8 @@ public class StatusOfPersonActivity extends BaseActivity {
 	private StatusOfPersonListAdapter myAdapter;
 	private List< Object> listMap;
 	private String statusResult;
-	private Handler myhandler;
+	private StatusOfPersonHandler myhandler;
+	private StatusOfPersonHandler myhandlerPull;
 	private int usrId ;
 	private String userName;
 	private String logoUrl;
@@ -68,6 +74,8 @@ public class StatusOfPersonActivity extends BaseActivity {
 		Bundle info = this.getIntent().getExtras();
 		usrId = Integer.parseInt(info.getString("usrId"));
 
+		myhandler = new StatusOfPersonHandler(this, true); 
+		myhandlerPull= new StatusOfPersonHandler(this, false);
 		context = this;
 		mCache = ACache.get(this);
 		
@@ -90,7 +98,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 						refreshView.getLoadingLayoutProxy().setReleaseLabel(getResources().getString(R.string.pull_to_refresh_release_label));
 						refreshView.getLoadingLayoutProxy().setPullLabel(getResources().getString(R.string.pull_to_refresh_pull_label));
 
-						new GetDataTask().execute();
+						GetPersonDataTask getDataTask = new GetPersonDataTask();
+						getDataTask.connect(myhandlerPull);
+						getDataTask.execute(0);
 					}
 				});
 
@@ -113,42 +123,42 @@ public class StatusOfPersonActivity extends BaseActivity {
 		myAdapter = new StatusOfPersonListAdapter(context,listMap );
 		statuslist.setAdapter(myAdapter);
 		
-		myhandler = new Handler(){
-			@Override
-	        public void handleMessage(Message msg) {
-	            // TODO Auto-generated method stub
-	            if(msg != null) {
-	            	Log.i("handler ", "get a message");
-	            	
-	            	switch (msg.arg1) {
-					case 1:
-						List<Object> allList = new ArrayList<Object>();
-						List<Object> resultList = getStatusListMaps(statusResult);
-						
-						allList.addAll(listMap);
-						allList.addAll(resultList);
-
-						listMap = allList;
-						myAdapter.setDataList(listMap);
-						Log.i("listMap length :", ""+listMap.size());
-						myAdapter.notifyDataSetChanged();
-
-						// Call onRefreshComplete when the list has been refreshed.
-						mPullRefreshListView.onRefreshComplete();
-						break;
-					default:
-						onLoading.dismiss();
-						listMap = getStatusListMaps(statusResult);
-						//Log.i("listMap length :", ""+listMap.size());
-		            	myAdapter.setDataList(listMap);
-		            	isNeedRefresh = false;
-		            	myAdapter.notifyDataSetChanged();
-		            	updateProfile();
-						break;
-	            	}
-	            }
-			}
-		};
+//		myhandler = new Handler(){
+//			@Override
+//	        public void handleMessage(Message msg) {
+//	            // TODO Auto-generated method stub
+//	            if(msg != null) {
+//	            	Log.i("handler ", "get a message");
+//	            	
+//	            	switch (msg.arg1) {
+//					case 1:
+//						List<Object> allList = new ArrayList<Object>();
+//						List<Object> resultList = getStatusListMaps(statusResult);
+//						
+//						allList.addAll(listMap);
+//						allList.addAll(resultList);
+//
+//						listMap = allList;
+//						myAdapter.setDataList(listMap);
+//						Log.i("listMap length :", ""+listMap.size());
+//						myAdapter.notifyDataSetChanged();
+//
+//						// Call onRefreshComplete when the list has been refreshed.
+//						mPullRefreshListView.onRefreshComplete();
+//						break;
+//					default:
+//						onLoading.dismiss();
+//						listMap = getStatusListMaps(statusResult);
+//						//Log.i("listMap length :", ""+listMap.size());
+//		            	myAdapter.setDataList(listMap);
+//		            	isNeedRefresh = false;
+//		            	myAdapter.notifyDataSetChanged();
+//		            	updateProfile();
+//						break;
+//	            	}
+//	            }
+//			}
+//		};
 		
 		
 		onLoading = new CustomProgressDialog(this);
@@ -177,12 +187,18 @@ public class StatusOfPersonActivity extends BaseActivity {
 		}
 		
 		statusResult = mCache.getAsString("statusOfPersonResult"+groupId+"---"+usrId);
-		if(statusResult == null)
-			initialStatuses();
-		else{
+		if(statusResult == null){
+			InitialPersonStatuses initialPerson = new InitialPersonStatuses();
+			initialPerson.connect(myhandler);
+			initialPerson.execute("");
+		}else{
 			isNeedRefresh = false;
-			Message message = new Message();
-			myhandler.sendMessage(message);
+			listMap = getStatusListMaps(statusResult);
+			//Log.i("listMap length :", ""+listMap.size());
+        	myAdapter.setDataList(listMap);
+        	isNeedRefresh = false;
+        	myAdapter.notifyDataSetChanged();
+        	updateProfile();
 		}
 
 	}
@@ -196,10 +212,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 		//myadapter.notifyDataSetChanged();
 	}
 	
-	private class GetDataTask extends AsyncTask<Integer, Void, String> {
-
+	class GetPersonDataTask extends BaseAsyncTask<StatusOfPersonActivity, Integer, Integer>{
 		@Override
-		protected String doInBackground(Integer... params) {
+		public Integer run(Integer... reqJsonMsg) throws Exception {
 			// Simulates a background job.
 			String result = "";
 			try{
@@ -211,49 +226,78 @@ public class StatusOfPersonActivity extends BaseActivity {
 			
 			Log.i("refresh data :", result);
 			statusResult = result;
-			//listMap = getStatusListMaps(json);
-			//onLoading.dismiss();
-			Message message = new Message();
-			message.arg1 = 1;
-			myhandler.sendMessage(message);
+
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
-			return result;
+			return 1;
 		}
 	}
 	
-	private void initialStatuses() {
-		new AsyncTask<String, String, String >() {
-
-			@Override
-			protected String doInBackground(String... params) {
-				// TODO Auto-generated method stub
-				statusResult = "";
-				try{
-					JSONObject obj=new JSONObject();
-					obj.put("usrId", usrId);
-					obj.put("grpId", User.Current.grpId);
-					obj.put("type", 0); //? type 日月年
-					String reqJsonMsg=obj.toJSONString();
+	class InitialPersonStatuses  extends BaseAsyncTask<StatusOfPersonActivity, String, Integer>{
+		@Override
+		public Integer run(String... Msg) throws Exception {
+			// TODO Auto-generated method stub
+			statusResult = "";
+			try{
+				JSONObject obj=new JSONObject();
+				obj.put("usrId", usrId);
+				obj.put("grpId", User.Current.grpId);
+				obj.put("type", 0); //? type 日月年
+				String reqJsonMsg=obj.toJSONString();
 				PostData pdata=new PostData("share","getStatusByUsrId", reqJsonMsg); //?"{\"usrId\":"+usrId+ ", \"grpId\":"+User.Current.grpId+", \"type\":"+0+"}"
 				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-
+	
 				statusResult = json;
 				JSONObject allResult = JSON.parseObject(json);
-
+	
 				if(allResult.getInteger("errCode") == 0){
 					mCache.put("statusOfPersonResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
 				}
-				Message message = new Message();
-				message.arg1 = 0;
-				myhandler.sendMessage(message);
-				}catch(Exception ex){
-					ex.printStackTrace();
-				}
-				return null;
+
+			}catch(Exception ex){
+				ex.printStackTrace();
 			}
-		}.execute("");
+			return 0;
+		}
+	}
+
+	class StatusOfPersonHandler extends BaseAsyncTaskHandler<StatusOfPersonActivity, Integer>{
+
+		public StatusOfPersonHandler(StatusOfPersonActivity context, boolean showProgressBar) {
+			super(context, showProgressBar);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public boolean onTaskFailed(StatusOfPersonActivity arg0, Exception arg1) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	
+		@Override
+		public boolean onTaskSuccess(StatusOfPersonActivity arg0, Integer rCode) {
+			// TODO Auto-generated method stub
+			switch(rCode){
+				case 1:
+					List<Object> allList = new ArrayList<Object>();
+					List<Object> resultList = getStatusListMaps(statusResult);
+					
+					allList.addAll(listMap);
+					allList.addAll(resultList);
+
+					listMap = allList;
+					myAdapter.setDataList(listMap);
+					Log.i("listMap length :", ""+listMap.size());
+					myAdapter.notifyDataSetChanged();
+
+					// Call onRefreshComplete when the list has been refreshed.
+					mPullRefreshListView.onRefreshComplete();
+					break;
+			}
+			return true;
+		}
+		
 	}
 	
 	private List<Object> getStatusListMaps(String string) {
@@ -323,37 +367,6 @@ public class StatusOfPersonActivity extends BaseActivity {
 		// onLoading.dismiss();
 		return listmap;
 	}
-	
-//	private void initialUserProfile() {
-//		// TODO Auto-generated method stub
-//
-//		new AsyncTask<String, String, String >() {
-//
-//			@Override
-//			protected String doInBackground(String... params) {
-//				// TODO Auto-generated method stub
-//				try{
-//				PostData pdata=new PostData("share", "getUsrByUsrId", "{\"usrId\":"+usrId+"}");
-//				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
-//				Log.i("initialUserProfile  :", json);
-//				
-//				JSONObject jsonResult = JSON.parseObject(json);
-//				JSONArray tmpArray = jsonResult.getJSONArray("results");
-//				if(jsonResult.getInteger("errCode") == 0) {
-//					JSONObject userProfile = (JSONObject) tmpArray.get(0);
-//					userName = userProfile.getString("name");
-//					logoUrl = userProfile.getString("avatar");
-//					groupId = userProfile.getString("grpId");
-//					Log.i("groupId", groupId);
-//					mCache.put("userProfile", userProfile);
-//				}
-//				}catch(Exception ex){
-//					ex.printStackTrace();
-//				}
-//				return null;
-//			}
-//		}.execute("");
-//	}
 	
 	private void updateProfile() {
 		// TODO Auto-generated method stub

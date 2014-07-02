@@ -73,7 +73,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 
 		Bundle info = this.getIntent().getExtras();
 		usrId = Integer.parseInt(info.getString("usrId"));
-
+		listMap = new ArrayList<Object>();
 		myhandler = new StatusOfPersonHandler(this, true); 
 		myhandlerPull= new StatusOfPersonHandler(this, false);
 		context = this;
@@ -188,7 +188,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		
 		statusResult = mCache.getAsString("statusOfPersonResult"+groupId+"---"+usrId);
 		if(statusResult == null){
-			InitialPersonStatuses initialPerson = new InitialPersonStatuses();
+			InitialPersonStatusesTask initialPerson = new InitialPersonStatusesTask();
 			initialPerson.connect(myhandler);
 			initialPerson.execute("");
 		}else{
@@ -234,7 +234,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		}
 	}
 	
-	class InitialPersonStatuses  extends BaseAsyncTask<StatusOfPersonActivity, String, Integer>{
+	class InitialPersonStatusesTask  extends BaseAsyncTask<StatusOfPersonActivity, String, Integer>{
 		@Override
 		public Integer run(String... Msg) throws Exception {
 			// TODO Auto-generated method stub
@@ -258,7 +258,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
-			return 0;
+			return 1;
 		}
 	}
 
@@ -272,7 +272,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		@Override
 		public boolean onTaskFailed(StatusOfPersonActivity arg0, Exception arg1) {
 			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 	
 		@Override

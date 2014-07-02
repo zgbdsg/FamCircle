@@ -1,8 +1,8 @@
 package com.android.famcircle.ui;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 //import android.app.Fragment;
 import android.content.DialogInterface;
@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 //import android.view.View;
 //import android.view.ViewGroup;
+import android.view.ViewConfiguration;
 
 import com.android.famcircle.R;
 import com.famnotes.android.base.AppManager;
@@ -29,6 +30,18 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if(menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
+		
 		mCache = ACache.get(this);
 
 		if (savedInstanceState == null) {

@@ -33,7 +33,7 @@ import com.famnotes.android.util.PostData;
 import com.famnotes.android.vo.User;
 
 public class FamilyMemberSetting extends BaseActivity {
-	private User mySelf;
+	//private User mySelf;
 	private ListView lv;
 	private List<ContactInfo> infos;
 	private FamilyMemberSettingAdapter myAdaper;
@@ -41,7 +41,7 @@ public class FamilyMemberSetting extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.family_member_setting);
+        setContentView(R.layout.fam_member_setting);
         
         infos=new ArrayList<ContactInfo>(8);
         
@@ -78,14 +78,15 @@ public class FamilyMemberSetting extends BaseActivity {
 			
 		});
 		
+		grpId=getIntent().getIntExtra("GroupId", User.Current.grpId); 
 		//Intent intent = getIntent();
 		//mySelf=(User) intent.getSerializableExtra("user");
     }
 
-    
+    private int grpId;
     public void enter_system(View view){
     	JSONObject obj=new JSONObject();
-		obj.put("grpId", User.Current.grpId);
+		obj.put("grpId", grpId); //User.Current.grpId);
 		JSONArray array=new JSONArray(infos.size());
 		obj.put("userInfos", array);
 		for(ContactInfo info : infos){
@@ -269,16 +270,16 @@ public class FamilyMemberSetting extends BaseActivity {
 				throw new Exception("Add Members fails ! "+jsonResult.getString("errMesg")); 
 			}
 			
-			 
-			User.Members.clear();
-			for(ContactInfo info : infos){
-				User user=new User();
-				user.loginId=info.getPhone();
-				user.name =info.getName();
-				user.grpId=User.Current.grpId;
-				User.Members.add(user);
+			if(grpId==User.Current.grpId){
+				User.Members.clear();
+				for(ContactInfo info : infos){
+					User user=new User();
+					user.loginId=info.getPhone();
+					user.name =info.getName();
+					user.grpId=grpId; 
+					User.Members.add(user);
+				}
 			}
-			
 			return 0;
 		}
 		

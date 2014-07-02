@@ -3,7 +3,8 @@
 
     <string name="app_name">FamCircle</string>
     <string name="orderlist">OrderList</string>
-    <string name="hello_world">进入FamCircle</string>
+    <!-- You have many group, please select(switch) one! -->
+    <string name="hello_world">您可在此选择，或增加群!</string>
     <string name="action_settings">Settings</string>
     <string name="action_clearcache">ClearCache</string>
     <string name="menu_clear">ClearLocalData</string>

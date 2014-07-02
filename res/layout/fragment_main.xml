@@ -13,6 +13,19 @@
         android:layout_height="wrap_content"
         android:id="@+id/gotoshare"
         android:clickable="true"
+        android:textSize="18sp"
         android:text="@string/hello_world" />
 
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/gotoshare"
+            android:background="@color/white" >
+
+            <ListView
+                android:id="@+id/group_listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical" />
+        </LinearLayout>
 </RelativeLayout>

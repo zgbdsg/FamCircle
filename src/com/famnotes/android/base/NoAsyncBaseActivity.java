@@ -53,7 +53,7 @@ public abstract class NoAsyncBaseActivity extends Activity  {
 	 * @param pClass
 	 * @param pBundle
 	 */
-	protected void openActivity(Class<?> pClass, Bundle pBundle) {
+	public void openActivity(Class<?> pClass, Bundle pBundle) {
 		Intent intent = new Intent(this, pClass);
 		if (pBundle != null) {
 			intent.putExtras(pBundle);
@@ -61,7 +61,7 @@ public abstract class NoAsyncBaseActivity extends Activity  {
 		startActivity(intent);
 	}
 	
-	protected void openActivityForResult(Class<?> pClass, Bundle pBundle, int requestCode) {
+	public void openActivityForResult(Class<?> pClass, Bundle pBundle, int requestCode) {
 		Intent intent = new Intent(this, pClass);
 		if (pBundle != null) {
 			intent.putExtras(pBundle);
@@ -74,7 +74,7 @@ public abstract class NoAsyncBaseActivity extends Activity  {
 	 * 
 	 * @param pAction
 	 */
-	protected void openActivity(String pAction) {
+	public void openActivity(String pAction) {
 		openActivity(pAction, null);
 	}
 
@@ -84,7 +84,7 @@ public abstract class NoAsyncBaseActivity extends Activity  {
 	 * @param pAction
 	 * @param pBundle
 	 */
-	protected void openActivity(String pAction, Bundle pBundle) {
+	public void openActivity(String pAction, Bundle pBundle) {
 		Intent intent = new Intent(pAction);
 		if (pBundle != null) {
 			intent.putExtras(pBundle);

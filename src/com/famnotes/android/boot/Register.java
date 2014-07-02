@@ -24,8 +24,8 @@ import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 
 public class Register extends BaseActivity {
-	
-	private EditText txtLoginCellno; // 帐号编辑框
+	String userId;
+	//private EditText txtLoginCellno; // 帐号编辑框
 	private EditText txtLoginEmail;
 	private EditText txtPassword, txtPassword2; // 密码编辑框
 	private EditText txtVerifyCode;
@@ -36,7 +36,9 @@ public class Register extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
         
-        txtLoginCellno = (EditText)findViewById(R.id.login_cellno);
+        Way way=(Way) getIntent().getSerializableExtra("way");  //savedInstanceState.getSerializable("way");
+        userId=way.loginId;
+        //txtLoginCellno = (EditText)findViewById(R.id.login_cellno);
         txtLoginEmail= (EditText)findViewById(R.id.login_email);
         
         txtPassword =   (EditText)findViewById(R.id.login_passwd_edit);
@@ -56,17 +58,17 @@ public class Register extends BaseActivity {
     
     
 	public void register_famnotes(View v) {
+		//显示软键盘  imm.showSoftInputFromInputMethod(tv.getWindowToken(), 0);
 		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		//隐藏软键盘  imm.hideSoftInputFromWindow(tv.getWindowToken(), 0);
-        //显示软键盘  imm.showSoftInputFromInputMethod(tv.getWindowToken(), 0);
-		String userId=txtLoginCellno.getText().toString().trim();
-		if(StringUtils.isEmpty(userId)) {
-			DisplayLongToast("Cell No. cannot be empty!");
-
-			txtLoginCellno.requestFocus();
-			imm.showSoftInput(txtLoginCellno, 0);
-			return;
-		}
+        
+//		String userId=txtLoginCellno.getText().toString().trim();
+//		if(StringUtils.isEmpty(userId)) {
+//			DisplayLongToast("Cell No. cannot be empty!");
+//
+//			txtLoginCellno.requestFocus();
+//			imm.showSoftInput(txtLoginCellno, 0);
+//			return;
+//		}
 		
 		String userName=txtLoginEmail.getText().toString().trim();
 		if(StringUtils.isEmpty(userName)) {

@@ -35,7 +35,7 @@
         </activity>
         
         <activity
-            android:name="com.famnotes.android.boot.Welcome"
+            android:name="com.famnotes.android.boot.PrepLogin"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -76,6 +76,12 @@
         </activity>
         
 		<activity  android:name="com.android.famcircle.ui.SettingActivity"
+		     android:theme="@android:style/Theme.Light.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity  android:name="com.famnotes.android.boot.RegisterGroup"
 		     android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

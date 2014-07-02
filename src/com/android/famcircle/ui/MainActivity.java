@@ -4,24 +4,25 @@ import java.io.File;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
+//import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+//import android.view.View;
+//import android.view.ViewGroup;
 
 import com.android.famcircle.R;
 import com.famnotes.android.base.AppManager;
+import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.ACache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 	private ACache mCache;
 	
 	@Override
@@ -50,7 +51,6 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 		}
 		
 		if (id == R.id.menu_exit) {
-			new AlertDialog.Builder(this).setTitle("").setMessage("ÍË³öÂð£¿")
+			new AlertDialog.Builder(this).setTitle("").setMessage("Exit£¿")
 			.setPositiveButton("OK", new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -114,20 +114,20 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-			return rootView;
-		}
-	}
+//	/**
+//	 * A placeholder fragment containing a simple view.
+//	 */
+//	public static class PlaceholderFragment extends Fragment {
+//
+//		public PlaceholderFragment() {
+//		}
+//
+//		@Override
+//		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//				Bundle savedInstanceState) {
+//			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+//			return rootView;
+//		}
+//	}
 
 }

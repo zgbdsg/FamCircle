@@ -71,7 +71,8 @@ public abstract class BaseAsyncTaskHandler<ContextT extends BaseActivity, Return
 	@Override
 	public boolean onTaskCompleted(ContextT context, ReturnT result) {
 		if(showProgressBar)
-			mPD.dismiss();
+//			mPD.dismiss();
+			mPD.dismissMyDialog();
 		return true;
 	}
 	

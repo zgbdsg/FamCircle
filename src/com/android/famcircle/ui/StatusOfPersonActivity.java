@@ -62,8 +62,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 	private String logoUrl;
 	private String groupId;
 	private ACache mCache;
-	private View headview;;
-	private CustomProgressDialog onLoading;
+	private View headview;
 	private boolean isNeedRefresh;
 
 	@Override
@@ -123,68 +122,12 @@ public class StatusOfPersonActivity extends BaseActivity {
 		myAdapter = new StatusOfPersonListAdapter(context,listMap );
 		statuslist.setAdapter(myAdapter);
 		
-//		myhandler = new Handler(){
-//			@Override
-//	        public void handleMessage(Message msg) {
-//	            // TODO Auto-generated method stub
-//	            if(msg != null) {
-//	            	Log.i("handler ", "get a message");
-//	            	
-//	            	switch (msg.arg1) {
-//					case 1:
-//						List<Object> allList = new ArrayList<Object>();
-//						List<Object> resultList = getStatusListMaps(statusResult);
-//						
-//						allList.addAll(listMap);
-//						allList.addAll(resultList);
-//
-//						listMap = allList;
-//						myAdapter.setDataList(listMap);
-//						Log.i("listMap length :", ""+listMap.size());
-//						myAdapter.notifyDataSetChanged();
-//
-//						// Call onRefreshComplete when the list has been refreshed.
-//						mPullRefreshListView.onRefreshComplete();
-//						break;
-//					default:
-//						onLoading.dismiss();
-//						listMap = getStatusListMaps(statusResult);
-//						//Log.i("listMap length :", ""+listMap.size());
-//		            	myAdapter.setDataList(listMap);
-//		            	isNeedRefresh = false;
-//		            	myAdapter.notifyDataSetChanged();
-//		            	updateProfile();
-//						break;
-//	            	}
-//	            }
-//			}
-//		};
-		
-		
-		onLoading = new CustomProgressDialog(this);
-		onLoading.setCancelable(true);
-		onLoading.setCanceledOnTouchOutside(true);
-		isNeedRefresh = true;
-		
-		//成为历史了  kx73		
-//		JSONObject userProfile = mCache.getAsJSONObject("userProfile");
-//		if(userProfile != null){
-//			userName = userProfile.getString("name");
-//			logoUrl = userProfile.getString("avatar");
-//			groupId = userProfile.getString("grpId");
-//			updateProfile();
-//			Log.i("cache", "find cache userName  "+userName);
-//		}else{
-//			initialUserProfile();
-//		}
-		{
-			User usr=User.getUserById(usrId);
-			userName=usr.name;
-			logoUrl=usr.avatar;
-			groupId=String.valueOf(User.Current.grpId);
-			updateProfile();
-			Log.i("cache", "find cache usrId "+usrId);
-		}
+		User usr=User.getUserById(usrId);
+		userName=usr.name;
+		logoUrl=usr.avatar;
+		groupId=String.valueOf(User.Current.grpId);
+		updateProfile();
+		Log.i("cache", "find cache usrId "+usrId);
 		
 		statusResult = mCache.getAsString("statusOfPersonResult"+groupId+"---"+usrId);
 		if(statusResult == null){
@@ -207,9 +150,6 @@ public class StatusOfPersonActivity extends BaseActivity {
 	protected void onStart(){
 		super.onStart();
 
-		if(isNeedRefresh)
-			onLoading.show();
-		//myadapter.notifyDataSetChanged();
 	}
 	
 	class GetPersonDataTask extends BaseAsyncTask<StatusOfPersonActivity, Integer, Integer>{

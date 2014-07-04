@@ -36,6 +36,7 @@ import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
 import com.android.famcircle.config.Constants;
+import com.android.famcircle.config.RequestCode;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
@@ -206,11 +207,17 @@ public class ShareActivity  extends BaseActivity {
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		if(data != null){
-			//?Integer handlerCode=data.getIntExtra("handlerCode", 5);
-			
-			listNotifyDataSetChanged();
-			
+		switch(requestCode){
+		
+			case RequestCode.GroupSetting :
+				//? 如何刷新界面，如组的封面、个人头像、新增的组成员
+				updateProfile();
+				break;
+				
+			default :
+				if(data != null){
+					listNotifyDataSetChanged();
+				}
 		}
 	}
 	@Override
@@ -228,8 +235,9 @@ public class ShareActivity  extends BaseActivity {
 			startActivity(i);
 			return true;
 		}
-		else if(id==R.id.btn_group_setting){
-			openActivity(SettingActivity.class);
+		else if(id==R.id.btn_group_setting){ //群设置
+			Bundle pBundle = new Bundle();  pBundle.putInt("GroupId",  User.Current.grpId); 
+			openActivityForResult(GroupSettingActivity.class, pBundle, RequestCode.GroupSetting);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

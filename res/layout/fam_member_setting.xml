@@ -111,7 +111,7 @@
 	         android:layout_alignParentTop="true"
 	         android:background="@drawable/btn_blue"
 	         android:onClick="enter_system"
-	         android:text="Enter"
+	         android:text="OK"
 	         android:textColor="#ffffff"
 	         android:textSize="14sp" />
 

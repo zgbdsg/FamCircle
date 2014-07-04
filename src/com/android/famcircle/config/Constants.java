@@ -19,10 +19,10 @@ public class Constants {
 	public final static String Server ="114.215.180.229"; //"114.215.180.229"; //"192.168.0.110";
 	
 	// 图片路径
-	public static final String IMAGE_URL = "http://58.211.5.34:8080/studioms/staticmedia/images/#";
+	//public static final String IMAGE_URL = "http://58.211.5.34:8080/studioms/staticmedia/images/#";
 
 	// 视频路径
-	public static final String VIDEO_URL = "http://58.211.5.34:8080/studioms/staticmedia/video/#";
+	//public static final String VIDEO_URL = "http://58.211.5.34:8080/studioms/staticmedia/video/#";
 
 	// 保存参数文件夹名称
 	public static final String SHARED_PREFERENCE_NAME = "itau_jingdong_prefs";

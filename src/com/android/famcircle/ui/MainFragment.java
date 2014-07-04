@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
+import com.android.famcircle.config.Constants;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
 import com.famnotes.android.boot.RegisterGroup;
@@ -123,8 +124,17 @@ public class MainFragment extends Fragment{
 						dialog.dismiss();
 						
 						Group info=infos.get((int) id);
-						infos.remove(info);
-						lvGroupAdaper.notifyDataSetChanged();
+						
+						JSONObject obj=new JSONObject();
+						obj.put("userId", User.Current.id);
+						obj.put("grpId",  info.grpId);
+						String reqJsonMsg=obj.toJSONString();
+
+						UnRegHandler handler=new UnRegHandler((MainActivity) getActivity());
+						UnRegTask task=new UnRegTask();
+						task.connect(handler);
+						task.execute(reqJsonMsg, String.valueOf(id));
+						
 					}
 
 				});
@@ -251,4 +261,50 @@ public class MainFragment extends Fragment{
 			return true;
 		}
 	}
+	
+	class UnRegTask extends BaseAsyncTask<MainActivity, String, Integer> {
+		@Override
+		public Integer run(String... reqJsonMsg) throws Exception {
+			//取当前群成员
+			PostData pdata=new PostData("user", "unregister_from_group",  reqJsonMsg[0] );
+			String json = new FNHttpRequest(Constants.Usage_System).doPost(pdata); 
+			if(StringUtils.isEmpty(json))
+				throw new Exception("unregister_from_group fails ! "); 
+
+			JSONObject jsonObjectResult = JSON.parseObject(json);
+			if(jsonObjectResult.getInteger("errCode") != 0) {
+				throw new Exception("unregister_from_group fails !"); 
+			}
+
+			return Integer.parseInt(reqJsonMsg[1]);
+		}
+
+	}
+	
+	class UnRegHandler extends BaseAsyncTaskHandler<MainActivity, Integer>
+	{
+		public UnRegHandler(MainActivity context) {
+			super(context);
+			// TODO Auto-generated constructor stub
+		}
+
+		private static final String TAG = "UnRegHandler";
+		
+		@Override
+		public boolean onTaskSuccess(MainActivity context, Integer result) {
+			Log.i(TAG, "UnRegHandler success");
+			
+			infos.remove(result.intValue());
+			lvGroupAdaper.notifyDataSetChanged();
+			return true;
+		}
+		
+		@Override
+		public boolean onTaskFailed(MainActivity context, Exception error) {
+			Log.i(TAG, "UnRegHandler fail");
+			context.DisplayLongToast(error.getMessage());
+			
+			return true;
+		}
+	}	
 }

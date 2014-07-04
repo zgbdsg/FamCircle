@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
+import com.android.famcircle.config.RequestCode;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
@@ -38,12 +39,16 @@ public class FamilyMemberSetting extends BaseActivity {
 	private List<ContactInfo> infos;
 	private FamilyMemberSettingAdapter myAdaper;
 
+	private int direction;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fam_member_setting);
         
         infos=new ArrayList<ContactInfo>(8);
+        
+        direction=getIntent().getIntExtra("direction", RequestCode.DirectionForword); 
         
     	lv = (ListView) findViewById(R.id.member_listview);
     	myAdaper=new FamilyMemberSettingAdapter();
@@ -226,6 +231,7 @@ public class FamilyMemberSetting extends BaseActivity {
 		@Override
 		public boolean onTaskFailed(FamilyMemberSetting context, Exception ex) {
 			// TODO Auto-generated method stub
+			context.DisplayLongToast("Add Members fails ! "+ex.getMessage()); 
 			return true;
 		}
 
@@ -233,9 +239,16 @@ public class FamilyMemberSetting extends BaseActivity {
 		public boolean onTaskSuccess(FamilyMemberSetting context, Integer rCode) {
 			// TODO Auto-generated method stub
 			if(rCode==0){
-				//通过“过场”进入主界面
-				context.openActivity(LoadingActivity.class);
-				context.finish();
+				if(direction!=RequestCode.DirectionGoback){
+					//通过“过场”进入主界面
+					context.openActivity(LoadingActivity.class);
+				}else{
+					Intent intent = new Intent();
+					intent.putExtra("isDirtyMembers", true);
+					setResult(RESULT_OK, intent);
+				}
+				
+				context.finish(); //返回打开我们的Activity
 				return true; 
 			}
 			

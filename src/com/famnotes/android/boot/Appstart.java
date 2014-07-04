@@ -1,6 +1,5 @@
 package com.famnotes.android.boot;
 
-
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -30,6 +29,9 @@ public class Appstart extends BaseActivity{
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);	
+		
+		final int HEAP_SIZE = 16 * 1024* 1024 ; 
+		
 		setContentView(R.layout.appstart);
 		//requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

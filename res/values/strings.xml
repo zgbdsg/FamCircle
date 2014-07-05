@@ -3,6 +3,10 @@
 
     <string name="app_name">FamCircle</string>
     <string name="orderlist">OrderList</string>
+    <string name="group_setting">Group Setting</string>
+    <string name="publish_activity">Publish</string>
+    <string name="imagebucket">Album</string>
+    <string name="imageselect">Select Pics</string>
     <!-- You have many group, please select(switch) one! -->
     <string name="hello_world">您可在此选择，或增加群!</string>
     <string name="action_settings">Group Setting</string>
@@ -23,4 +27,6 @@
     <string name="OrderByTime">OrderByTime</string>
 	
     <string name="loadingData">数据获取中。。。。。</string>
+    
+    <string name="activity_selectimg_send">Send</string>
 </resources>

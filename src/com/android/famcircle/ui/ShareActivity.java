@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 //import android.os.AsyncTask;
@@ -90,6 +91,9 @@ public class ShareActivity  extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
+		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		context = this;
 		mCache = ACache.get(this);
@@ -235,11 +239,12 @@ public class ShareActivity  extends BaseActivity {
 			Intent i = new Intent(getApplicationContext(), OrderStatusListActivity.class);
 			startActivity(i);
 			return true;
-		}
-		else if(id==R.id.btn_group_setting){ //群设置
+		}else if(id==R.id.btn_group_setting){ //群设置
 			Bundle pBundle = new Bundle();  pBundle.putInt("GroupId",  User.Current.grpId); 
 			openActivityForResult(GroupSettingActivity.class, pBundle, RequestCode.GroupSetting);
 			return true;
+		}else if(id == android.R.id.home){
+			finish();
 		}
 		return super.onOptionsItemSelected(item);
 	}

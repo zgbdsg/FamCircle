@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,6 +25,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -62,8 +65,8 @@ public class PublishedActivity extends Activity implements OnClickListener {
 	private LinearLayout screen;
 	private GridView noScrollgridview;
 	private GridAdapter adapter;
-	private TextView activitySelectimgSend;
-	private TextView cancel;
+//	private TextView activitySelectimgSend;
+//	private TextView cancel;
 	private EditText contentEdit;
 	private ACache mCache;
 	
@@ -110,14 +113,17 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_selectimg);
 		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		init();
 	}
 
 	public void init() {
 		mCache = ACache.get(this);
 		screen = (LinearLayout) findViewById(R.id.screen);
-		activitySelectimgSend = (TextView) findViewById(R.id.activity_selectimg_send);
-		cancel = (TextView) findViewById(R.id.cancel);
+//		activitySelectimgSend = (TextView) findViewById(R.id.activity_selectimg_send);
+//		cancel = (TextView) findViewById(R.id.cancel);
 		
 		contentEdit = (EditText) findViewById(R.id.contentEditText);
 		noScrollgridview = (GridView) findViewById(R.id.noScrollgridview);
@@ -142,9 +148,42 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		});
 		
 		screen.setOnClickListener(this);
-		cancel.setOnClickListener(this);
-		activitySelectimgSend.setOnClickListener(this);
+//		cancel.setOnClickListener(this);
+//		activitySelectimgSend.setOnClickListener(this);
 		contentEdit.setOnClickListener(this);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.publish, menu);
+		return true;
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			closeInput();
+			emptyBimp();
+			finish();
+		}else if(id == R.id.activity_selectimg_send){
+			closeInput();
+			progressDialog = ProgressDialog.show(PublishedActivity.this, "Sending...", "Please wait...", true, false);  
+			
+			ArrayList<String> uploadList = new ArrayList<String>();
+			for (int i = 0; i < Bimp.drr.size(); i++) {
+				uploadList.add(Bimp.drr.get(i));
+			}
+			upload(uploadList, contentEdit.getText().toString());
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 	
 	//上传数据
@@ -444,12 +483,12 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		case R.id.screen:
 			closeInput();
 			break;
-		case R.id.cancel:
-			closeInput();
-			emptyBimp();
-			PublishedActivity.this.finish();
-			break;
-		case R.id.activity_selectimg_send:
+//		case R.id.cancel:
+//			closeInput();
+//			emptyBimp();
+//			PublishedActivity.this.finish();
+//			break;
+//		case R.id.activity_selectimg_send:
 //			ArrayList<String> list = new ArrayList<String>();				
 //			for (int i = 0; i < Bimp.drr.size(); i++) {
 //				String Str = Bimp.drr.get(i).substring( 
@@ -457,15 +496,15 @@ public class PublishedActivity extends Activity implements OnClickListener {
 //						Bimp.drr.get(i).lastIndexOf("."));
 //				list.add(FileUtils.SDPATH+Str+".jpg");				
 //			}
-			closeInput();
-			progressDialog = ProgressDialog.show(PublishedActivity.this, "Sending...", "Please wait...", true, false);  
-			
-			ArrayList<String> uploadList = new ArrayList<String>();
-			for (int i = 0; i < Bimp.drr.size(); i++) {
-				uploadList.add(Bimp.drr.get(i));
-			}
-			upload(uploadList, contentEdit.getText().toString());
-			break;
+//			closeInput();
+//			progressDialog = ProgressDialog.show(PublishedActivity.this, "Sending...", "Please wait...", true, false);  
+//			
+//			ArrayList<String> uploadList = new ArrayList<String>();
+//			for (int i = 0; i < Bimp.drr.size(); i++) {
+//				uploadList.add(Bimp.drr.get(i));
+//			}
+//			upload(uploadList, contentEdit.getText().toString());
+//			break;
 		case R.id.contentEditText:
 			contentEdit.setCursorVisible(true);
 			break;

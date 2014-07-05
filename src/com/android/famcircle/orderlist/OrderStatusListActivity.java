@@ -7,10 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +18,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
-import com.android.famcircle.ui.ShareActivity;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;

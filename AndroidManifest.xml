@@ -76,10 +76,8 @@
         </activity>
         
 		<activity  android:name="com.android.famcircle.ui.GroupSettingActivity"
-		     android:theme="@android:style/Theme.Light.NoTitleBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
+		    		  android:label="@string/group_setting" >
+
         </activity>
         <activity  android:name="com.famnotes.android.boot.RegisterGroup"
 		     android:theme="@android:style/Theme.Light.NoTitleBar" >
@@ -143,19 +141,19 @@
         </activity>
         <activity
             android:name="com.android.famcircle.picselect.ImageBucketActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
+            android:label="@string/imagebucket"
             android:launchMode="singleTask" >
         </activity>
         <activity
             android:name = "com.android.famcircle.picselect.ImageSelectActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
+            android:label="@string/imageselect"
             android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="com.android.famcircle.picselect.PublishedActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
-            android:theme="@android:style/Theme.NoTitleBar" >
+            android:label="@string/publish_activity">
         </activity>
         <activity
             android:name="com.android.famcircle.picselect.PhotoDisplayActivity"

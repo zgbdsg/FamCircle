@@ -3,6 +3,7 @@ package com.android.famcircle.ui;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -47,6 +49,9 @@ public class GroupSettingActivity extends BaseActivity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		grpId=getIntent().getIntExtra("GroupId", User.Current.grpId); 
 		
 		builder=new AlertDialog.Builder(this)
@@ -63,8 +68,6 @@ public class GroupSettingActivity extends BaseActivity{
 		
 		
 		setContentView(R.layout.activity_group_setting); //View view			=  inflater.inflate(R.layout.setting, container, false);
-		TextView textView	=(TextView)findViewById(R.id.title_text);
-		textView.setText("群设置");  //我的设置 --> 设置
 		
 		RelativeLayout  re= (RelativeLayout)findViewById(R.id.clear_map);
 		re.setOnClickListener(new OnClickListener() {
@@ -124,6 +127,19 @@ public class GroupSettingActivity extends BaseActivity{
 //		return view;
 		
 		return null;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			go_back(null);
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 	
 	

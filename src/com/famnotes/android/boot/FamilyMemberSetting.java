@@ -21,11 +21,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.RequestCode;
+import com.android.famcircle.ui.MainActivity;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
@@ -241,7 +243,7 @@ public class FamilyMemberSetting extends BaseActivity {
 			if(rCode==0){
 				if(direction!=RequestCode.DirectionGoback){
 					//通过“过场”进入主界面
-					context.openActivity(LoadingActivity.class);
+					context.openActivity(MainActivity.class);
 				}else{
 					Intent intent = new Intent();
 					intent.putExtra("isDirtyMembers", true);

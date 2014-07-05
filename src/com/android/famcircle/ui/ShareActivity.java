@@ -1,5 +1,6 @@
 package com.android.famcircle.ui;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +98,13 @@ public class ShareActivity  extends BaseActivity {
 		
 		context = this;
 		mCache = ACache.get(this);
+		if(User.Current==null)
+			User.Current=mCache.getAsObject("User.Current");
+		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
+			Groups.selectIdx=mCache.getAsObject("Groups.selectIdx");
+			Groups.lGroup=mCache.getAsObject("Groups.lGroup");
+		}
+			
 		myhandler = new ShareHandler(this, true); myhandlerPull= new ShareHandler(this, false);
 		Log.i("activity ", "shared!!!!!!");
 		replyWindow = (RelativeLayout)findViewById(R.id.relative_pop_up_input_window);
@@ -175,13 +183,13 @@ public class ShareActivity  extends BaseActivity {
 		updateProfile();
 		Log.i("cache", "find cache usrId"+userId);
 
-		statusResult = mCache.getAsString("statusResult"+User.Current.grpId+"---"+User.Current.id);
-		if(statusResult == null){
+		listMap = (List<HashMap<String, Object>>) mCache.getAsObject("statusResult"+User.Current.grpId+"---"+User.Current.id);
+		if(listMap == null){
 			InitialStatuses initial = new InitialStatuses();
 			initial.connect(myhandler);
 			initial.execute("");
 		}else{
-			listMap = getStatusListMaps(statusResult);
+//			listMap = getStatusListMaps(statusResult);
 			Log.i("listMap length :", ""+listMap.size());
         	myadapter.setDataList(listMap);
         	isNeedRefresh = false;
@@ -218,9 +226,12 @@ public class ShareActivity  extends BaseActivity {
 				logoUrl=User.Current.getAvatar();
 				updateProfile();
 				break;
-				
+			case RequestCode.RefreshStatusByPull:
+				if(resultCode == RESULT_OK){
+					listNotifyDataSetChanged();
+				}
 			default :
-				if(data != null){
+				if(resultCode == RESULT_OK){
 					listNotifyDataSetChanged();
 				}
 		}
@@ -233,7 +244,7 @@ public class ShareActivity  extends BaseActivity {
 		int id = item.getItemId();
 		if (id == R.id.btn_send_status) {
 			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
-			startActivityForResult(i, 0);//startActivity(i);
+			startActivityForResult(i, RequestCode.RefreshStatusByPull);//startActivity(i);
 			return true;
 		}else if(id == R.id.orderbytime){
 			Intent i = new Intent(getApplicationContext(), OrderStatusListActivity.class);
@@ -296,9 +307,9 @@ public class ShareActivity  extends BaseActivity {
 					statusResult = json;
 					JSONObject allResult = JSON.parseObject(json);
 		
-					if(allResult.getInteger("errCode") == 0){
-						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
-					}
+//					if(allResult.getInteger("errCode") == 0){
+//						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
+//					}
 				}catch(Exception ex){
 					ex.printStackTrace();
 				}
@@ -332,6 +343,7 @@ public class ShareActivity  extends BaseActivity {
 						//for  init the status
 //						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
+						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
@@ -351,6 +363,7 @@ public class ShareActivity  extends BaseActivity {
 							allList.addAll(listMap);
 						}
 						listMap = allList;
+						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 						myadapter.notifyDataSetChanged();
@@ -387,6 +400,7 @@ public class ShareActivity  extends BaseActivity {
 	public void listNotifyDataSetChanged(){
 		currentMode = 1;
 		mPullRefreshListView.setRefreshing();
+		Log.i("send status need refresh", "");
 	}
 
 	private List<HashMap<String, Object>> getStatusListMaps(String string) {

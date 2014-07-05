@@ -447,7 +447,7 @@ public class ACache {
 	 * @param key
 	 * @return Serializable 数据
 	 */
-	public Object getAsObject(String key) {
+	public <T> T getAsObject(String key) {
 		byte[] data = getAsBinary(key);
 		if (data != null) {
 			ByteArrayInputStream bais = null;
@@ -456,7 +456,7 @@ public class ACache {
 				bais = new ByteArrayInputStream(data);
 				ois = new ObjectInputStream(bais);
 				Object reObject = ois.readObject();
-				return reObject;
+				return (T)reObject;
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;

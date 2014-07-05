@@ -10,4 +10,6 @@ public class RequestCode {
 		//?新打开的Activity中可以获得requestCode
 		public static final int DirectionForword=1;
 		public static final int DirectionGoback =2;
+		
+		public static final int RefreshStatusByPull = 0;
 }

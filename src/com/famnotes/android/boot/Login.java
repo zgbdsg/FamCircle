@@ -1,12 +1,13 @@
 package com.famnotes.android.boot;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+//import android.app.AlertDialog;
+//import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+//import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,10 +18,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
+import com.android.famcircle.ui.MainActivity;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
-import com.famnotes.android.db.DBUtil;
+//import com.famnotes.android.db.DBUtil;
+import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
@@ -32,11 +35,14 @@ public class Login extends BaseActivity {
 	private EditText mUser; // 帐号编辑框
 	private EditText mPassword; // 密码编辑框
 
+	ACache mCache;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         
+        mCache = ACache.get(this);
+		
         //Bundle pBundle=getIntent().getExtras(); 
         //Way way0=(Way) pBundle.getSerializable("way");
         Way way=(Way) getIntent().getSerializableExtra("way");  //savedInstanceState.getSerializable("way");
@@ -101,7 +107,7 @@ public class Login extends BaseActivity {
 //    	Intent intent = new Intent(Intent.ACTION_VIEW, uri); 
 //    	startActivity(intent);
       }  
-}
+
 
 
 class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
@@ -115,102 +121,7 @@ class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
 	@Override
 	public boolean onTaskSuccess(final Login context, Void result) {
 		
-//		final BaseAsyncTask<Login, Void, Void>  memberTask=new BaseAsyncTask<Login, Void, Void>(){
-//			@Override
-//			public Void run(Void... params) throws Exception {
-//				//取当前群成员
-//				PostData pdata=new PostData("user", "get_members");
-//				String json_members = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata); 
-//				if(!StringUtils.isEmpty(json_members)){
-//				JSONObject jsonObjectResult = JSON.parseObject(json_members);
-//					if(jsonObjectResult.getInteger("errCode") != 0) {
-//						throw new Exception("login fails ! Cannot get members"); 
-//					}else{
-//						JSONArray userArray = jsonObjectResult.getJSONArray("results");
-//						User.Members.clear();
-//						for(int i=0; i<userArray.size(); i++) {
-//							JSONObject  userJSON=(JSONObject) userArray.get(i);
-//							//User user=JSON.toJavaObject(userJSON, User.class);
-//							//(String userId, String userName, int grpId, String password, int flag)
-//							User iUser=new User(userJSON.getIntValue("id"),userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
-//							iUser.setAvatar(userJSON.getString("avatar"));
-//							User.Members.add(iUser);
-//						}
-//					}
-//				}
-//				return null;
-//			}
-//
-//		};
-//		
-//		final BaseAsyncTaskHandler<Login, Void> memberHandler=new BaseAsyncTaskHandler<Login, Void>(context) {
-//			
-//			@Override
-//			public boolean onTaskSuccess(Login context, Void result) {
-//				Log.i(TAG, "memberTask success");
-//				
-//				//通过“过场”进入主界面
-//				context.openActivity(LoadingActivity.class);
-//				context.finish();			
-//				
-//				return true;
-//			}
-//			
-//			@Override
-//			public boolean onTaskFailed(Login context, Exception error) {
-//				context.DisplayLongToast(error.getMessage());
-//				
-//				//通过“过场”进入主界面
-//				context.openActivity(LoadingActivity.class);
-//				//context.finish();			
-//				
-//				return true;
-//			}
-//		};
-//		
-//		if(Groups.lGroup.size()>1){ //要求客户选一个
-//			ArrayList<String> lItem=new ArrayList<String>(Groups.lGroup.size());
-//			for(Group grp : Groups.lGroup){
-//				lItem.add(grp.name);
-//			}
-//			
-//			new AlertDialog.Builder(context).setTitle("您属于多个群，请选一个（日后可以切换）!")
-//						.setSingleChoiceItems(lItem.toArray(new String[lItem.size()]), 0,
-//								new DialogInterface.OnClickListener() {
-//									public void onClick(DialogInterface dialog, int which) {
-//										Groups.selectIdx=which;
-//										dialog.dismiss();
-//										
-//										User.Current.grpId=Groups.selectGrpId();
-//										User.Current.flag=1;
-//										try{
-//											DBUtil.insertUser(User.Current);
-//										}catch(Exception ex){
-//											context.DisplayLongToast(ex.toString());
-//										}
-//										
-//										
-//										memberTask.connect(memberHandler);
-//										memberTask.execute();
-//									}
-//								})
-//						.setNegativeButton("取消", null)
-//						.show();
-//			
-//		} else {
-//			Groups.selectIdx=0;
-//			User.Current.grpId=Groups.selectGrpId();
-//			User.Current.flag=1;
-//			try{
-//				DBUtil.insertUser(User.Current);
-//			}catch(Exception ex){
-//				context.DisplayLongToast(ex.toString());
-//			}
-//			memberTask.connect(memberHandler);
-//			memberTask.execute();
-//		}
-		
-		context.openActivity(LoadingActivity.class);
+		context.openActivity(MainActivity.class);
 		context.finish();
 		return true;
 	}
@@ -273,7 +184,8 @@ class LoginTask extends BaseAsyncTask<Login, String, Void>{
 			User.Current.name=userJSON.getString("name");
 			User.Current.grpId=userJSON.getIntValue("grpId"); //?还无用， 要选了后面的Groups.lGroup才有效
 			User.Current.setAvatar(userJSON.getString("avatar"));
-			
+			mCache.put("Groups.selectIdx", Groups.selectIdx);
+			mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
 			
 			
 			JSONArray groupArray = jsonResult.getJSONArray("results");
@@ -284,7 +196,12 @@ class LoginTask extends BaseAsyncTask<Login, String, Void>{
 				lGrp.add(grp);
 			}
 			Groups.lGroup=lGrp;
+			
+			mCache.put("Groups.selectIdx", Groups.selectIdx);
+			mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
 			return null;
 	}
+
+}
 
 }

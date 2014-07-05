@@ -93,7 +93,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				
 				Intent intent = new Intent();
 				intent.putExtra("handlerCode", 5);
-				setResult(0, intent);
+				setResult(RESULT_OK, intent);
 				PublishedActivity.this.finish();
 				
 				break;
@@ -121,6 +121,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 
 	public void init() {
 		mCache = ACache.get(this);
+		User.Current=mCache.getAsObject("User.Current");
 		screen = (LinearLayout) findViewById(R.id.screen);
 //		activitySelectimgSend = (TextView) findViewById(R.id.activity_selectimg_send);
 //		cancel = (TextView) findViewById(R.id.cancel);
@@ -171,6 +172,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		if (id == android.R.id.home) {
 			closeInput();
 			emptyBimp();
+			setResult(RESULT_CANCELED,  null);
 			finish();
 		}else if(id == R.id.activity_selectimg_send){
 			closeInput();
@@ -455,6 +457,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 			vDirPath.mkdirs();
 		}
 		path = file.getPath();
+		mCache.put("path", path);
 		Log.v("halley", "path_photo:" + path);
 		Uri imageUri = Uri.fromFile(file);
 		openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -466,7 +469,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		switch (requestCode) {
 		case TAKE_PICTURE:
 			if (Bimp.drr.size() < 9 && resultCode == RESULT_OK) {
-				Bimp.drr.add(file.getPath());
+				Bimp.drr.add(mCache.getAsString("path"));
 			}
 			
 			break;
@@ -513,4 +516,20 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+//		onStop()is called when the activity is no longer visible to the 
+//		user. This may happen because the activity is being destroyed 
+//		or because another activity (either an existing one or a new 
+//		one) has been resumed and is covering the activity. Android 
+//		calls onRestart()after calling onStop()
+		
+		//openCameraIntent后，才被执行的。 为什么不是onPause()
+		Log.d("PublishedActivity", "onStop() called");
+		super.onStop();
+	}
+	
+	
 }

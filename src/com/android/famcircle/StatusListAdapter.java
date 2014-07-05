@@ -1,5 +1,6 @@
 package com.android.famcircle;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.ui.StatusOfPersonActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
+import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
@@ -55,6 +57,11 @@ public class StatusListAdapter extends BaseAdapter{
 			// TODO Auto-generated constructor stub
 		}
 
+		public StatusListAdapterHandler(ShareActivity context, boolean showProgressBar) {
+			super(context, showProgressBar);
+			// TODO Auto-generated constructor stub
+		}
+		
 		@Override
 		public boolean onTaskFailed(ShareActivity arg0, Exception arg1) {
 			// TODO Auto-generated method stub
@@ -70,6 +77,7 @@ public class StatusListAdapter extends BaseAdapter{
 				commentPopupWindow.dismiss();
 				int loc = msg.arg2;
 				Bundle data = msg.getData();
+				
 				List<StatusZanInfo> zanList = (List<StatusZanInfo>) dataList.get(loc).get("zaninfo");
 
 				StatusZanInfo addZan = new StatusZanInfo();
@@ -77,7 +85,8 @@ public class StatusListAdapter extends BaseAdapter{
 				addZan.setFromUsrId(data.getString("fromUsrId"));
 				addZan.setFromUsrName(data.getString("fromUsrName"));
 				zanList.add(addZan);
-
+				
+				mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)dataList);
 				context.notifyDataSetChanged();
 			}else if(msg.arg1 == 0){
 				replyTextContent.setText("");
@@ -88,6 +97,7 @@ public class StatusListAdapter extends BaseAdapter{
 				int loc = msg.arg2;
 				Bundle data = msg.getData();
 				List<StatusReplyInfo> replyList = (List<StatusReplyInfo>) dataList.get(loc).get("replyinfo");
+				
 				StatusReplyInfo replyInfo = new StatusReplyInfo();
 				replyInfo.setFromUsrId(data.getString("fromUsrId"));
 				replyInfo.setFromUsrName(data.getString("fromUsrName"));
@@ -95,8 +105,10 @@ public class StatusListAdapter extends BaseAdapter{
 				replyInfo.setToUsrId(data.getString("toUsrId"));
 				replyInfo.setToUsrName(data.getString("toUsrName"));
 				
+				Log.i("add reply info ", data.getString("reply"));
 				replyList.add(replyInfo);
 
+				mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)dataList);
 				context.notifyDataSetChanged();
 			}			
 			return true;
@@ -130,6 +142,8 @@ public class StatusListAdapter extends BaseAdapter{
 	private List<StatusZanInfo> statusZanInfoList;
 	private List<StatusReplyInfo> statusReplyInfoList;
 	
+	private ACache mCache;
+	
 	public StatusListAdapter(Context context,
 			List<HashMap<String, Object>> data) {
 		
@@ -137,6 +151,9 @@ public class StatusListAdapter extends BaseAdapter{
 		this.dataList = data;
 		this.context = context;
 		layoutInflater = (LayoutInflater)LayoutInflater.from(context);
+		
+		mCache = ACache.get(context);
+		handler = new StatusListAdapterHandler((ShareActivity) context,false);
 		
 		Options sampleOpt = new Options();
 		sampleOpt.inJustDecodeBounds = false;
@@ -176,7 +193,7 @@ public class StatusListAdapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
-		Log.i("get view("+dataList.size()+") :", ""+position);
+//		Log.i("get view("+dataList.size()+") :", ""+position);
 		statusInfo = (StatusListInfo)dataList.get(position).get("statusInfo");
 		statusZanInfoList = (List<StatusZanInfo>)dataList.get(position).get("zaninfo");
 		//Log.i("zan Len:", ""+statusZanInfoList.size()+"");
@@ -238,6 +255,7 @@ public class StatusListAdapter extends BaseAdapter{
 		holder.zanText.setVisibility(View.VISIBLE);
 
 		if(statusZanInfoList.size() > 0 || statusReplyInfoList.size() > 0){
+			Log.i("reply and zan info :", "zan : "+statusZanInfoList.size()+"  reply   :"+statusReplyInfoList.size());
 			holder.all_reply_component.setVisibility(0);
 		}
 		
@@ -249,7 +267,7 @@ public class StatusListAdapter extends BaseAdapter{
 			holder.zanText.setText(zanText);
 		}else{
 				holder.zanText.setVisibility(View.GONE);
-		}
+		}	
 		
 		ReplyListAdapter replyAdapter = new ReplyListAdapter(context , statusReplyInfoList);
 		holder.replyList.setAdapter(replyAdapter);
@@ -358,16 +376,18 @@ public class StatusListAdapter extends BaseAdapter{
 					String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 					
 					JSONObject result = JSON.parseObject(json);
-					if(result.getString("errMesg").equals("Already Zan!"))
+					if(result.getIntValue("errCode") != 0)
 						msg.arg1 = 2;
 					else
 						msg.arg1 = 1;
+
 					msg.arg2 = (Integer) params[0];
 					Bundle data = new Bundle();
 					Log.i("zanFromName", (String) params[4]);
 					data.putString("fromUsrName", (String) params[4]);
 					data.putString("fromUsrId", (String) params[1]);
-		
+					
+					msg.setData(data);
 					System.out.println(json);
 			}catch(Exception ex){
 				ex.printStackTrace();
@@ -380,13 +400,19 @@ public class StatusListAdapter extends BaseAdapter{
 	class SendReply  extends BaseAsyncTask<ShareActivity, Object, Message>{
 		@Override
 		public Message run(Object... params) throws Exception {
+//			sendReply.execute(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
+//					StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
 			Message msg = new Message();
 			try{
-				Log.i("reply  info:", params[1]+"  to "+params[2] +" int status "+params[3]);
-				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[3]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[2]+", \"type\":0, \"reply\":\""+params[6]+"\"}");
+				Log.i("reply  info:", params[1]+"  to "+params[3] +" int status "+params[5]);
+				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[5]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[3]+", \"type\":0, \"reply\":\""+params[7]+"\"}");
 				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 	
-				msg.arg1 = 0 ;
+				JSONObject result = JSON.parseObject(json);
+				if(result.getIntValue("errCode") != 0)
+					msg.arg1 = 2;
+				else
+					msg.arg1 = 0 ;
 				msg.arg2 = (Integer) params[0];
 				Bundle data = new Bundle();
 				data.putString("fromUsrName", (String) params[2]);
@@ -395,6 +421,7 @@ public class StatusListAdapter extends BaseAdapter{
 				data.putString("toUsrId", (String) params[3]);
 				data.putString("reply", (String) params[7]);
 				
+				msg.setData(data);
 				System.out.println(json);
 			}catch(Exception ex){
 				ex.printStackTrace();
@@ -615,7 +642,7 @@ class ReplyListAdapter extends BaseAdapter{
 		}
 		
 		StatusReplyInfo reply = statusReplyInfoList.get(position);
-		replyTextView.setText(reply.getFromUsrName()+" reply§ç "+reply.getToUsrName()+": "+reply.getReply());
+		replyTextView.setText(reply.getFromUsrName()+" reply  to"+reply.getToUsrName()+": "+reply.getReply());
 		return replyTextView;
 	}
 	

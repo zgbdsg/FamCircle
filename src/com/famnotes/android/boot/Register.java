@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
+import com.android.famcircle.ui.MainActivity;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
@@ -168,7 +169,7 @@ class RegisterHandler extends BaseAsyncTaskHandler<Register, Integer>{
 			case 2: 
 
 				//通过“过场”进入主界面
-				getContext().openActivity(LoadingActivity.class);
+				getContext().openActivity(MainActivity.class);
 				break;
 				
 		}

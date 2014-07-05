@@ -1,6 +1,8 @@
 package com.famnotes.android.boot;
 
 
+import java.io.Serializable;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +16,7 @@ import com.android.famcircle.config.Constants;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
+import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
@@ -22,6 +25,7 @@ import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 
 public class RegisterGroup extends BaseActivity {
+	ACache mCache;
 	String userId;
 	//private EditText txtLoginCellno; // 帐号编辑框
 	//private EditText txtLoginEmail;
@@ -34,6 +38,9 @@ public class RegisterGroup extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_group);
         
+        mCache=ACache.get(this);
+        if(User.Current==null)
+			User.Current=mCache.getAsObject("User.Current");
         userId=User.Current.loginId;
         
         txtGroupName= (EditText)findViewById(R.id.login_grp_name);
@@ -146,6 +153,8 @@ public class RegisterGroup extends BaseActivity {
 			}else{
 				Group grp=new Group(grpId, reqJsonMsg[2], grpId+".png");
 				Groups.lGroup.add(grp);
+				mCache.put("Groups.selectIdx", Groups.selectIdx);
+				mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
 			}
 		
 			return grpId;

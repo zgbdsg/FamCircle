@@ -6,7 +6,7 @@ public class StatusListInfo implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 273031318471688450L;
 	
 	String statusId;
 	String usrId;

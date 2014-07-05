@@ -1,6 +1,12 @@
 package com.android.famcircle;
 
-public class StatusReplyInfo {
+import java.io.Serializable;
+
+public class StatusReplyInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1432691977072300247L;
 	String fromUsrId;
 	String fromUsrName;
 	String toUsrId;

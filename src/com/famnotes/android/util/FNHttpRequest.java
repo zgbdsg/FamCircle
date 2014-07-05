@@ -139,6 +139,7 @@ public class FNHttpRequest {
 
 			HttpClient httpclient = new DefaultHttpClient();
 			httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+			Log.d("FNHttpRequest", "Send:  objId="+postData.objId+", method="+postData.method+", params="+postData.dataVal);
 			localHttpResponse = httpclient.execute(httpPost); // ?DefaultHttpClient 已被淘汰了
 			if (localHttpResponse.getStatusLine().getStatusCode() == 200) {
 				String result = EntityUtils.toString(localHttpResponse.getEntity());

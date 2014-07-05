@@ -21,6 +21,8 @@ import com.famnotes.android.base.AppManager;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.ACache;
+import com.famnotes.android.vo.Groups;
+import com.famnotes.android.vo.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MainActivity extends BaseActivity {
@@ -43,6 +45,12 @@ public class MainActivity extends BaseActivity {
         }
 		
 		mCache = ACache.get(this);
+		if(User.Current==null)
+			User.Current=mCache.getAsObject("User.Current");
+		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
+			Groups.selectIdx=mCache.getAsObject("Groups.selectIdx");
+			Groups.lGroup=mCache.getAsObject("Groups.lGroup");
+		}
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()

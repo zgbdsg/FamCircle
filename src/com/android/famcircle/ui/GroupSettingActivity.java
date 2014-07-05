@@ -224,7 +224,7 @@ public class GroupSettingActivity extends BaseActivity{
 				
 			Bitmap tmpmap = ImageUtils.compImageBySize(path[0]);
 			String filename=StringUtils.getFileNameFromPath(path[0]);
-			PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.PNG , filename);
+			PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.JPEG , filename);
 			pics.add(pb);
 			PostData	pdata = new PostData("share", "uploadUsrAvatar", "{\"usrId\":"+ShareActivity.userId+"}", pics);
 			
@@ -289,7 +289,7 @@ public class GroupSettingActivity extends BaseActivity{
 				
 			Bitmap tmpmap = ImageUtils.compImageBySize(path[0]);
 			String filename=StringUtils.getFileNameFromPath(path[0]);
-			PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.PNG , filename);
+			PictureBody pb = new PictureBody(tmpmap, Bitmap.CompressFormat.JPEG , filename);
 			pics.add(pb);
 			PostData	pdata = new PostData("share", "uploadGrpCoverPhoto", "{\"grpId\":"+grpId+"}", pics);
 			

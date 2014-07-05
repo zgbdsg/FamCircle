@@ -211,6 +211,7 @@ public class ShareActivity  extends BaseActivity {
 		
 			case RequestCode.GroupSetting :
 				//? 如何刷新界面，如组的封面、个人头像、新增的组成员
+				logoUrl=User.Current.getAvatar();
 				updateProfile();
 				break;
 				

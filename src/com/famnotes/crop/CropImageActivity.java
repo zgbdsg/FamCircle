@@ -70,13 +70,14 @@ public class CropImageActivity extends BaseActivity {
 			}
 	    		
 	    	case R.id.detect:
+	    		
 	    		mCrop.detectionFace(mBitmap);
 	    		break;
 	    		
 	    	case R.id.save:  {//先保存到 mBitmap中然后，//?再保存到sdcard目录中
 	    		Intent intent = new Intent();
 	    		Bitmap cropedBitmap=mCrop.cropAndSave(mBitmap);
-	    		Bitmap sndBm=ImageUtils.compressImage(cropedBitmap);
+	    		Bitmap sndBm=ImageUtils.compressImage(cropedBitmap);//? 没起作用
 	    		//?mBitmap.recycle();
 	    		String path = mCrop.saveToLocal(sndBm);
 	    		cropedBitmap.recycle(); //释放ram

@@ -125,7 +125,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 
 		statuslist = mPullRefreshListView.getRefreshableView();
 		headview = LayoutInflater.from(this).inflate(
-				R.layout.activity_share_header, null);
+				R.layout.activity_personal_header, null);
 		statuslist.addHeaderView(headview);
 		
 		myAdapter = new StatusOfPersonListAdapter(context,listMap );

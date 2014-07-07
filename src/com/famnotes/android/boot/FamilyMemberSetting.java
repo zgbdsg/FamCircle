@@ -1,5 +1,6 @@
 package com.famnotes.android.boot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import com.android.famcircle.ui.MainActivity;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
+import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.vo.User;
@@ -40,15 +42,32 @@ public class FamilyMemberSetting extends BaseActivity {
 	private ListView lv;
 	private List<ContactInfo> infos;
 	private FamilyMemberSettingAdapter myAdaper;
-
+	private ACache mCache;
 	private int direction;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fam_member_setting);
+        grpId=getIntent().getIntExtra("GroupId", User.Current.grpId); 
         
-        infos=new ArrayList<ContactInfo>(8);
+        mCache = ACache.get(this);
+        infos = mCache.getAsObject("FamilyMemberList-"+grpId);
+        if(infos == null){
+        	infos=new ArrayList<ContactInfo>(8);
+        	
+        	if(User.Members.size() > 0){
+        		for(int i=0;i<User.Members.size();i ++){
+        			User iuser = User.Members.get(i);
+        			ContactInfo contactInfo = new ContactInfo();
+        			contactInfo.setName(iuser.name);
+        			contactInfo.setPhone(iuser.loginId);
+        			contactInfo.setSelected(true);
+        			
+        			infos.add(contactInfo);
+        		}
+        	}
+        }
         
         direction=getIntent().getIntExtra("direction", RequestCode.DirectionForword); 
         
@@ -85,7 +104,6 @@ public class FamilyMemberSetting extends BaseActivity {
 			
 		});
 		
-		grpId=getIntent().getIntExtra("GroupId", User.Current.grpId); 
 		//Intent intent = getIntent();
 		//mySelf=(User) intent.getSerializableExtra("user");
     }
@@ -155,7 +173,7 @@ public class FamilyMemberSetting extends BaseActivity {
 				if(!infos.contains(info))
 					infos.add(info);
 			}
-			
+			mCache.put("FamilyMemberList-"+grpId, (Serializable)infos);
 			myAdaper.notifyDataSetChanged();
 			
 		}

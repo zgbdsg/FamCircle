@@ -262,11 +262,11 @@ public class MainFragment extends Fragment{
 		
 		@Override
 		public boolean onTaskFailed(MainActivity context, Exception error) {
-			Log.i(TAG, "memberTask fail");
+			Log.i(TAG, "Get Member Info Fail");
 			context.DisplayLongToast(error.getMessage());
 			
-			Intent intent = new Intent(getActivity(),ShareActivity.class);
-			startActivity(intent);			
+//			Intent intent = new Intent(getActivity(),ShareActivity.class);
+//			startActivity(intent);			
 			
 			return true;
 		}

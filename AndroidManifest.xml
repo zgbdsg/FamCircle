@@ -77,7 +77,9 @@
         
 		<activity  android:name="com.android.famcircle.ui.GroupSettingActivity"
 		    		  android:label="@string/group_setting" >
-
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
         <activity  android:name="com.famnotes.android.boot.RegisterGroup"
 		     android:theme="@android:style/Theme.Light.NoTitleBar" >

@@ -110,7 +110,7 @@ public class Login extends BaseActivity {
 
 
 
-class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
+class LoginHandler extends BaseAsyncTaskHandler<Login, Integer>{
 
 	protected static final String TAG = "LoginHandler";
 
@@ -119,8 +119,8 @@ class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
 	}
 
 	@Override
-	public boolean onTaskSuccess(final Login context, Void result) {
-		
+	public boolean onTaskSuccess(final Login context, Integer resultCode) {
+		//? resultCode==3
 		context.openActivity(MainActivity.class);
 		context.finish();
 		return true;
@@ -133,10 +133,10 @@ class LoginHandler extends BaseAsyncTaskHandler<Login, Void>{
 	}
 
 }
-class LoginTask extends BaseAsyncTask<Login, String, Void>{
+class LoginTask extends BaseAsyncTask<Login, String, Integer>{
 
 	@Override
-	public Void run(String... params) throws Exception {
+	public Integer run(String... params) throws Exception {
 //FamNotes可以自动成为FamPhoto的用户/群；但反过来，不行！
 /*
  * 输入: ｛userId, password(被加密)｝
@@ -149,10 +149,14 @@ class LoginTask extends BaseAsyncTask<Login, String, Void>{
 			String reqJsonMsg=obj.toJSONString();
 			String json = null;
 			
+			JSONObject jsonResult=null;
 			if(Constants.isFamNotes()){
 				try {
 					PostData pdata=new PostData("user", "login_famnotes", reqJsonMsg );
 					json = new FNHttpRequest(Constants.Usage_System).doPost(pdata); //用第0Group登录，意味以后要把,所有用户与群有关的数据汇总到一台专门的登录服务器上.
+					if(json==null)
+						throw new Exception(" json==null"); 
+					 jsonResult = JSON.parseObject(json);
 				} catch (Exception e) {
 					throw new Exception("login fails ! Network exception!"); 
 				}
@@ -160,17 +164,32 @@ class LoginTask extends BaseAsyncTask<Login, String, Void>{
 				try {//grpId  register_famphoto(群+用户信息+VerifyCode)
 					PostData pdata=new PostData("user", "login_famphoto", reqJsonMsg );
 					json = new FNHttpRequest(Constants.Usage_System).doPost(pdata); //用第0Group登录，意味以后要把,所有用户与群有关的数据汇总到一台专门的登录服务器上.
+					if(json==null)
+						throw new Exception(" json==null"); 
+					 jsonResult = JSON.parseObject(json);
 				} catch (Exception e) {
-					throw new Exception("login fails ! Network exception!"); 
+					throw new Exception("login fails ! "+e.getMessage()); 
 				}
 			}
+
+			int errCode=jsonResult.getInteger("errCode");
 			
-			if(json==null){
-				throw new Exception("login fails ! json==null!"); 
+			if(errCode==3){
+				//login success
+				JSONObject userJSON = jsonResult.getJSONObject("user");
+				User.Current=new User();
+				User.Current.id=userJSON.getIntValue("id");
+				User.Current.loginId=params[0];
+				User.Current.password =params[1];
+				User.Current.name=userJSON.getString("name");
+				User.Current.grpId=userJSON.getIntValue("grpId"); //?还无用， 要选了后面的Groups.lGroup才有效
+				User.Current.setAvatar(userJSON.getString("avatar"));
+				Groups.lGroup=new ArrayList<Group>();
+				mCache.put("User.Current", User.Current);
+				mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
+				return 3;
 			}
-			
-			JSONObject jsonResult = JSON.parseObject(json);
-			if(jsonResult.getInteger("errCode") != 0) {
+			if( errCode!=0 ) {
 				throw new Exception("login fails ! "+jsonResult.getString("errMesg")); 
 			}
 
@@ -184,9 +203,6 @@ class LoginTask extends BaseAsyncTask<Login, String, Void>{
 			User.Current.name=userJSON.getString("name");
 			User.Current.grpId=userJSON.getIntValue("grpId"); //?还无用， 要选了后面的Groups.lGroup才有效
 			User.Current.setAvatar(userJSON.getString("avatar"));
-			mCache.put("Groups.selectIdx", Groups.selectIdx);
-			mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
-			
 			
 			JSONArray groupArray = jsonResult.getJSONArray("results");
 			ArrayList<Group> lGrp=new ArrayList<Group>();
@@ -196,10 +212,9 @@ class LoginTask extends BaseAsyncTask<Login, String, Void>{
 				lGrp.add(grp);
 			}
 			Groups.lGroup=lGrp;
-			
-			mCache.put("Groups.selectIdx", Groups.selectIdx);
+			mCache.put("User.Current", User.Current);
 			mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
-			return null;
+			return 0;
 	}
 
 }

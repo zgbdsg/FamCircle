@@ -26,7 +26,6 @@ import com.famnotes.android.vo.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MainActivity extends BaseActivity {
-	private ACache mCache;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,6 @@ public class MainActivity extends BaseActivity {
 		if(User.Current==null)
 			User.Current=mCache.getAsObject("User.Current");
 		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
-			Groups.selectIdx=mCache.getAsObject("Groups.selectIdx");
 			Groups.lGroup=mCache.getAsObject("Groups.lGroup");
 		}
 

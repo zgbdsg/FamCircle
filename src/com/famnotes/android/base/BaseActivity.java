@@ -2,6 +2,8 @@ package com.famnotes.android.base;
 
 import java.util.ArrayList;
 
+import com.famnotes.android.util.ACache;
+
 
 
 import android.os.Bundle;
@@ -11,6 +13,13 @@ public abstract class BaseActivity  extends NoAsyncBaseActivity {
 
 	public static final String TAG = BaseActivity.class.getSimpleName();
 
+	protected ACache mCache;
+	public ACache getACache(){
+		if(mCache==null)
+			mCache = ACache.get(this);
+		return mCache;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

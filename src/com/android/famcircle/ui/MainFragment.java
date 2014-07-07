@@ -1,5 +1,6 @@
 package com.android.famcircle.ui;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
 import com.famnotes.android.boot.RegisterGroup;
 import com.famnotes.android.db.DBUtil;
+import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
 import com.famnotes.android.util.StringUtils;
@@ -39,11 +41,16 @@ import android.widget.AdapterView.OnItemClickListener;
 
 
 public class MainFragment extends Fragment{
+	public MainFragment() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	private ListView lvGroup;
 	private ListViewGroupAdapter lvGroupAdaper;
 	private List<Group> infos;
 	
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -90,6 +97,9 @@ public class MainFragment extends Fragment{
 				User.Current.flag=1;
 				try{
 					DBUtil.insertUser(User.Current);
+					ACache mCache=((MainActivity)getActivity()).getACache();
+					mCache.put("User.Current", User.Current);
+					mCache.put("Groups.selectIdx", (Serializable)Groups.selectIdx);
 				}catch(Exception ex){
 					//getActivity().DisplayLongToast(ex.toString());
 					ex.printStackTrace();

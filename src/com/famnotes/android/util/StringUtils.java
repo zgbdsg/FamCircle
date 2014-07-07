@@ -52,7 +52,10 @@ public class StringUtils {
 		StringBuffer unicodeBytes = new StringBuffer();
 		for (int byteIndex = 0; byteIndex < utfBytes.length; byteIndex++) {
 			StringBuffer hexB = new StringBuffer(Integer.toHexString(utfBytes[byteIndex]));
-			if (hexB.length() <= 2) {
+//			System.out.println("originBytes is: " + hexB);
+			if(hexB.length() == 1){
+				hexB.insert(0, "000");
+			}else if (hexB.length() == 2) {
 				hexB.insert(0, "00");
 				//hexB = "00" + hexB;
 			}

@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
@@ -103,12 +104,12 @@ public class MainFragment extends Fragment{
 					ex.printStackTrace();
 				}
 				
-//				MemberTask memberTask=new MemberTask();
-//				MemberHandler memberHandler=new MemberHandler((MainActivity) getActivity());
-//				memberTask.connect(memberHandler);
-//				memberTask.execute();
-				Intent intent = new Intent(getActivity(),ShareActivity.class);
-				startActivity(intent);		
+				MemberTask memberTask=new MemberTask();
+				MemberHandler memberHandler=new MemberHandler((MainActivity) getActivity(),false);
+				memberTask.connect(memberHandler);
+				memberTask.execute();
+//				Intent intent = new Intent(getActivity(),ShareActivity.class);
+//				startActivity(intent);		
 			}
 				
 		});
@@ -212,64 +213,64 @@ public class MainFragment extends Fragment{
 		TextView tv_name;
 	}	
 	
-//	class MemberTask extends BaseAsyncTask<MainActivity, Void, Void> {
-//		@Override
-//		public Void run(Void... params) throws Exception {
-//			//取当前群成员
-//			PostData pdata=new PostData("user", "get_members");
-//			String json_members = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata); 
-//			if(!StringUtils.isEmpty(json_members)){
-//			JSONObject jsonObjectResult = JSON.parseObject(json_members);
-//				if(jsonObjectResult.getInteger("errCode") != 0) {
-//					throw new Exception("login fails ! Cannot get members"); 
-//				}else{
-//					JSONArray userArray = jsonObjectResult.getJSONArray("results");
-//					User.Members.clear();
-//					for(int i=0; i<userArray.size(); i++) {
-//						JSONObject  userJSON=(JSONObject) userArray.get(i);
-//						//User user=JSON.toJavaObject(userJSON, User.class);
-//						//(String userId, String userName, int grpId, String password, int flag)
-//						User iUser=new User(userJSON.getIntValue("id"),userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
-//						iUser.setAvatar(userJSON.getString("avatar"));
-//						User.Members.add(iUser);
-//					}
-//				}
-//			}
-//			return null;
-//		}
-//
-//	}
-//	
-//	class MemberHandler extends BaseAsyncTaskHandler<MainActivity, Void>
-//	{
-//		public MemberHandler(MainActivity context) {
-//			super(context);
-//			// TODO Auto-generated constructor stub
-//		}
-//
-//		private static final String TAG = "MemberHandler";
-//		
-//		@Override
-//		public boolean onTaskSuccess(MainActivity context, Void result) {
-//			Log.i(TAG, "memberTask success");
-//			
-//			Intent intent = new Intent(getActivity(),ShareActivity.class);
-//			startActivity(intent);		
-//			
-//			return true;
-//		}
-//		
-//		@Override
-//		public boolean onTaskFailed(MainActivity context, Exception error) {
-//			Log.i(TAG, "memberTask fail");
-//			context.DisplayLongToast(error.getMessage());
-//			
-//			Intent intent = new Intent(getActivity(),ShareActivity.class);
-//			startActivity(intent);			
-//			
-//			return true;
-//		}
-//	}
+	class MemberTask extends BaseAsyncTask<MainActivity, Void, Void> {
+		@Override
+		public Void run(Void... params) throws Exception {
+			//取当前群成员
+			PostData pdata=new PostData("user", "get_members");
+			String json_members = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata); 
+			if(!StringUtils.isEmpty(json_members)){
+			JSONObject jsonObjectResult = JSON.parseObject(json_members);
+				if(jsonObjectResult.getInteger("errCode") != 0) {
+					throw new Exception("login fails ! Cannot get members"); 
+				}else{
+					JSONArray userArray = jsonObjectResult.getJSONArray("results");
+					User.Members.clear();
+					for(int i=0; i<userArray.size(); i++) {
+						JSONObject  userJSON=(JSONObject) userArray.get(i);
+						//User user=JSON.toJavaObject(userJSON, User.class);
+						//(String userId, String userName, int grpId, String password, int flag)
+						User iUser=new User(userJSON.getIntValue("id"),userJSON.getString("loginId"), userJSON.getString("name"),  User.Current.grpId, null, 0 );
+						iUser.setAvatar(userJSON.getString("avatar"));
+						User.Members.add(iUser);
+					}
+				}
+			}
+			return null;
+		}
+
+	}
+	
+	class MemberHandler extends BaseAsyncTaskHandler<MainActivity, Void>
+	{
+		public MemberHandler(MainActivity context, boolean showProgressBar) {
+			super(context,showProgressBar);
+			// TODO Auto-generated constructor stub
+		}
+
+		private static final String TAG = "MemberHandler";
+		
+		@Override
+		public boolean onTaskSuccess(MainActivity context, Void result) {
+			Log.i(TAG, "memberTask success");
+			
+			Intent intent = new Intent(getActivity(),ShareActivity.class);
+			startActivity(intent);		
+			
+			return true;
+		}
+		
+		@Override
+		public boolean onTaskFailed(MainActivity context, Exception error) {
+			Log.i(TAG, "memberTask fail");
+			context.DisplayLongToast(error.getMessage());
+			
+			Intent intent = new Intent(getActivity(),ShareActivity.class);
+			startActivity(intent);			
+			
+			return true;
+		}
+	}
 	
 	class UnRegTask extends BaseAsyncTask<MainActivity, String, Integer> {
 		@Override

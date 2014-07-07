@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,7 @@ import android.os.Message;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,6 +31,9 @@ import com.android.famcircle.StatusListInfo;
 import com.android.famcircle.StatusOfPersonListAdapter;
 import com.android.famcircle.StatusOfPersonListInfo;
 import com.android.famcircle.config.Constants;
+import com.android.famcircle.config.RequestCode;
+import com.android.famcircle.orderlist.OrderStatusListActivity;
+import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.ui.ShareActivity.GetDataTask;
 import com.android.famcircle.ui.ShareActivity.InitialStatuses;
 import com.android.famcircle.ui.ShareActivity.ShareHandler;
@@ -70,6 +76,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_personal_status);
 
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		Bundle info = this.getIntent().getExtras();
 		usrId = Integer.parseInt(info.getString("usrId"));
 		listMap = new ArrayList<Object>();
@@ -151,6 +160,19 @@ public class StatusOfPersonActivity extends BaseActivity {
 		super.onStart();
 
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if(id == android.R.id.home){
+			finish();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
 	
 	class GetPersonDataTask extends BaseAsyncTask<StatusOfPersonActivity, Integer, Integer>{
 		@Override

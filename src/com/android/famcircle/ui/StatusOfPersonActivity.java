@@ -145,6 +145,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		
 		statusResult = mCache.getAsString("statusOfPersonResult"+groupId+"---"+usrId);
 		if(statusResult == null){
+			Log.i("user "+usr.name, "personal status is null");
 			InitialPersonStatusesTask initialPerson = new InitialPersonStatusesTask();
 			initialPerson.connect(myhandler);
 			initialPerson.execute("");
@@ -219,7 +220,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 				JSONObject allResult = JSON.parseObject(json);
 	
 				if(allResult.getInteger("errCode") == 0){
-					mCache.put("statusOfPersonResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
+					mCache.put("statusOfPersonResult"+User.Current.grpId+"---"+usrId, statusResult);
 				}
 
 			}catch(Exception ex){

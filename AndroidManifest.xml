@@ -26,6 +26,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.famnotes.android.boot.Appstart"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
@@ -36,6 +37,7 @@
         
         <activity
             android:name="com.famnotes.android.boot.PrepLogin"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -43,6 +45,7 @@
         </activity>
         <activity
             android:name="com.famnotes.android.boot.LoadingActivity"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -51,6 +54,7 @@
         
 		<activity
             android:name="com.famnotes.android.boot.Login"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -58,36 +62,42 @@
         </activity>        
        		<activity
             android:name="com.famnotes.android.boot.Register"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>     
           
-        <activity  android:name="com.famnotes.android.boot.FamilyMemberSetting">
+        <activity  android:name="com.famnotes.android.boot.FamilyMemberSetting"
+            		android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-		<activity  android:name="com.famnotes.android.boot.SelectContactActivity">
+		<activity  android:name="com.famnotes.android.boot.SelectContactActivity"
+		    android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         
 		<activity  android:name="com.android.famcircle.ui.GroupSettingActivity"
-		    		  android:label="@string/group_setting" >
+		    	   android:screenOrientation="portrait"
+		    	   android:label="@string/group_setting" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity  android:name="com.famnotes.android.boot.RegisterGroup"
+            android:screenOrientation="portrait"
 		     android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
 		<activity android:name="com.famnotes.crop.CropImageActivity" 
+		    android:screenOrientation="portrait"
 		    android:theme="@android:style/Theme.Light.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -97,12 +107,14 @@
 		<!-- ********************************************************************************************************************* -->
         <activity
             android:name="com.android.famcircle.ui.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light"
             android:label="@string/app_name" >
         </activity>
         
         <activity
 			android:name="com.android.famcircle.ui.ShareActivity"
+			android:screenOrientation="portrait"
             	  android:theme="@android:style/Theme.Holo.Light">
             <!-- VIEW一定需要吗 -->
             <intent-filter>
@@ -112,6 +124,7 @@
         
          <activity 
 			android:name="com.android.famcircle.ui.StatusImagePagerActivity"
+			android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar">
             <!-- VIEW一定需要吗 -->
             <intent-filter>
@@ -121,6 +134,7 @@
         
         <activity 
 			android:name="com.android.famcircle.ui.StatusPicsSendActivity"
+			android:screenOrientation="portrait"
            	android:theme="@android:style/Theme.Holo.Light">
             <!-- VIEW一定需要吗 -->
             <intent-filter>
@@ -129,6 +143,7 @@
         </activity>
         
         <activity android:name="com.android.famcircle.ui.StatusSelectPictureActivity"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar">
             <!-- VIEW一定需要吗 -->
             <intent-filter>
@@ -139,30 +154,36 @@
         </activity>
         
         <activity android:name="com.android.famcircle.ui.StatusOfPersonActivity"
+            	  android:screenOrientation="portrait"
             	  android:theme="@android:style/Theme.Holo.Light">
         </activity>
         <activity
             android:name="com.android.famcircle.picselect.ImageBucketActivity"
+            android:screenOrientation="portrait"
             android:label="@string/imagebucket"
             android:launchMode="singleTask" >
         </activity>
         <activity
             android:name = "com.android.famcircle.picselect.ImageSelectActivity"
+            android:screenOrientation="portrait"
             android:label="@string/imageselect"
             android:launchMode="singleTask" >
         </activity>
         <activity
             android:name="com.android.famcircle.picselect.PublishedActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:label="@string/publish_activity">
         </activity>
         <activity
             android:name="com.android.famcircle.picselect.PhotoDisplayActivity"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
         </activity>
         <activity
             android:name="com.android.famcircle.orderlist.OrderStatusListActivity"
+            android:screenOrientation="portrait"
             android:label="@string/orderlist"
             android:theme="@android:style/Theme.Holo.Light">
         </activity>

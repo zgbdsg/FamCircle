@@ -104,6 +104,8 @@ public class ShareActivity  extends BaseActivity {
 			Groups.selectIdx=mCache.getAsObject("Groups.selectIdx");
 			Groups.lGroup=mCache.getAsObject("Groups.lGroup");
 		}
+		
+		setTitle(Groups.selectGrp().name);
 			
 		myhandler = new ShareHandler(this, true); myhandlerPull= new ShareHandler(this, false);
 		Log.i("activity ", "shared!!!!!!");

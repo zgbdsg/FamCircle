@@ -9,6 +9,7 @@ import java.util.List;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,12 +72,13 @@ public class StatusOfPersonActivity extends BaseActivity {
 	private View headview;
 	private boolean isNeedRefresh;
 
+	private ActionBar actionBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_personal_status);
 
-		ActionBar actionBar = getActionBar();
+		actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		Bundle info = this.getIntent().getExtras();
@@ -133,6 +135,9 @@ public class StatusOfPersonActivity extends BaseActivity {
 		
 		User usr=User.getUserById(usrId);
 		userName=usr.name;
+		
+		setTitle(userName);
+		
 		logoUrl=usr.avatar;
 		groupId=String.valueOf(User.Current.grpId);
 		updateProfile();
@@ -340,7 +345,7 @@ public class StatusOfPersonActivity extends BaseActivity {
 		
 		ImageView imageCover = (ImageView)headview.findViewById(R.id.imageCover);
 		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/group/"+groupId+"/"+Groups.selectGrp().getCoverPhoto(), imageCover); //
-				
+		actionBar.setIcon(new BitmapDrawable(ImageLoader.getInstance().loadImageSync("http://"+Constants.Server+"/famnotes/Uploads/smallPic/"+usrId+"/"+logoUrl)));		
 		
 	}
 //	private void updateProfile() {

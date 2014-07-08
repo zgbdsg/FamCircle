@@ -220,7 +220,7 @@ public class ShareActivity  extends BaseActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		
+		Log.i("11111  publish success", "!!!!!  "+(requestCode==RequestCode.RefreshStatusByPull)+"  "+(resultCode));
 		switch(requestCode){
 		
 			case RequestCode.GroupSetting :
@@ -231,11 +231,16 @@ public class ShareActivity  extends BaseActivity {
 			case RequestCode.RefreshStatusByPull:
 				if(resultCode == RESULT_OK){
 					listNotifyDataSetChanged();
-				}
+				}else if(resultCode == RESULT_CANCELED)
+					Toast.makeText(
+							this, "上传取消！", Toast.LENGTH_SHORT).show();
+				break;
 			default :
 				if(resultCode == RESULT_OK){
+					Log.i("publish success", "!!!!!");
 					listNotifyDataSetChanged();
 				}
+				break;
 		}
 	}
 	@Override

@@ -94,8 +94,8 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				Intent intent = new Intent();
 				intent.putExtra("handlerCode", 5);
 				setResult(RESULT_OK, intent);
-				PublishedActivity.this.finish();
-				
+				mfinish();
+				Log.i("publish ", "finished !");
 				break;
 			case MSG_SEND_FAIL:
 				progressDialog.dismiss();
@@ -107,6 +107,9 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		};
 	};
 
+	private void mfinish(){
+		this.finish();
+	}
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		Log.v("halley", "onCreate");

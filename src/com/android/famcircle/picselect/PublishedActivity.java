@@ -48,6 +48,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
+import com.android.famcircle.config.Constants;
 import com.android.famcircle.ui.ShareActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
@@ -93,6 +94,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				
 				Intent intent = new Intent();
 				intent.putExtra("handlerCode", 5);
+				Constants.publishResult = 0;
 				setResult(RESULT_OK, intent);
 				mfinish();
 				Log.i("publish ", "finished !");
@@ -175,6 +177,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		if (id == android.R.id.home) {
 			closeInput();
 			emptyBimp();
+			Constants.publishResult = -1;
 			setResult(RESULT_CANCELED,  null);
 			finish();
 		}else if(id == R.id.activity_selectimg_send){

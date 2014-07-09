@@ -168,8 +168,8 @@
         <activity
             android:name="com.android.famcircle.picselect.PublishedActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"
-
             android:label="@string/publish_activity">
         </activity>
         <activity

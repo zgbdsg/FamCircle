@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
@@ -236,7 +237,21 @@ public class StatusListAdapter extends BaseAdapter{
 			}
 		});
 		
+		holder.userName.setTag(position);
 		holder.userName.setText(statusInfo.getName());
+		holder.userName.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				int num = (Integer)arg0.getTag();
+//				if(arg0.isHovered())
+//					arg0.setBackgroundColor(Color.rgb(169,169,169));
+				final StatusListInfo statInfo=(StatusListInfo)dataList.get(num).get("statusInfo");
+				startStatusOfPersonActivity(statInfo.getUsrId());
+			}
+		});
+		
 		holder.status.setText(statusInfo.getStatus());
 		
 		

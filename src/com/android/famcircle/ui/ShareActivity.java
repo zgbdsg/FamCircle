@@ -470,6 +470,7 @@ public class ShareActivity  extends BaseActivity {
 				reply.setToUsrId(replyInfo.getJSONObject(a).getString("toUsrId"));
 				reply.setToUsrName(replyInfo.getJSONObject(a).getString("toUsrName"));
 				reply.setReply(replyInfo.getJSONObject(a).getString("reply"));
+				reply.setStatusId(info.getStatusId());
 				replyList.add(reply);
 			}
 			map.put("replyinfo", replyList);

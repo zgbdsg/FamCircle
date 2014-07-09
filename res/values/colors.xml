@@ -2,6 +2,7 @@
 <resources>
 
     <color name="white">#ffffff</color>
+    <color name="reply_background_normal">#edeeee</color>
     <!-- 白色 -->
     <color name="ivory">#fffff0</color>
     <!-- 象牙色 -->

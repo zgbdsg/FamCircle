@@ -139,7 +139,7 @@
 		         <com.android.famcircle.FamcirleListView android:id="@+id/replyList"
 		             	   android:layout_width="fill_parent"
 		             	   android:layout_height="fill_parent"
-		             	   android:dividerHeight="0.2dp"
+		             	   android:dividerHeight="5dp"
 					       android:layout_marginBottom="5dp"
 					       android:paddingLeft="4dp"
 		             	   android:paddingTop="4dp"

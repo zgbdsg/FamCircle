@@ -12,7 +12,14 @@ public class StatusReplyInfo implements Serializable{
 	String toUsrId;
 	String toUsrName;
 	String reply;
+	String statusId;
 	
+	public String getStatusId() {
+		return statusId;
+	}
+	public void setStatusId(String statusId) {
+		this.statusId = statusId;
+	}
 	public String getFromUsrId() {
 		return fromUsrId;
 	}

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
@@ -19,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -73,7 +73,8 @@ public class StatusListAdapter extends BaseAdapter{
 		public boolean onTaskSuccess(ShareActivity context, Message msg) {
 			// TODO Auto-generated method stub
 			if(msg.arg1 == 2){
-				commentPopupWindow.dismiss();
+				if(commentPopupWindow != null)
+					commentPopupWindow.dismiss();
 			}else if(msg.arg1 == 1){
 				commentPopupWindow.dismiss();
 				int loc = msg.arg2;
@@ -105,6 +106,7 @@ public class StatusListAdapter extends BaseAdapter{
 				replyInfo.setReply(data.getString("reply"));
 				replyInfo.setToUsrId(data.getString("toUsrId"));
 				replyInfo.setToUsrName(data.getString("toUsrName"));
+				replyInfo.setStatusId(data.getString("StatusId"));
 				
 				Log.i("add reply info ", data.getString("reply"));
 				replyList.add(replyInfo);
@@ -284,7 +286,7 @@ public class StatusListAdapter extends BaseAdapter{
 				holder.zanText.setVisibility(View.GONE);
 		}	
 		
-		ReplyListAdapter replyAdapter = new ReplyListAdapter(context , statusReplyInfoList);
+		ReplyListAdapter replyAdapter = new ReplyListAdapter(context , statusReplyInfoList, position);
 		holder.replyList.setAdapter(replyAdapter);
 		
 		holder.comment.setTag(position); //Log.i("get view position ", ""+position);
@@ -378,72 +380,170 @@ public class StatusListAdapter extends BaseAdapter{
 	public void setDataList(List<HashMap<String, Object>> dataList) {
 		this.dataList = dataList;
 	}
-}
-	
-	
-	class SendZan  extends BaseAsyncTask<ShareActivity, Object, Message>{
-		@Override
-		public Message run(Object... params) throws Exception {
-			Message msg = new Message();
-			try{
-					Log.i("zan info:", params[1]+"  to "+params[2] +" int status "+params[3]);
-					PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[3]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[2]+", \"type\":1, \"reply\":\"\"}");
-					String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-					
-					JSONObject result = JSON.parseObject(json);
-					if(result.getIntValue("errCode") != 0)
-						msg.arg1 = 2;
-					else
-						msg.arg1 = 1;
 
-					msg.arg2 = (Integer) params[0];
-					Bundle data = new Bundle();
-					Log.i("zanFromName", (String) params[4]);
-					data.putString("fromUsrName", (String) params[4]);
-					data.putString("fromUsrId", (String) params[1]);
-					
-					msg.setData(data);
-					System.out.println(json);
-			}catch(Exception ex){
-				ex.printStackTrace();
-			}
-			return msg;
-		}
+///////////////////////////////////////////////////////////////////////////////////////////
+
+class ReplyListAdapter extends BaseAdapter{
+	
+	 List<StatusReplyInfo> statusReplyInfoList;
+	Context context;
+	 int statusLocation;
+
+	public ReplyListAdapter(Context context , List<StatusReplyInfo> statusReplyInfoList, int statusLocation){
+		this.statusReplyInfoList = statusReplyInfoList;
+		this.context = context;
+		this.statusLocation = statusLocation;
+		Log.i("status position:", statusLocation+"");
 	}
-	
-	
-	class SendReply  extends BaseAsyncTask<ShareActivity, Object, Message>{
-		@Override
-		public Message run(Object... params) throws Exception {
-//			sendReply.execute(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
-//					StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
-			Message msg = new Message();
-			try{
-				Log.i("reply  info:", params[1]+"  to "+params[3] +" int status "+params[5]);
-				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[5]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[3]+", \"type\":0, \"reply\":\""+params[7]+"\"}");
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return statusReplyInfoList.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		// TODO Auto-generated method stub
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		//Log.i("reply add :", ""+position);
+		TextView replyTextView;
+		if(convertView != null) {
+			replyTextView = (TextView)convertView;
+		}else{
+			replyTextView = new TextView(context);
+			replyTextView.setBackgroundResource(R.drawable.reply_text_background);
+		}
+		
+		replyTextView.setTag(position);
+		replyTextView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Log.i("press reply", "!!!");
+				int loc=(Integer) v.getTag();
+
+				ShareActivity share = (ShareActivity)context;
+				final RelativeLayout  inputWindow = share.inputWindow;
+				final RelativeLayout replyWindow = share.replyWindow;
+				Log.i("reply visual","  "+ inputWindow.getVisibility());
+				inputWindow.setVisibility(View.VISIBLE);
+				replyWindow.setVisibility(View.VISIBLE);
+				inputWindow.requestFocus();
+				InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
+				imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
+				
+				Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
+				btnReplySend.setTag(loc);
+				replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+				btnReplySend.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						int loc=(Integer) arg0.getTag();
+						StatusReplyInfo reply = statusReplyInfoList.get(loc);
+						SendReply sendReply = new SendReply();
+						sendReply.connect(handler);
+						sendReply.execute(statusLocation , ShareActivity.userId ,ShareActivity.userName , reply.getFromUsrId() , reply.getFromUsrName() ,reply.getStatusId(),
+								StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
+					}
+				});
+			}
+		});
+		
+		StatusReplyInfo reply = statusReplyInfoList.get(position);
+		
+		replyTextView.setText(reply.getFromUsrName()+" reply  "+reply.getToUsrName()+": "+reply.getReply());
+		return replyTextView;
+		}	
+	}
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+class SendZan  extends BaseAsyncTask<ShareActivity, Object, Message>{
+	@Override
+	public Message run(Object... params) throws Exception {
+		Message msg = new Message();
+		try{
+				Log.i("zan info:", params[1]+"  to "+params[2] +" int status "+params[3]);
+				PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[3]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[2]+", \"type\":1, \"reply\":\"\"}");
 				String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
-	
+				
 				JSONObject result = JSON.parseObject(json);
 				if(result.getIntValue("errCode") != 0)
 					msg.arg1 = 2;
 				else
-					msg.arg1 = 0 ;
+					msg.arg1 = 1;
+
 				msg.arg2 = (Integer) params[0];
 				Bundle data = new Bundle();
-				data.putString("fromUsrName", (String) params[2]);
+				Log.i("zanFromName", (String) params[4]);
+				data.putString("fromUsrName", (String) params[4]);
 				data.putString("fromUsrId", (String) params[1]);
-				data.putString("toUsrName", (String) params[4]);
-				data.putString("toUsrId", (String) params[3]);
-				data.putString("reply", (String) params[7]);
 				
 				msg.setData(data);
 				System.out.println(json);
-			}catch(Exception ex){
-				ex.printStackTrace();
-			}
-			return msg;
+		}catch(Exception ex){
+			ex.printStackTrace();
 		}
+		return msg;
 	}
+}
+
+
+class SendReply  extends BaseAsyncTask<ShareActivity, Object, Message>{
+	@Override
+	public Message run(Object... params) throws Exception {
+//		sendReply.execute(loc , ShareActivity.userId ,ShareActivity.userName , statInfo.getUsrId() , statInfo.getName() ,statInfo.getStatusId(),
+//				StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
+		Message msg = new Message();
+		try{
+			Log.i("reply  info:", params[1]+"  to "+params[3] +" int status "+params[5] +"at position  "+params[0]);
+			PostData pdata=new PostData("share", "postReply", "{\"statusId\":"+params[5]+ ", \"fromUsrId\":"+params[1]+", \"toUsrId\":"+params[3]+", \"type\":0, \"reply\":\""+StringUtils.gbEncoding((String)params[7])+"\"}");
+			String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
+
+			JSONObject result = JSON.parseObject(json);
+			if(result.getIntValue("errCode") != 0)
+				msg.arg1 = 2;
+			else
+				msg.arg1 = 0 ;
+			msg.arg2 = (Integer) params[0];
+			Bundle data = new Bundle();
+			data.putString("fromUsrName", (String) params[2]);
+			data.putString("fromUsrId", (String) params[1]);
+			data.putString("toUsrName", (String) params[4]);
+			data.putString("toUsrId", (String) params[3]);
+			data.putString("reply", (String) params[7]);
+			data.putString("StatusId", (String) params[5]);
+			
+			msg.setData(data);
+			System.out.println(json);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return msg;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 class GridViewAdapter extends BaseAdapter{
 	String[] imageUrls;
@@ -615,50 +715,4 @@ class GridViewAdapter extends BaseAdapter{
 		intent.putExtra("position", position);
 		context.startActivity(intent);
 	}
-}
-///////////////////////////////////////////////////////////////////////////////////////////
-
-class ReplyListAdapter extends BaseAdapter{
-	
-	 List<StatusReplyInfo> statusReplyInfoList;
-	Context context;
-
-	public ReplyListAdapter(Context context , List<StatusReplyInfo> statusReplyInfoList){
-		this.statusReplyInfoList = statusReplyInfoList;
-		this.context = context;
-	}
-	@Override
-	public int getCount() {
-		// TODO Auto-generated method stub
-		return statusReplyInfoList.size();
-	}
-
-	@Override
-	public Object getItem(int position) {
-		// TODO Auto-generated method stub
-		return position;
-	}
-
-	@Override
-	public long getItemId(int position) {
-		// TODO Auto-generated method stub
-		return position;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		//Log.i("reply add :", ""+position);
-		TextView replyTextView;
-		if(convertView != null) {
-			replyTextView = (TextView)convertView;
-		}else{
-			replyTextView = new TextView(context);
-		}
-		
-		StatusReplyInfo reply = statusReplyInfoList.get(position);
-		replyTextView.setText(reply.getFromUsrName()+" reply  to"+reply.getToUsrName()+": "+reply.getReply());
-		return replyTextView;
-	}
-	
 }

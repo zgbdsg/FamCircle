@@ -263,6 +263,8 @@ public class ShareActivity  extends BaseActivity {
 			openActivityForResult(GroupSettingActivity.class, pBundle, RequestCode.GroupSetting);
 			return true;
 		}else if(id == android.R.id.home){
+			Intent intent = new Intent(this, MainActivity.class);
+			startActivity(intent);
 			finish();
 		}
 		return super.onOptionsItemSelected(item);

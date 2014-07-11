@@ -447,6 +447,7 @@ class ReplyListAdapter extends BaseAdapter{
 				Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
 				btnReplySend.setTag(loc);
 				replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+				replyTextContent.setHint("reply to:"+statusReplyInfoList.get(loc).getFromUsrName());
 				btnReplySend.setOnClickListener(new OnClickListener() {
 					
 					@Override

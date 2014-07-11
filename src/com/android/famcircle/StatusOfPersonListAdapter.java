@@ -165,6 +165,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 		this.layoutInflater = layoutInflater;
 		this.options = options;
 	}
+	
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub

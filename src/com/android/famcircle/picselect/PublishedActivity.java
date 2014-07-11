@@ -92,10 +92,16 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				mCache.clear();
 //				refreshMsg.sendToTarget();
 				
-				Intent intent = new Intent();
-				intent.putExtra("handlerCode", 5);
+//				Intent intent = new Intent(PublishedActivity.this, ShareActivity.class);
+//				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+//				intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+//				intent.putExtra("handlerCode", 5);
 				Constants.publishResult = 0;
-				setResult(RESULT_OK, intent);
+//				setResult(RESULT_OK, intent);
+				Intent intentOk = new Intent(PublishedActivity.this, ShareActivity.class);
+				intentOk.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+				intentOk.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+				startActivity(intentOk);
 				mfinish();
 				Log.i("publish ", "finished !");
 				break;
@@ -179,6 +185,10 @@ public class PublishedActivity extends Activity implements OnClickListener {
 			emptyBimp();
 			Constants.publishResult = -1;
 			setResult(RESULT_CANCELED,  null);
+			Intent intent = new Intent(this, ShareActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+			intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+			startActivity(intent);
 			finish();
 		}else if(id == R.id.activity_selectimg_send){
 			closeInput();

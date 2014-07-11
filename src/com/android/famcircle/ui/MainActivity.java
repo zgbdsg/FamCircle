@@ -2,6 +2,8 @@ package com.android.famcircle.ui;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -20,12 +22,15 @@ import android.view.MenuItem;
 //import android.view.ViewGroup;
 import android.view.ViewConfiguration;
 import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
+
 import com.android.famcircle.R;
 import com.famnotes.android.base.AppManager;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.db.DBUtil;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.ExampleUtil;
+import com.famnotes.android.util.MyReceiver;
 import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -34,7 +39,7 @@ public class MainActivity extends BaseActivity {
 	
 	public static boolean isForeground = false;
 	//for receive customer msg from jpush server
-	private MessageReceiver mMessageReceiver;
+	private MyReceiver mMessageReceiver;
 	public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_MESSAGE = "message";
@@ -67,6 +72,19 @@ public class MainActivity extends BaseActivity {
 		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
 			Groups.lGroup=mCache.getAsObject("Groups.lGroup");
 		}
+		
+		Set<String> tags = new HashSet<String>();
+		for(int i=0;i<Groups.lGroup.size();i++){
+			tags.add("grpId"+Groups.lGroup.get(i).grpId);
+		}
+		JPushInterface.setAliasAndTags(this, "usrId"+User.Current.loginId, tags, new TagAliasCallback() {
+			
+			@Override
+			public void gotResult(int arg0, String arg1, Set<String> arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -102,34 +120,34 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void onDestroy() {
-		unregisterReceiver(mMessageReceiver);
+		//unregisterReceiver(mMessageReceiver);
 		super.onDestroy();
 	}
 	
 	
 	public void registerMessageReceiver() {
-		mMessageReceiver = new MessageReceiver();
-		IntentFilter filter = new IntentFilter();
+		mMessageReceiver = new MyReceiver();
+		IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
 		filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
 		filter.addAction(MESSAGE_RECEIVED_ACTION);
 		registerReceiver(mMessageReceiver, filter);
 	}
 
-	public class MessageReceiver extends BroadcastReceiver {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
-              String messge = intent.getStringExtra(KEY_MESSAGE);
-              String extras = intent.getStringExtra(KEY_EXTRAS);
-              StringBuilder showMsg = new StringBuilder();
-              showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
-              if (!ExampleUtil.isEmpty(extras)) {
-            	  showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
-              }
-			}
-		}
-	}
+//	public class MessageReceiver extends BroadcastReceiver {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
+//              String messge = intent.getStringExtra(KEY_MESSAGE);
+//              String extras = intent.getStringExtra(KEY_EXTRAS);
+//              StringBuilder showMsg = new StringBuilder();
+//              showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
+//              if (!ExampleUtil.isEmpty(extras)) {
+//            	  showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
+//              }
+//			}
+//		}
+//	}
 	
 	
 	@Override

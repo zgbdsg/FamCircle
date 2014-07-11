@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.famcircle.config.Constants;
 import com.android.famcircle.linearlistview.LinearListView;
 import com.android.famcircle.linearlistview.LinearListView.OnItemClickListener;
 import com.android.famcircle.ui.StatusImagePagerActivity;
@@ -118,7 +119,7 @@ public class StatusOfPersonListAdapter extends BaseAdapter{
 				
 				String[] bigImageUrl = new String[imageUrls.length];
 				for(int i=0;i<imageUrls.length;i ++)
-					bigImageUrl[i] = "http://114.215.180.229"+statInfo.getBigPicpath()+imageUrls[i];
+					bigImageUrl[i] = "http://"+Constants.Server+""+statInfo.getBigPicpath()+imageUrls[i];
 				Log.i("start pager", "");
 				startImagePagerActivity(0, "", bigImageUrl);
 			}
@@ -164,6 +165,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 		this.layoutInflater = layoutInflater;
 		this.options = options;
 	}
+	
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -209,7 +211,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 			listHolder.pics_status.setVisibility(View.VISIBLE);
 			listHolder.pics_discript.setText(statusTexts[position]);
 			listHolder.numOfPics.setText(numOfPics[position]);
-			ImageLoader.getInstance().displayImage("http://114.215.180.229"+smallPicPath+statusPic[position], listHolder.pics,options,null);
+			ImageLoader.getInstance().displayImage("http://"+Constants.Server+""+smallPicPath+statusPic[position], listHolder.pics,options,null);
 		
 			
 		}

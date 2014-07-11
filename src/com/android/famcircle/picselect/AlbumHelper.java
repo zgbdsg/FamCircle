@@ -142,9 +142,9 @@ public class AlbumHelper {
 				numOfSongs = cur.getInt(numOfSongsColumn);
 
 				// Do something with the values.
-				Log.i(TAG, _id + " album:" + album + " albumArt:" + albumArt
-						+ "albumKey: " + albumKey + " artist: " + artist
-						+ " numOfSongs: " + numOfSongs + "---");
+//				Log.i(TAG, _id + " album:" + album + " albumArt:" + albumArt
+//						+ "albumKey: " + albumKey + " artist: " + artist
+//						+ " numOfSongs: " + numOfSongs + "---");
 				HashMap<String, String> hash = new HashMap<String, String>();
 				hash.put("_id", _id + "");
 				hash.put("album", album);
@@ -232,17 +232,17 @@ public class AlbumHelper {
 			Map.Entry<String, ImageBucket> entry = (Map.Entry<String, ImageBucket>) itr
 					.next();
 			ImageBucket bucket = entry.getValue();
-			Log.d(TAG, entry.getKey() + ", " + bucket.bucketName + ", "
-					+ bucket.count + " ---------- ");
+//			Log.d(TAG, entry.getKey() + ", " + bucket.bucketName + ", "
+//					+ bucket.count + " ---------- ");
 			for (int i = 0; i < bucket.imageList.size(); ++i) {
 				ImageItem image = bucket.imageList.get(i);
-				Log.d(TAG, "----- " + image.imageId + ", " + image.imagePath
-						+ ", " + image.thumbnailPath);
+//				Log.d(TAG, "----- " + image.imageId + ", " + image.imagePath
+//						+ ", " + image.thumbnailPath);
 			}
 		}
 		hasBuildImagesBucketList = true;
 		long endTime = System.currentTimeMillis();
-		Log.d(TAG, "use time: " + (endTime - startTime) + " ms");
+//		Log.d(TAG, "use time: " + (endTime - startTime) + " ms");
 	}
 
 	/**
@@ -274,7 +274,7 @@ public class AlbumHelper {
 	 */
 	String getOriginalImagePath(String image_id) {
 		String path = null;
-		Log.i(TAG, "---(^o^)----" + image_id);
+//		Log.i(TAG, "---(^o^)----" + image_id);
 		String[] projection = { Media._ID, Media.DATA };
 		Cursor cursor = cr.query(Media.EXTERNAL_CONTENT_URI, projection,
 				Media._ID + "=" + image_id, null, null);

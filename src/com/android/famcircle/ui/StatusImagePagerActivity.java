@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.android.famcircle.HackyViewPager;
 import com.android.famcircle.R;
+import com.famnotes.android.base.BaseActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -110,9 +112,9 @@ public class StatusImagePagerActivity extends BaseActivity {
 		
 		for(int i=0;i<imageUrls.length;i++){
 			pointsArray[i] = new ImageView(this);
-			pointsArray[i].setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			pointsArray[i].setPadding(15, 0, 0, 0);
-			pointsArray[i].setScaleType(ScaleType.MATRIX);
+			pointsArray[i].setLayoutParams(new LayoutParams(20, 20));
+			pointsArray[i].setPadding(0, 0, 10, 0);
+			pointsArray[i].setScaleType(ScaleType.FIT_CENTER);
 			
 			if(i==pagerPosition){
 				pointsArray[i].setImageResource(R.drawable.point_selected);

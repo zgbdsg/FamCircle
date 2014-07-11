@@ -1,6 +1,12 @@
 package com.android.famcircle;
 
-public class StatusZanInfo {
+import java.io.Serializable;
+
+public class StatusZanInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8177546272336857090L;
 	String fromUsrId;
 	String fromUsrName;
 	public String getFromUsrId() {

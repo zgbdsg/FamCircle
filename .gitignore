@@ -2,3 +2,4 @@ bin/
 gen/
 lint.xml
 project.properties
+/res/anim/.svn

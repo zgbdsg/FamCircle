@@ -5,7 +5,7 @@
     android:background="#f1eff5"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <!-- <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="#ff495a" >
@@ -29,7 +29,7 @@
             android:textColor="@drawable/text_while"
             android:text="取消"
             android:textSize="20sp" />
-    </RelativeLayout>
+    </RelativeLayout> -->
 
     <GridView
         android:id="@+id/gridview"

@@ -39,11 +39,17 @@
 		    		  android:layout_height="wrap_content"
 		    		  android:layout_marginBottom="5dp"
 		    		  android:orientation="horizontal">
-			    <TextView android:id="@+id/username"
-			        	  android:layout_width="wrap_content"
-			        	  android:layout_height="wrap_content"
-			        	  android:text="lilei"
-			        	  android:layout_marginRight="15dp"/>
+
+			    <TextView
+			        android:id="@+id/username"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="top"
+			        android:layout_marginRight="15dp"
+			        android:background="@drawable/text_background"
+			        android:text="lilei"
+			        android:textColor="@color/lightslategrey"
+			        android:textSize="@dimen/status_username_dim" />
 			    
 			    <TextView android:id="@+id/link_message"
 			        	  android:layout_width="wrap_content"
@@ -97,12 +103,14 @@
 				android:layout_height="wrap_content"
 				android:minHeight="40dp"
 				android:layout_width="fill_parent">
+
 				<TextView
-					android:id="@+id/publish_time"
-					android:layout_alignParentLeft="true"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="2天前" />
+				    android:id="@+id/publish_time"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_alignParentLeft="true"
+				    android:text="2天前"
+				    android:textColor="@color/darkgray" />
 
 				<ImageButton
 					android:focusable="true"
@@ -131,7 +139,7 @@
 		         <com.android.famcircle.FamcirleListView android:id="@+id/replyList"
 		             	   android:layout_width="fill_parent"
 		             	   android:layout_height="fill_parent"
-		             	   android:dividerHeight="0.2dp"
+		             	   android:dividerHeight="5dp"
 					       android:layout_marginBottom="5dp"
 					       android:paddingLeft="4dp"
 		             	   android:paddingTop="4dp"

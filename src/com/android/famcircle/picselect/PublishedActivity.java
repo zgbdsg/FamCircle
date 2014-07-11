@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,6 +25,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -45,13 +48,15 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
+import com.android.famcircle.config.Constants;
 import com.android.famcircle.ui.ShareActivity;
-import com.android.famcircle.util.ACache;
-import com.android.famcircle.util.FNHttpRequest;
-import com.android.famcircle.util.ImageUtils;
-import com.android.famcircle.util.PictureBody;
-import com.android.famcircle.util.PostData;
-import com.android.famcircle.util.StringUtils;
+import com.famnotes.android.util.ACache;
+import com.famnotes.android.util.FNHttpRequest;
+import com.famnotes.android.util.ImageUtils;
+import com.famnotes.android.util.PictureBody;
+import com.famnotes.android.util.PostData;
+import com.famnotes.android.util.StringUtils;
+import com.famnotes.android.vo.User;
 
 public class PublishedActivity extends Activity implements OnClickListener {
 	
@@ -61,8 +66,8 @@ public class PublishedActivity extends Activity implements OnClickListener {
 	private LinearLayout screen;
 	private GridView noScrollgridview;
 	private GridAdapter adapter;
-	private TextView activitySelectimgSend;
-	private TextView cancel;
+//	private TextView activitySelectimgSend;
+//	private TextView cancel;
 	private EditText contentEdit;
 	private ACache mCache;
 	
@@ -83,12 +88,22 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				
 				Message refreshMsg = new Message();
 				refreshMsg.arg1 = 5;
-				refreshMsg.setTarget(ShareActivity.myhandler);
+//				refreshMsg.setTarget(ShareActivity.myhandler);
 				mCache.clear();
-				refreshMsg.sendToTarget();
+//				refreshMsg.sendToTarget();
 				
-				PublishedActivity.this.finish();
-				
+//				Intent intent = new Intent(PublishedActivity.this, ShareActivity.class);
+//				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+//				intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+//				intent.putExtra("handlerCode", 5);
+				Constants.publishResult = 0;
+//				setResult(RESULT_OK, intent);
+				Intent intentOk = new Intent(PublishedActivity.this, ShareActivity.class);
+				intentOk.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+				intentOk.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+				startActivity(intentOk);
+				mfinish();
+				Log.i("publish ", "finished !");
 				break;
 			case MSG_SEND_FAIL:
 				progressDialog.dismiss();
@@ -100,20 +115,27 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		};
 	};
 
+	private void mfinish(){
+		this.finish();
+	}
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		Log.v("halley", "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_selectimg);
 		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		init();
 	}
 
 	public void init() {
 		mCache = ACache.get(this);
+		User.Current=mCache.getAsObject("User.Current");
 		screen = (LinearLayout) findViewById(R.id.screen);
-		activitySelectimgSend = (TextView) findViewById(R.id.activity_selectimg_send);
-		cancel = (TextView) findViewById(R.id.cancel);
+//		activitySelectimgSend = (TextView) findViewById(R.id.activity_selectimg_send);
+//		cancel = (TextView) findViewById(R.id.cancel);
 		
 		contentEdit = (EditText) findViewById(R.id.contentEditText);
 		noScrollgridview = (GridView) findViewById(R.id.noScrollgridview);
@@ -138,9 +160,48 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		});
 		
 		screen.setOnClickListener(this);
-		cancel.setOnClickListener(this);
-		activitySelectimgSend.setOnClickListener(this);
+//		cancel.setOnClickListener(this);
+//		activitySelectimgSend.setOnClickListener(this);
 		contentEdit.setOnClickListener(this);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.publish, menu);
+		return true;
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			closeInput();
+			emptyBimp();
+			Constants.publishResult = -1;
+			setResult(RESULT_CANCELED,  null);
+			Intent intent = new Intent(this, ShareActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+			intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+			startActivity(intent);
+			finish();
+		}else if(id == R.id.activity_selectimg_send){
+			closeInput();
+			progressDialog = ProgressDialog.show(PublishedActivity.this, "Sending...", "Please wait...", true, false);  
+			
+			ArrayList<String> uploadList = new ArrayList<String>();
+			for (int i = 0; i < Bimp.drr.size(); i++) {
+				uploadList.add(Bimp.drr.get(i));
+			}
+			upload(uploadList, contentEdit.getText().toString());
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 	
 	//上传数据
@@ -170,11 +231,13 @@ public class PublishedActivity extends Activity implements OnClickListener {
 				}
 				
 				String json;
-				JSONObject responseJSONObject;
-
-				json = new FNHttpRequest().doPost(pdata).trim();
+				JSONObject responseJSONObject = null;
+				try{
+				json = new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 				responseJSONObject = JSON.parseObject(json);
-				
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				if (responseJSONObject.getIntValue("errCode") == 0) {
 					mHandler.sendEmptyMessage(MSG_SEND_SUC);
 				} else {
@@ -410,6 +473,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 			vDirPath.mkdirs();
 		}
 		path = file.getPath();
+		mCache.put("path", path);
 		Log.v("halley", "path_photo:" + path);
 		Uri imageUri = Uri.fromFile(file);
 		openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -421,7 +485,7 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		switch (requestCode) {
 		case TAKE_PICTURE:
 			if (Bimp.drr.size() < 9 && resultCode == RESULT_OK) {
-				Bimp.drr.add(file.getPath());
+				Bimp.drr.add(mCache.getAsString("path"));
 			}
 			
 			break;
@@ -438,12 +502,12 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		case R.id.screen:
 			closeInput();
 			break;
-		case R.id.cancel:
-			closeInput();
-			emptyBimp();
-			PublishedActivity.this.finish();
-			break;
-		case R.id.activity_selectimg_send:
+//		case R.id.cancel:
+//			closeInput();
+//			emptyBimp();
+//			PublishedActivity.this.finish();
+//			break;
+//		case R.id.activity_selectimg_send:
 //			ArrayList<String> list = new ArrayList<String>();				
 //			for (int i = 0; i < Bimp.drr.size(); i++) {
 //				String Str = Bimp.drr.get(i).substring( 
@@ -451,15 +515,15 @@ public class PublishedActivity extends Activity implements OnClickListener {
 //						Bimp.drr.get(i).lastIndexOf("."));
 //				list.add(FileUtils.SDPATH+Str+".jpg");				
 //			}
-			closeInput();
-			progressDialog = ProgressDialog.show(PublishedActivity.this, "Sending...", "Please wait...", true, false);  
-			
-			ArrayList<String> uploadList = new ArrayList<String>();
-			for (int i = 0; i < Bimp.drr.size(); i++) {
-				uploadList.add(Bimp.drr.get(i));
-			}
-			upload(uploadList, contentEdit.getText().toString());
-			break;
+//			closeInput();
+//			progressDialog = ProgressDialog.show(PublishedActivity.this, "Sending...", "Please wait...", true, false);  
+//			
+//			ArrayList<String> uploadList = new ArrayList<String>();
+//			for (int i = 0; i < Bimp.drr.size(); i++) {
+//				uploadList.add(Bimp.drr.get(i));
+//			}
+//			upload(uploadList, contentEdit.getText().toString());
+//			break;
 		case R.id.contentEditText:
 			contentEdit.setCursorVisible(true);
 			break;
@@ -468,4 +532,20 @@ public class PublishedActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+//		onStop()is called when the activity is no longer visible to the 
+//		user. This may happen because the activity is being destroyed 
+//		or because another activity (either an existing one or a new 
+//		one) has been resumed and is covering the activity. Android 
+//		calls onRestart()after calling onStop()
+		
+		//openCameraIntent后，才被执行的。 为什么不是onPause()
+		Log.d("PublishedActivity", "onStop() called");
+		super.onStop();
+	}
+	
+	
 }

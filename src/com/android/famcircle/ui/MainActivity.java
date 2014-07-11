@@ -1,28 +1,54 @@
 package com.android.famcircle.ui;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.app.AlertDialog;
+//import android.app.Fragment;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+//import android.view.View;
+//import android.view.ViewGroup;
+import android.view.ViewConfiguration;
 
 import com.android.famcircle.R;
-import com.android.famcircle.util.ACache;
+import com.famnotes.android.base.AppManager;
+import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.db.DBUtil;
+import com.famnotes.android.util.ACache;
+import com.famnotes.android.vo.Groups;
+import com.famnotes.android.vo.User;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class MainActivity extends Activity {
-	private ACache mCache;
+public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if(menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
+		
 		mCache = ACache.get(this);
+		if(User.Current==null)
+			User.Current=mCache.getAsObject("User.Current");
+		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
+			Groups.lGroup=mCache.getAsObject("Groups.lGroup");
+		}
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -44,7 +70,6 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
@@ -61,24 +86,67 @@ public class MainActivity extends Activity {
 		}else if(id == R.id.action_clearcache){
 			mCache.clear();
 		}
+		
+		if (id == R.id.menu_exit) {
+			new AlertDialog.Builder(this).setTitle("").setMessage("Exit£¿")
+			.setPositiveButton("OK", new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					AppManager.getInstance().AppExit(getApplicationContext());
+					ImageLoader.getInstance().clearMemoryCache();
+				}
+			})
+			.setNegativeButton("CANCEL", new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.dismiss();
+				}
+			})
+			.show();
+		}
+
+		if (id ==R.id.menu_clear) {
+		  new AlertDialog.Builder(this).setTitle("Delete User Data").setMessage("Delete User Data, then Exit")
+			.setPositiveButton("OK",  new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						try {
+							DBUtil.clearDatabase();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						AppManager.getInstance().AppExit(getApplicationContext());//System.exit(0);
+					}
+				})
+			.setNegativeButton("CANCEL", new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				})
+			.show();
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
-		}
-	}
+//	/**
+//	 * A placeholder fragment containing a simple view.
+//	 */
+//	public static class PlaceholderFragment extends Fragment {
+//
+//		public PlaceholderFragment() {
+//		}
+//
+//		@Override
+//		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//				Bundle savedInstanceState) {
+//			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+//			return rootView;
+//		}
+//	}
 
 }

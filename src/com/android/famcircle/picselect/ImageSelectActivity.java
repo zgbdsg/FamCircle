@@ -5,13 +5,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -32,7 +35,7 @@ public class ImageSelectActivity extends Activity implements OnClickListener {
 	private ImageSelectAdapter adapter;
 	private AlbumHelper helper;
 	private Button finish;
-	TextView cancel;
+//	TextView cancel;
 
 	Handler mHandler = new Handler() {
 		@Override
@@ -52,6 +55,9 @@ public class ImageSelectActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		setContentView(R.layout.activity_image_grid);
 
 		helper = AlbumHelper.getHelper();
@@ -64,10 +70,22 @@ public class ImageSelectActivity extends Activity implements OnClickListener {
 		finish = (Button) findViewById(R.id.finish);
 		finish.setOnClickListener(this);
 		
-		cancel = (TextView) findViewById(R.id.cancel);
-		cancel.setOnClickListener(this);
+//		cancel = (TextView) findViewById(R.id.cancel);
+//		cancel.setOnClickListener(this);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			finish();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
 	private void initView() {
 		gridView = (GridView) findViewById(R.id.gridview);
 		gridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
@@ -101,9 +119,6 @@ public class ImageSelectActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.cancel:
-			this.finish();
-			break;
 		case R.id.finish:
 			ArrayList<String> list = new ArrayList<String>();
 			Collection<String> c = adapter.map.values();
@@ -119,18 +134,10 @@ public class ImageSelectActivity extends Activity implements OnClickListener {
 				}
 			}
 
-//			if (Bimp.act_bool) {
-				Intent intent = new Intent(ImageSelectActivity.this,
-						PublishedActivity.class);
-				startActivity(intent);
-//				Bimp.act_bool = false;
-//			}
-//			for (int i = 0; i < list.size(); i++) {
-//				if (Bimp.drr.size() < 9) {
-//					Bimp.drr.add(list.get(i));
-//				}
-//			}
-//			finish();
+			Intent intent = new Intent(ImageSelectActivity.this,
+					PublishedActivity.class);
+			startActivity(intent);
+
 			break;
 		}
 	}

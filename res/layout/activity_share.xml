@@ -32,7 +32,7 @@
 	        android:id="@+id/statuslist"
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent" 
-	        android:dividerHeight="2dp"
+	        android:dividerHeight="0dp"
 	        android:layout_marginBottom="5dp"
 	        android:fadingEdge="none"
 	        android:fastScrollEnabled="false"

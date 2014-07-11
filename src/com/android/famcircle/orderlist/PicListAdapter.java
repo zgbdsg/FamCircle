@@ -16,7 +16,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.android.famcircle.R;
+import com.android.famcircle.orderlist.OrderStatusListActivity.RequestData;
 import com.android.famcircle.orderlist.PinnedHeaderListView.PinnedHeaderAdapter;
+import com.android.famcircle.ui.ShareActivity;
+import com.famnotes.android.base.BaseActivity;
+import com.famnotes.android.base.BaseAsyncTask;
+import com.famnotes.android.base.BaseAsyncTaskHandler;
 
 public class PicListAdapter extends BaseAdapter implements
 		PinnedHeaderAdapter, OnScrollListener {
@@ -31,6 +36,7 @@ public class PicListAdapter extends BaseAdapter implements
 	private int level;
 	private int maxLevel;
 	
+	private PicListhandler handler;
 //	private String [][]tagName = {
 //			{"2010年", "2011年", "2012年", "2013年", "2014年", "2015年", "2016年"},
 //			{"1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"},
@@ -46,6 +52,7 @@ public class PicListAdapter extends BaseAdapter implements
 		this.level = 0;
 		this.maxLevel = maxLevel;
 		mInflater = LayoutInflater.from(mContext);
+		handler = new PicListhandler((OrderStatusListActivity)mContext, false);
 	}
 
 	@Override
@@ -143,7 +150,9 @@ public class PicListAdapter extends BaseAdapter implements
 		// TODO Auto-generated method stub
 		int realPosition = position;
 		int section = mIndexer.getSectionForPosition(realPosition);
-		String title = (String) mIndexer.getSections()[section];
+		String title = "";
+		if(mIndexer.getSections() != null && mIndexer.getSections().length != 0)
+			title = (String) mIndexer.getSections()[section];
 		((TextView) header.findViewById(R.id.group_title)).setText(title);
 	}
 
@@ -177,17 +186,57 @@ public class PicListAdapter extends BaseAdapter implements
 			int vid= arg1.getId ( ) ;
 			
 			if (level < maxLevel) {
-				Message msg = new Message();
-				msg.what = 1;
-				level = level + 1;
-				msg.arg2 =level;
+//				Message msg = new Message();
+//				msg.what = 1;
+//				level = level + 1;
+//				msg.arg2 =level;
 				Log.v("halley", "maxL:" + maxLevel);
-				msg.setTarget(OrderStatusListActivity.handler);
-				msg.sendToTarget();
+//				msg.setTarget(OrderStatusListActivity.handler);
+//				msg.sendToTarget();
 				
+				UpdateDataByLevel updatetask = new UpdateDataByLevel();
+				updatetask.connect(handler);
+				updatetask.execute();
 				Log.v("halley", "level:" + level);
 			}
 		}
+	}
+	
+	class PicListhandler extends BaseAsyncTaskHandler<OrderStatusListActivity, Message>{
+
+		public PicListhandler(OrderStatusListActivity context,
+				boolean showProgressBar) {
+			super(context, showProgressBar);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public boolean onTaskFailed(OrderStatusListActivity arg0, Exception arg1) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean onTaskSuccess(OrderStatusListActivity context, Message msg) {
+			// TODO Auto-generated method stub
+			context.updateDataByLevel(msg.arg2);
+			return true;
+		}
+		
+	}
+	
+	class UpdateDataByLevel extends BaseAsyncTask<OrderStatusListActivity, Object, Message>{
+
+		@Override
+		public Message run(Object... arg0) throws Exception {
+			// TODO Auto-generated method stub
+			Message msg = new Message();
+			msg.what = 1;
+			level = level + 1;
+			msg.arg2 =level;
+			return msg;
+		}
+		
 	}
 	
 	//升级

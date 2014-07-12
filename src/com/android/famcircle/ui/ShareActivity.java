@@ -65,6 +65,8 @@ public class ShareActivity  extends BaseActivity {
 	public static String logoUrl;
 	public static String groupId; //? int groupId; 
 	
+	public static int showNum ;
+	
 	private ACache mCache;
 	
 	String statusResult; //getStatusXXXX()  返回的json数据包
@@ -98,6 +100,8 @@ public class ShareActivity  extends BaseActivity {
 		
 		context = this;
 		mCache = ACache.get(this);
+		showNum = 8;
+		
 		if(User.Current==null)
 			User.Current=mCache.getAsObject("User.Current");
 		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
@@ -146,6 +150,7 @@ public class ShareActivity  extends BaseActivity {
 					getDataTask.execute(1);
 				}else if(refreshView.getCurrentMode() == Mode.PULL_FROM_END){
 					currentMode = 0;
+					
 					GetDataTask getDataTask = new GetDataTask();
 					getDataTask.connect(myhandlerPull);
 					getDataTask.execute(0);
@@ -278,6 +283,12 @@ public class ShareActivity  extends BaseActivity {
 			try{
 			if(reqJsonMsg[0] == 0){
 				/*from end*/
+				
+				if(listMap.size() > showNum){
+					showNum = 2*showNum;
+					return 6;
+				}
+				
 				String statusId = "-1";
 				if(listMap.size() != 0){
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
@@ -373,6 +384,8 @@ public class ShareActivity  extends BaseActivity {
 							allList.addAll(listMap);
 						}
 						listMap = allList;
+						showNum = 2*showNum;
+						
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
@@ -388,6 +401,10 @@ public class ShareActivity  extends BaseActivity {
 					case 5:
 						//for status send finished;
 						listNotifyDataSetChanged();
+						break;
+					case 6:
+						mPullRefreshListView.onRefreshComplete();
+						notifyDataSetChanged() ; 
 						break;
 					default:
 //						onLoading.dismiss();

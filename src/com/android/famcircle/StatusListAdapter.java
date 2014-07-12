@@ -178,7 +178,8 @@ public class StatusListAdapter extends BaseAdapter{
 	public int getCount() {
 		// TODO Auto-generated method stub
 		//Log.i("get count", ""+(this.dataList!=null? this.dataList.size(): 0));
-		return this.dataList!=null? this.dataList.size(): 0 ;
+		int num = this.dataList!=null? this.dataList.size(): 0;
+		return (num>ShareActivity.showNum)?ShareActivity.showNum : num ;
 	}
 
 	@Override

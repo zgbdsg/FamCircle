@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +35,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.config.Constants;
 import com.android.famcircle.linearlistview.LinearListView;
+import com.android.famcircle.linearlistview.LinearListView.OnItemClickListener;
 import com.android.famcircle.ui.ShareActivity;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.android.famcircle.ui.StatusOfPersonActivity;
@@ -132,7 +133,7 @@ public class StatusListAdapter extends BaseAdapter{
 		ImageButton comment;
 		LinearLayout all_reply_component;
 		TextView zanText;
-		ListView replyList;
+		LinearListView replyList;
 	}
 	
 	private List<HashMap<String, Object>> dataList;
@@ -197,7 +198,7 @@ public class StatusListAdapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
-//		Log.i("get view("+dataList.size()+") :", ""+position);
+		Log.i("get view("+dataList.size()+") :", ""+position);
 		statusInfo = (StatusListInfo)dataList.get(position).get("statusInfo");
 		statusZanInfoList = (List<StatusZanInfo>)dataList.get(position).get("zaninfo");
 		//Log.i("zan Len:", ""+statusZanInfoList.size()+"");
@@ -217,7 +218,7 @@ public class StatusListAdapter extends BaseAdapter{
 			holder.comment = (ImageButton)convertView.findViewById(R.id.commentButton);
 			holder.all_reply_component = (LinearLayout)convertView.findViewById(R.id.all_reply_component);
 			holder.zanText = (TextView)convertView.findViewById(R.id.zan_text);
-			holder.replyList = (ListView)convertView.findViewById(R.id.replyList);
+			holder.replyList = (LinearListView)convertView.findViewById(R.id.replyList);
 			
 			convertView.setTag(holder);
 		}
@@ -289,6 +290,48 @@ public class StatusListAdapter extends BaseAdapter{
 		
 		ReplyListAdapter replyAdapter = new ReplyListAdapter(context , statusReplyInfoList, position);
 		holder.replyList.setAdapter(replyAdapter);
+
+		holder.replyList.setTag(position);
+		
+		holder.replyList.setOnItemClickListener(new OnItemClickListener() {
+			
+			@Override
+			public void onItemClick(LinearListView parent, View view, int position,
+					long id) {
+				// TODO Auto-generated method stub
+				final int statusLocation = (Integer) parent.getTag();
+				Log.i("click status location: ", ""+statusLocation);
+				final List<StatusReplyInfo> replyInfoList = (List<StatusReplyInfo>)dataList.get(statusLocation).get("replyinfo");
+				ShareActivity share = (ShareActivity)context;
+				final RelativeLayout  inputWindow = share.inputWindow;
+				final RelativeLayout replyWindow = share.replyWindow;
+//				Log.i("reply visual","  "+ inputWindow.getVisibility());
+				inputWindow.setVisibility(View.VISIBLE);
+				replyWindow.setVisibility(View.VISIBLE);
+				inputWindow.requestFocus();
+				InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
+				imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
+				
+				Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
+				btnReplySend.setTag(position);
+				replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+				replyTextContent.setHint("reply to:"+replyInfoList.get(position).getFromUsrName());
+				
+				btnReplySend.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						int locOfReply=(Integer) arg0.getTag();
+						StatusReplyInfo reply = replyInfoList.get(locOfReply);
+						SendReply sendReply = new SendReply();
+						sendReply.connect(handler);
+						sendReply.execute(statusLocation , ShareActivity.userId ,ShareActivity.userName , reply.getFromUsrId() , reply.getFromUsrName() ,reply.getStatusId(),
+								StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
+					}
+				});
+			}
+		});
 		
 		holder.comment.setTag(position); //Log.i("get view position ", ""+position);
 		holder.comment.setOnClickListener(new OnClickListener() {
@@ -386,6 +429,11 @@ public class StatusListAdapter extends BaseAdapter{
 
 class ReplyListAdapter extends BaseAdapter{
 	
+	class ReplyViewHolder{
+		TextView replyFromName;
+		TextView replayToName;
+		TextView replyContent;
+	}
 	 List<StatusReplyInfo> statusReplyInfoList;
 	Context context;
 	 int statusLocation;
@@ -423,49 +471,53 @@ class ReplyListAdapter extends BaseAdapter{
 			replyTextView = (TextView)convertView;
 		}else{
 			replyTextView = new TextView(context);
+//			replyTextView.setAutoLinkMask(0);
 			replyTextView.setBackgroundResource(R.drawable.reply_text_background);
+			replyTextView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
 		}
 		
-		replyTextView.setTag(position);
-		replyTextView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Log.i("press reply", "!!!");
-				int loc=(Integer) v.getTag();
-
-				ShareActivity share = (ShareActivity)context;
-				final RelativeLayout  inputWindow = share.inputWindow;
-				final RelativeLayout replyWindow = share.replyWindow;
-				Log.i("reply visual","  "+ inputWindow.getVisibility());
-				inputWindow.setVisibility(View.VISIBLE);
-				replyWindow.setVisibility(View.VISIBLE);
-				inputWindow.requestFocus();
-				InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
-				imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
-				
-				Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
-				btnReplySend.setTag(loc);
-				replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
-				replyTextContent.setHint("reply to:"+statusReplyInfoList.get(loc).getFromUsrName());
-				btnReplySend.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-						int loc=(Integer) arg0.getTag();
-						StatusReplyInfo reply = statusReplyInfoList.get(loc);
-						SendReply sendReply = new SendReply();
-						sendReply.connect(handler);
-						sendReply.execute(statusLocation , ShareActivity.userId ,ShareActivity.userName , reply.getFromUsrId() , reply.getFromUsrName() ,reply.getStatusId(),
-								StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
-					}
-				});
-			}
-		});
+//		replyTextView.setTag(position);
+//		replyTextView.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				Log.i("press reply", "!!!");
+//				int loc=(Integer) v.getTag();
+//
+//				ShareActivity share = (ShareActivity)context;
+//				final RelativeLayout  inputWindow = share.inputWindow;
+//				final RelativeLayout replyWindow = share.replyWindow;
+//				Log.i("reply visual","  "+ inputWindow.getVisibility());
+//				inputWindow.setVisibility(View.VISIBLE);
+//				replyWindow.setVisibility(View.VISIBLE);
+//				inputWindow.requestFocus();
+//				InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
+//				imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
+//				
+//				Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
+//				btnReplySend.setTag(loc);
+//				replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+//				replyTextContent.setHint("reply to:"+statusReplyInfoList.get(loc).getFromUsrName());
+//				btnReplySend.setOnClickListener(new OnClickListener() {
+//					
+//					@Override
+//					public void onClick(View arg0) {
+//						// TODO Auto-generated method stub
+//						int loc=(Integer) arg0.getTag();
+//						StatusReplyInfo reply = statusReplyInfoList.get(loc);
+//						SendReply sendReply = new SendReply();
+//						sendReply.connect(handler);
+//						sendReply.execute(statusLocation , ShareActivity.userId ,ShareActivity.userName , reply.getFromUsrId() , reply.getFromUsrName() ,reply.getStatusId(),
+//								StringUtils.gbEncoding(replyTextContent.getText().toString()) , replyTextContent.getText().toString());
+//					}
+//				});
+//			}
+//		});
 		
 		StatusReplyInfo reply = statusReplyInfoList.get(position);
+		
+		SpannableString ssReplyFromName = new SpannableString(reply.getFromUsrName());
 		
 		replyTextView.setText(reply.getFromUsrName()+" reply  "+reply.getToUsrName()+": "+reply.getReply());
 		return replyTextView;

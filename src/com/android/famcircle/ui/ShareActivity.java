@@ -66,11 +66,13 @@ public class ShareActivity  extends BaseActivity {
 	public static String groupId; //? int groupId; 
 	
 	public static int showNum ;
-	
+	public static Boolean isNeedRefresh;
 	private ACache mCache;
 	
 	String statusResult; //getStatusXXXX()  返回的json数据包
 	List<HashMap<String, Object>> listMap; //statusResult的解析结果, 其中HashMap<String, Object>就是一个Status的所有结构
+	HashMap<String, Object> newZanAndReplyOfHistory;
+	HashMap<Integer,Integer> indexMap;
 	ListView statuslist;
 	View headview;
 	PullToRefreshListView mPullRefreshListView;
@@ -82,7 +84,6 @@ public class ShareActivity  extends BaseActivity {
 	DisplayImageOptions options;
 	
 //	private CustomProgressDialog onLoading;
-	Boolean isNeedRefresh;
 	int currentMode; ///getStatusXXXX ‘s flag， 表示刷新模式，上拉 or 下拉
 	
 	Context context;
@@ -210,7 +211,14 @@ public class ShareActivity  extends BaseActivity {
 
 //		if(isNeedRefresh)
 //			onLoading.show();
-		//myadapter.notifyDataSetChanged();
+//		myadapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		if(isNeedRefresh)
+			listNotifyDataSetChanged();
 	}
 	
 	@Override
@@ -256,6 +264,7 @@ public class ShareActivity  extends BaseActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.btn_send_status) {
+			Constants.publishResult = -2;
 			Intent i = new Intent(getApplicationContext(), PublishedActivity.class);
 			startActivityForResult(i, RequestCode.RefreshStatusByPull);//startActivity(i);
 			return true;
@@ -365,6 +374,9 @@ public class ShareActivity  extends BaseActivity {
 //						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
+						
+						updateIndexMap(listMap);
+						updateNewZanAndReply();
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
@@ -387,6 +399,8 @@ public class ShareActivity  extends BaseActivity {
 						showNum = 2*showNum;
 						
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
+						updateIndexMap(listMap);
+						updateNewZanAndReply();
 						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 						myadapter.notifyDataSetChanged();
@@ -409,6 +423,7 @@ public class ShareActivity  extends BaseActivity {
 					default:
 //						onLoading.dismiss();
 						listMap = getStatusListMaps(statusResult);
+						updateIndexMap(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
@@ -424,9 +439,26 @@ public class ShareActivity  extends BaseActivity {
 			myadapter.notifyDataSetChanged();
 	}
 	
+	public void updateIndexMap(List<HashMap<String, Object>> list) {
+		// TODO Auto-generated method stub
+		if(indexMap == null){
+			indexMap = new HashMap<Integer, Integer>();
+		}
+		
+		for(int i=0;i<list.size();i++){
+			StatusListInfo info = (StatusListInfo) list.get(i).get("statusInfo");
+			indexMap.put(Integer.parseInt(info.getStatusId()), i);
+		}
+	}
+	
+	public void updateZanAndReply(){
+		
+	}
+
 	public void listNotifyDataSetChanged(){
 		currentMode = 1;
 		mPullRefreshListView.setRefreshing();
+		isNeedRefresh = false;
 		Log.i("send status need refresh", "");
 	}
 
@@ -497,6 +529,42 @@ public class ShareActivity  extends BaseActivity {
 			listmap.add(map);
 		}
 		
+		JSONObject addreply = allResult.getJSONObject("replys");
+		JSONObject addZan = allResult.getJSONObject("zans");
+		if(newZanAndReplyOfHistory == null)
+			newZanAndReplyOfHistory = new HashMap<String, Object>();
+		else
+			newZanAndReplyOfHistory.clear();
+		if(addreply != null){
+			 JSONArray replys = addreply.getJSONArray("items");
+			 List<StatusReplyInfo> replyList = new ArrayList<StatusReplyInfo>();
+			 for(int i=0;i<replys.size();i++){
+				 StatusReplyInfo reply = new StatusReplyInfo();
+				 reply.setFromUsrId(replys.getJSONObject(i).getString("fromUsrId"));
+				 reply.setFromUsrName(replys.getJSONObject(i).getString("fromUsrName"));
+				 reply.setToUsrId(replys.getJSONObject(i).getString("toUsrId"));
+				 reply.setToUsrName(replys.getJSONObject(i).getString("toUsrName"));
+				 reply.setReply(replys.getJSONObject(i).getString("reply"));
+				 reply.setStatusId(replys.getJSONObject(i).getString("id"));
+				 replyList.add(reply);
+			 }
+			 
+			 newZanAndReplyOfHistory.put("replyList", replyList);
+		}
+		
+		if(addZan != null){
+			 JSONArray zans = addZan.getJSONArray("items");
+			 List<StatusZanInfo> zanList = new ArrayList<StatusZanInfo>();
+			 for(int i=0;i<zans.size();i++){
+				 StatusZanInfo zan = new StatusZanInfo();
+				 zan.setFromUsrId(zans.getJSONObject(i).getString("fromUsrId"));
+				 zan.setFromUsrName(zans.getJSONObject(i).getString("fromUsrName"));
+				 zan.setStatusId(zans.getJSONObject(i).getString("id"));
+				 zanList.add(zan);
+			 }
+			 
+			 newZanAndReplyOfHistory.put("zanList", zanList);
+		}
 		//onLoading.dismiss();
 		return listmap;
 	}

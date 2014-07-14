@@ -100,7 +100,8 @@ public class PublishedActivity extends Activity implements OnClickListener {
 //				setResult(RESULT_OK, intent);
 				Intent intentOk = new Intent(PublishedActivity.this, ShareActivity.class);
 				intentOk.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
-				intentOk.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); 
+				intentOk.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				ShareActivity.isNeedRefresh = true;
 				startActivity(intentOk);
 				mfinish();
 				Log.i("publish ", "finished !");

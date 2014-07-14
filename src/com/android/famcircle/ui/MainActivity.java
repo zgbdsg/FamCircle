@@ -50,8 +50,8 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
-        JPushInterface.init(this);     		// 初始化 JPush
+//        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+//        JPushInterface.init(this);     		// 初始化 JPush
 		
         registerMessageReceiver();
         
@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void onDestroy() {
-		//unregisterReceiver(mMessageReceiver);
+		unregisterReceiver(mMessageReceiver);
 		super.onDestroy();
 	}
 	
@@ -130,6 +130,7 @@ public class MainActivity extends BaseActivity {
 		IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
 		filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
 		filter.addAction(MESSAGE_RECEIVED_ACTION);
+		filter.addAction(Intent.ACTION_BOOT_COMPLETED);
 		registerReceiver(mMessageReceiver, filter);
 	}
 

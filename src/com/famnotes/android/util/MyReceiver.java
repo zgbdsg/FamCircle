@@ -3,14 +3,14 @@ package com.famnotes.android.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.android.famcircle.ui.MainActivity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
+
+import com.android.famcircle.ui.MainActivity;
 
 /**
  * 自定义接收器
@@ -25,10 +25,49 @@ public class MyReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
-        if(bundle != null)
-        	Log.d(TAG, "[MyReceiver] onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
-		
-        if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
+
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) { 
+        	Log.d(TAG, "[MyReceiver] onReceive - " + intent.getAction());
+        	if(!JPushInterface.getConnectionState(context)){
+	            JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+	            JPushInterface.init(context);     		// 初始化 JPush
+        	}
+            
+//        	Intent iPush= new Intent(context,PushService.class);
+//        	context.startService(iPush);
+//        	Intent iDown = new Intent(context,DownloadService.class);
+//        	context.startService(iDown);
+        	
+        }else if(intent.getAction().equals(Intent.ACTION_TIME_TICK)){
+        	Log.d(TAG, "[MyReceiver] onReceive - " + intent.getAction()+"  state :"+JPushInterface.getConnectionState(context));
+        	if(!JPushInterface.getConnectionState(context)){
+        		Log.d(TAG, "[MyReceiver] init jpush "+intent.getAction());
+	            JPushInterface.init(context); 
+        	}
+//        	boolean isPushServiceRunning = false; 
+//        	boolean isDownServiceRunning = false;
+//        	ActivityManager manager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
+//        	
+//        	for (RunningServiceInfo service :manager.getRunningServices(Integer.MAX_VALUE)) { 
+//        		if("cn.jpush.android.service.PushService".equals(service.service.getClassName()))
+//        			isPushServiceRunning = true;
+//        		if("cn.jpush.android.service.DownloadService".equals(service.service.getClassName()))
+//        			isDownServiceRunning = true;
+//        		
+//        		if(isDownServiceRunning && isPushServiceRunning)
+//        			break;
+//        	}
+//        	if (!isPushServiceRunning) { 
+//        		Intent i= new Intent(context,PushService.class);
+//            	context.startService(i);
+//        	}
+//        	
+//        	if (!isDownServiceRunning) { 
+//        		Intent i= new Intent(context,DownloadService.class);
+//            	context.startService(i);
+//        	}
+        }
+        else if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
             String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
             Log.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
             //send the Registration Id to your server...
@@ -41,6 +80,7 @@ public class MyReceiver extends BroadcastReceiver {
             Log.d(TAG, "[MyReceiver] 接收到推送下来的通知");
             int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
             Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
+            receivingNotification(context,bundle);
         	
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
@@ -61,6 +101,13 @@ public class MyReceiver extends BroadcastReceiver {
         	boolean connected = intent.getBooleanExtra(JPushInterface.EXTRA_CONNECTION_CHANGE, false);
         	Log.e(TAG, "[MyReceiver]" + intent.getAction() +" connected state change to "+connected);
         } else {
+        	
+        	if(!JPushInterface.getConnectionState(context)){
+        		Log.d(TAG, "[MyReceiver] init jpush "+intent.getAction());
+	            JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
+	            JPushInterface.init(context);     		// 初始化 JPush
+        	}
+        	
         	Log.d(TAG, "[MyReceiver] Unhandled intent - " + intent.getAction());
         }
 	}
@@ -80,6 +127,15 @@ public class MyReceiver extends BroadcastReceiver {
 		}
 		return sb.toString();
 	}
+	
+	private void receivingNotification(Context context, Bundle bundle){
+        String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
+        Log.d(TAG, " title : " + title);
+        String message = bundle.getString(JPushInterface.EXTRA_ALERT);
+        Log.d(TAG, "message : " + message);
+        String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
+        Log.d(TAG, "extras : " + extras);
+    } 
 	
 	//send msg to MainActivity
 	private void processCustomMessage(Context context, Bundle bundle) {

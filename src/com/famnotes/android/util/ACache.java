@@ -435,6 +435,7 @@ public class ACache {
 			e.printStackTrace();
 		} finally {
 			try {
+				oos.flush();
 				oos.close();
 			} catch (IOException e) {
 			}

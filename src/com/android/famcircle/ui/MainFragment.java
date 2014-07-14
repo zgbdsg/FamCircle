@@ -99,6 +99,7 @@ public class MainFragment extends Fragment{
 					ACache mCache=((MainActivity)getActivity()).getACache();
 					mCache.put("User.Current", User.Current);
 					mCache.put("Groups.selectIdx", (Serializable)Groups.selectIdx);
+
 				}catch(Exception ex){
 					//getActivity().DisplayLongToast(ex.toString());
 					ex.printStackTrace();

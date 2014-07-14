@@ -220,12 +220,12 @@ public class PublishedActivity extends Activity implements OnClickListener {
 							pics.add(pb);
 					}
 					pdata = new PostData("share", "postStatus",
-							"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""+ 
+							"{\"usrId\":"+User.Current.id+", \"grpId\":"+User.Current.grpId+", \"creatTime\":\""+ 
 							System.currentTimeMillis() / 1000+ "\", \"status\":\""
 							+StringUtils.gbEncoding(text)+"\"}", pics);
 				}else{
 					pdata = new PostData("share", "postStatus",
-							"{\"usrId\":"+ShareActivity.userId+", \"grpId\":"+ShareActivity.groupId+", \"creatTime\":\""
+							"{\"usrId\":"+User.Current.id+", \"grpId\":"+User.Current.grpId+", \"creatTime\":\""
 									+ System.currentTimeMillis() / 1000
 									+ "\", \"status\":\""
 									+ StringUtils.gbEncoding(text) + "\"}");

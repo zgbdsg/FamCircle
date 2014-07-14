@@ -161,13 +161,13 @@ public class ShareActivity  extends BaseActivity {
 		});
 
 		// Add an end-of-list listener
-		mPullRefreshListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
-
-			@Override
-			public void onLastItemVisible() {
-				Toast.makeText(ShareActivity.this, "End of List!", Toast.LENGTH_SHORT).show();
-			}
-		});
+//		mPullRefreshListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+//
+//			@Override
+//			public void onLastItemVisible() {
+//				Toast.makeText(ShareActivity.this, "End of List!", Toast.LENGTH_SHORT).show();
+//			}
+//		});
 				
 		statuslist = mPullRefreshListView.getRefreshableView();
 		
@@ -181,7 +181,7 @@ public class ShareActivity  extends BaseActivity {
 //		onLoading = new CustomProgressDialog(this);
 //		onLoading.setCancelable(true);
 //		onLoading.setCanceledOnTouchOutside(true);
-		isNeedRefresh = true;
+		isNeedRefresh = false;
 
 		//init user profile ;
 		userId =String.valueOf(User.Current.id);
@@ -212,6 +212,8 @@ public class ShareActivity  extends BaseActivity {
 //		if(isNeedRefresh)
 //			onLoading.show();
 //		myadapter.notifyDataSetChanged();
+		if(isNeedRefresh)
+			listNotifyDataSetChanged();
 	}
 	
 	@Override
@@ -376,7 +378,7 @@ public class ShareActivity  extends BaseActivity {
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						
 						updateIndexMap(listMap);
-						updateNewZanAndReply();
+//						updateNewZanAndReply();
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
@@ -400,7 +402,7 @@ public class ShareActivity  extends BaseActivity {
 						
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						updateIndexMap(listMap);
-						updateNewZanAndReply();
+//						updateNewZanAndReply();
 						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 						myadapter.notifyDataSetChanged();

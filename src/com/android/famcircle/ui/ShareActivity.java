@@ -378,7 +378,7 @@ public class ShareActivity  extends BaseActivity {
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						
 						updateIndexMap(listMap);
-//						updateNewZanAndReply();
+						updateNewZanAndReply();
 						Log.i("listMap length :", ""+listMap.size());
 		            	myadapter.setDataList(listMap);
 		            	isNeedRefresh = false;
@@ -402,7 +402,7 @@ public class ShareActivity  extends BaseActivity {
 						
 						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, (Serializable)listMap);
 						updateIndexMap(listMap);
-//						updateNewZanAndReply();
+						updateNewZanAndReply();
 						myadapter.setDataList(listMap);
 						Log.i("listMap length :", ""+listMap.size());
 						myadapter.notifyDataSetChanged();
@@ -441,6 +441,28 @@ public class ShareActivity  extends BaseActivity {
 			myadapter.notifyDataSetChanged();
 	}
 	
+	public void updateNewZanAndReply() {
+		// TODO Auto-generated method stub
+		List<StatusReplyInfo> replyList = (List<StatusReplyInfo>) newZanAndReplyOfHistory.get("replyList");
+		
+		if(replyList != null){
+			for(int i=0;i<replyList.size();i++){
+				StatusReplyInfo info = replyList.get(i);
+				int index = indexMap.get(info.getStatusId());
+				((List<StatusReplyInfo>)listMap.get(index).get("replyinfo")).add(info);
+			}
+		}
+		
+		List<StatusZanInfo> zanList = (List<StatusZanInfo>) newZanAndReplyOfHistory.get("zanList");
+		if(zanList != null){
+			for(int i=0;i<replyList.size();i++){
+				StatusZanInfo info = zanList.get(i);
+				int index = indexMap.get(info.getStatusId());
+				((List<StatusZanInfo>)listMap.get(index).get("zaninfo")).add(info);
+			}
+		}
+	}
+
 	public void updateIndexMap(List<HashMap<String, Object>> list) {
 		// TODO Auto-generated method stub
 		if(indexMap == null){
@@ -531,14 +553,13 @@ public class ShareActivity  extends BaseActivity {
 			listmap.add(map);
 		}
 		
-		JSONObject addreply = allResult.getJSONObject("replys");
-		JSONObject addZan = allResult.getJSONObject("zans");
+		JSONArray replys = allResult.getJSONArray("replys");
+		JSONArray zans = allResult.getJSONArray("zans");
 		if(newZanAndReplyOfHistory == null)
 			newZanAndReplyOfHistory = new HashMap<String, Object>();
 		else
 			newZanAndReplyOfHistory.clear();
-		if(addreply != null){
-			 JSONArray replys = addreply.getJSONArray("items");
+		if(replys != null){
 			 List<StatusReplyInfo> replyList = new ArrayList<StatusReplyInfo>();
 			 for(int i=0;i<replys.size();i++){
 				 StatusReplyInfo reply = new StatusReplyInfo();
@@ -554,8 +575,7 @@ public class ShareActivity  extends BaseActivity {
 			 newZanAndReplyOfHistory.put("replyList", replyList);
 		}
 		
-		if(addZan != null){
-			 JSONArray zans = addZan.getJSONArray("items");
+		if(zans != null){
 			 List<StatusZanInfo> zanList = new ArrayList<StatusZanInfo>();
 			 for(int i=0;i<zans.size();i++){
 				 StatusZanInfo zan = new StatusZanInfo();

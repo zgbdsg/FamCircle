@@ -441,6 +441,7 @@ public class ShareActivity  extends BaseActivity {
 			myadapter.notifyDataSetChanged();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void updateNewZanAndReply() {
 		// TODO Auto-generated method stub
 		List<StatusReplyInfo> replyList = (List<StatusReplyInfo>) newZanAndReplyOfHistory.get("replyList");
@@ -448,7 +449,9 @@ public class ShareActivity  extends BaseActivity {
 		if(replyList != null){
 			for(int i=0;i<replyList.size();i++){
 				StatusReplyInfo info = replyList.get(i);
-				int index = indexMap.get(info.getStatusId());
+//				Log.i("updateReply :", info.getStatusId()+"  indexMap == null  "+(indexMap==null));
+//				Log.i("updateReply :", ""+indexMap.get(info.getStatusId()));
+				int index = indexMap.get(Integer.parseInt(info.getStatusId()));
 				((List<StatusReplyInfo>)listMap.get(index).get("replyinfo")).add(info);
 			}
 		}
@@ -457,7 +460,8 @@ public class ShareActivity  extends BaseActivity {
 		if(zanList != null){
 			for(int i=0;i<replyList.size();i++){
 				StatusZanInfo info = zanList.get(i);
-				int index = indexMap.get(info.getStatusId());
+//				Log.i("updateZan :", info.getStatusId()+"  indexMap == null  "+(indexMap==null));
+				int index = indexMap.get(Integer.parseInt(info.getStatusId()));
 				((List<StatusZanInfo>)listMap.get(index).get("zaninfo")).add(info);
 			}
 		}
@@ -471,6 +475,7 @@ public class ShareActivity  extends BaseActivity {
 		
 		for(int i=0;i<list.size();i++){
 			StatusListInfo info = (StatusListInfo) list.get(i).get("statusInfo");
+//			Log.i("indexMap: ", Integer.parseInt(info.getStatusId())+"  "+i);
 			indexMap.put(Integer.parseInt(info.getStatusId()), i);
 		}
 	}
@@ -568,7 +573,7 @@ public class ShareActivity  extends BaseActivity {
 				 reply.setToUsrId(replys.getJSONObject(i).getString("toUsrId"));
 				 reply.setToUsrName(replys.getJSONObject(i).getString("toUsrName"));
 				 reply.setReply(replys.getJSONObject(i).getString("reply"));
-				 reply.setStatusId(replys.getJSONObject(i).getString("id"));
+				 reply.setStatusId(replys.getJSONObject(i).getString("statusId"));
 				 replyList.add(reply);
 			 }
 			 
@@ -581,7 +586,7 @@ public class ShareActivity  extends BaseActivity {
 				 StatusZanInfo zan = new StatusZanInfo();
 				 zan.setFromUsrId(zans.getJSONObject(i).getString("fromUsrId"));
 				 zan.setFromUsrName(zans.getJSONObject(i).getString("fromUsrName"));
-				 zan.setStatusId(zans.getJSONObject(i).getString("id"));
+				 zan.setStatusId(zans.getJSONObject(i).getString("statusId"));
 				 zanList.add(zan);
 			 }
 			 

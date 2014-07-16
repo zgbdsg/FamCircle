@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,6 +54,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 //import android.view.LayoutInflater;
 //import android.view.View;
 //import android.view.ViewGroup;
+
+
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends BaseActivity {
 	
@@ -140,94 +143,6 @@ public class MainActivity extends BaseActivity {
     	lvGroupAdaper=new ListViewGroupAdapter((LayoutInflater)LayoutInflater.from(this));
 		lvGroup.setAdapter(lvGroupAdaper);
         
-		lvGroup.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(LinearListView parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				//enter group's ShareActivity
-				Group selGrp=infos.get((int) id);
-				if( "+".equals(selGrp.name) ){
-					//register新群，...
-					openActivity(RegisterGroup.class);
-					
-					return; //?
-				}
-				
-				//读取群成员后， enter ShareActivity
-				Groups.selectIdx=(int) id;
-				User.Current.grpId=selGrp.getGrpId(); //=Groups.selectGrpId();
-				User.Current.flag=1;
-				try{
-					DBUtil.insertUser(User.Current);
-					ACache mCache=getACache();
-					mCache.put("User.Current", User.Current);
-					mCache.put("Groups.selectIdx", (Serializable)Groups.selectIdx);
-
-				}catch(Exception ex){
-					//getActivity().DisplayLongToast(ex.toString());
-					ex.printStackTrace();
-				}
-				
-				MemberTask memberTask=new MemberTask();
-				MemberHandler memberHandler=new MemberHandler(MainActivity.this,false);
-				memberTask.connect(memberHandler);
-				memberTask.execute();
-//				Intent intent = new Intent(getActivity(),ShareActivity.class);
-//				startActivity(intent);
-			}
-				
-		});
-		
-		//?registerForContextMenu(lvGroup);
-		
-		//为ListView加上长按事件
-		lvGroup.setOnItemLongClickListener(new OnItemLongClickListener() {
-
-			@Override
-			public void onItemLongClick(LinearListView parent, View view,
-					int position, final long id) {
-				// TODO Auto-generated method stub
-				Group selGrp=infos.get((int) id);
-				if( "+".equals(selGrp.name) )
-					return; //?
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage("Confirm unregister from this group ?");
-				builder.setTitle("提示");
-				builder.setPositiveButton("Yes", new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						
-						Group info=infos.get((int) id);
-						
-						JSONObject obj=new JSONObject();
-						obj.put("userId", User.Current.id);
-						obj.put("grpId",  info.grpId);
-						String reqJsonMsg=obj.toJSONString();
-
-						UnRegHandler handler=new UnRegHandler(MainActivity.this);
-						UnRegTask task=new UnRegTask();
-						task.connect(handler);
-						task.execute(reqJsonMsg, String.valueOf(id));
-						
-					}
-
-				});
-				builder.setNegativeButton("No", new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.create().show();
-				
-				return; //?
-			}
-			
-		});
 	}
 
 
@@ -367,6 +282,8 @@ public class MainActivity extends BaseActivity {
 				convertView = inflater.inflate(R.layout.fam_group_item, parent,false);
 				holder.tv_name_left = (TextView) convertView.findViewById(R.id.name_left);
 				holder.tv_name_right = (TextView) convertView.findViewById(R.id.name_right);
+				holder.tv_image_left = (CircleImageView)convertView.findViewById(R.id.group_image_left);
+				holder.tv_image_right = (CircleImageView)convertView.findViewById(R.id.group_image_right);
 				holder.tv_left_block = (LinearLayout) convertView.findViewById(R.id.left_block);
 				holder.tv_right_block = (LinearLayout) convertView.findViewById(R.id.right_block);
 				
@@ -375,21 +292,133 @@ public class MainActivity extends BaseActivity {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			
-			holder.tv_name_left.setTag(position);
-			holder.tv_name_right.setTag(position);
-			holder.tv_left_block.setTag(position);
-			holder.tv_right_block.setTag(position);
+			holder.tv_name_left.setTag(position*2);
+			holder.tv_name_right.setTag(position*2+1);
+			holder.tv_image_right.setTag(position*2+1);
+			holder.tv_image_left.setTag(position*2);
+			holder.tv_left_block.setTag(position*2);
+			holder.tv_right_block.setTag(position*2+1);
 			
+			/*set the click listener*/
+			View.OnClickListener listener = new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					int id = (Integer) v.getTag();
+					Group selGrp=infos.get(id);
+					if( "+".equals(selGrp.name) ){
+						openActivity(RegisterGroup.class);
+						return; //?
+					}
+					
+					//读取群成员后， enter ShareActivity
+					Groups.selectIdx= id;
+					User.Current.grpId=selGrp.getGrpId(); //=Groups.selectGrpId();
+					User.Current.flag=1;
+					try{
+						DBUtil.insertUser(User.Current);
+						ACache mCache=getACache();
+						mCache.put("User.Current", User.Current);
+						mCache.put("Groups.selectIdx", (Serializable)Groups.selectIdx);
+
+					}catch(Exception ex){
+						//getActivity().DisplayLongToast(ex.toString());
+						ex.printStackTrace();
+					}
+					
+					MemberTask memberTask=new MemberTask();
+					MemberHandler memberHandler=new MemberHandler(MainActivity.this,false);
+					memberTask.connect(memberHandler);
+					memberTask.execute();
+				}
+			};
+			
+			View.OnLongClickListener longListener = new View.OnLongClickListener() {
+				
+				@Override
+				public boolean onLongClick(View v) {
+					// TODO Auto-generated method stub
+					final int id = (Integer) v.getTag();
+					Group selGrp=infos.get(id);
+					if( "+".equals(selGrp.name) )
+						return false; //?
+					
+					AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+					builder.setMessage("Confirm unregister from this group ?");
+					builder.setTitle("提示");
+					builder.setPositiveButton("Yes", new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							
+							Group info=infos.get(id);
+							
+							JSONObject obj=new JSONObject();
+							obj.put("userId", User.Current.id);
+							obj.put("grpId",  info.grpId);
+							String reqJsonMsg=obj.toJSONString();
+
+							UnRegHandler handler=new UnRegHandler(MainActivity.this);
+							UnRegTask task=new UnRegTask();
+							task.connect(handler);
+							task.execute(reqJsonMsg, String.valueOf(id));
+							
+						}
+
+					});
+					builder.setNegativeButton("No", new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+					builder.create().show();
+					return true;
+				}
+			};
+			
+			holder.tv_left_block.setOnClickListener(listener);
+			holder.tv_left_block.setOnLongClickListener(longListener);	
+			holder.tv_right_block.setOnClickListener(listener);
+			holder.tv_right_block.setOnLongClickListener(longListener);
+			
+			/*change the view in the linear list view*/
 			switch (infos.size() - (position*2+2)){
 				case -1:
 					Log.i("add group name:", infos.get(position*2).getName());
-					holder.tv_name_left.setText(infos.get(position*2).getName());
-					holder.tv_right_block.setVisibility(View.GONE);
+					Group groupInfo = infos.get(position*2);
+					if(!groupInfo.getName().equals("+")){
+						holder.tv_name_left.setText(groupInfo.getName());
+						String path ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfo.getGrpId()+"/"+ groupInfo.getCoverPhoto();
+						ImageLoader.getInstance().displayImage(path, holder.tv_image_left);
+					}else{
+						holder.tv_image_left.setVisibility(View.GONE);
+						holder.tv_name_left.setText(groupInfo.getName());
+						holder.tv_name_left.setTextSize(80);
+						holder.tv_name_left.setPadding(0, 0, 0, 0);
+					}
+
+					holder.tv_right_block.setVisibility(View.INVISIBLE);
 					break;
 				default:
 					Log.i("add group name:", infos.get(position*2).getName()+"  "+infos.get(position*2+1).getName());
-					holder.tv_name_left.setText(infos.get(position*2).getName());
-					holder.tv_name_right.setText(infos.get(position*2+1).getName());
+					Group groupInfoLeft = infos.get(position*2);
+					holder.tv_name_left.setText(groupInfoLeft.getName());
+					String pathLeft ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfoLeft.getGrpId()+"/"+ groupInfoLeft.getCoverPhoto();
+					ImageLoader.getInstance().displayImage(pathLeft, holder.tv_image_left);
+					
+					Group groupInfoRight = infos.get(position*2+1);
+					if(!groupInfoRight.getName().equals("+")){
+						holder.tv_name_right.setText(groupInfoRight.getName());
+						String pathRight ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfoRight.getGrpId()+"/"+ groupInfoRight.getCoverPhoto();
+						ImageLoader.getInstance().displayImage(pathRight, holder.tv_image_right);
+					}else{
+						holder.tv_image_left.setVisibility(View.GONE);
+						holder.tv_name_left.setText(groupInfoRight.getName());
+						holder.tv_name_left.setTextSize(80);
+						holder.tv_name_left.setPadding(0, 0, 0, 0);
+					}
 					break;
 			}
 			
@@ -403,6 +432,8 @@ public class MainActivity extends BaseActivity {
 		//ImageView iv_pic;
 		TextView tv_name_left;
 		TextView tv_name_right;
+		CircleImageView tv_image_left;
+		CircleImageView tv_image_right;
 		LinearLayout tv_left_block;
 		LinearLayout tv_right_block;
 	}	

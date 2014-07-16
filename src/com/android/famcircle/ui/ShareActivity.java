@@ -4,14 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-//import android.os.AsyncTask;
 import android.os.Bundle;
-//import android.os.Handler;
-//import android.os.Message;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,11 +23,9 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.famnotes.android.util.CustomProgressDialog;
 import com.android.famcircle.R;
 import com.android.famcircle.StatusListAdapter;
 import com.android.famcircle.StatusListInfo;
@@ -39,11 +33,11 @@ import com.android.famcircle.StatusReplyInfo;
 import com.android.famcircle.StatusZanInfo;
 import com.android.famcircle.config.Constants;
 import com.android.famcircle.config.RequestCode;
+import com.android.famcircle.orderlist.OrderStatusListActivity;
+import com.android.famcircle.picselect.PublishedActivity;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
 import com.famnotes.android.base.BaseAsyncTaskHandler;
-import com.android.famcircle.orderlist.OrderStatusListActivity;
-import com.android.famcircle.picselect.PublishedActivity;
 import com.famnotes.android.util.ACache;
 import com.famnotes.android.util.FNHttpRequest;
 import com.famnotes.android.util.PostData;
@@ -51,7 +45,6 @@ import com.famnotes.android.vo.Groups;
 import com.famnotes.android.vo.User;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -64,6 +57,7 @@ public class ShareActivity  extends BaseActivity {
 	public static String userName;
 	public static String logoUrl;
 	public static String groupId; //? int groupId; 
+	public static String updateTime; 
 	
 	public static int showNum ;
 	public static Boolean isNeedRefresh;
@@ -305,7 +299,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":0}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"timstamp\":"+updateTime+",\"statusId\":"+statusId+",\"flag\":0}");
 				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}else if(reqJsonMsg[0] == 1){
 				/*from start*/
@@ -314,7 +308,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"statusId\":"+statusId+",\"flag\":1}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"timstamp\":"+updateTime+",\"statusId\":"+statusId+",\"flag\":1}");
 				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}
 			
@@ -337,7 +331,7 @@ public class ShareActivity  extends BaseActivity {
 					String json=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata);
 		
 					statusResult = json;
-					JSONObject allResult = JSON.parseObject(json);
+//					JSONObject allResult = JSON.parseObject(json);
 		
 //					if(allResult.getInteger("errCode") == 0){
 //						mCache.put("statusResult"+User.Current.grpId+"---"+User.Current.id, statusResult);
@@ -479,10 +473,6 @@ public class ShareActivity  extends BaseActivity {
 			indexMap.put(Integer.parseInt(info.getStatusId()), i);
 		}
 	}
-	
-	public void updateZanAndReply(){
-		
-	}
 
 	public void listNotifyDataSetChanged(){
 		currentMode = 1;
@@ -496,6 +486,7 @@ public class ShareActivity  extends BaseActivity {
 
 		//initialStatuses();
 		JSONObject allResult = JSON.parseObject(string);
+		updateTime = allResult.getString("timeStamp");
 		JSONObject jsonResult = allResult.getJSONObject("results");
 		
 		if(string == null || string.length() == 0 || allResult.getInteger("errCode") != 0){

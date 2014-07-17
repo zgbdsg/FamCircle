@@ -299,7 +299,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(listMap.size()-1).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"timstamp\":"+updateTime+",\"statusId\":"+statusId+",\"flag\":0}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"timeStamp\":\""+updateTime+"\",\"statusId\":"+statusId+",\"flag\":0}");
 				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}else if(reqJsonMsg[0] == 1){
 				/*from start*/
@@ -308,7 +308,7 @@ public class ShareActivity  extends BaseActivity {
 					StatusListInfo statusInfo = (StatusListInfo)listMap.get(0).get("statusInfo");
 					statusId = statusInfo.getStatusId();
 				}
-				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"timstamp\":"+updateTime+",\"statusId\":"+statusId+",\"flag\":1}");
+				PostData pdata=new PostData("share", "getStatusByGrpId", "{\"grpId\":"+User.Current.grpId+",\"timeStamp\":\""+updateTime+"\",\"statusId\":"+statusId+",\"flag\":1}");
 				result=new FNHttpRequest(User.Current.loginId, User.Current.password, User.Current.grpId).doPost(pdata).trim();
 			}
 			

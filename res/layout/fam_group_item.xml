@@ -2,17 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="160dp"
     android:baselineAligned="false"
     android:orientation="horizontal" >
 
     <LinearLayout
         android:id="@+id/left_block"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="12"
+        android:layout_height="160dp"
+        android:layout_weight="1"
         android:padding="@dimen/base_padding"
-        android:background="@color/light"
+        android:background="@drawable/reply_text_background"
         android:orientation="vertical" >
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -36,10 +36,10 @@
     <LinearLayout
         android:id="@+id/right_block"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="12"
+        android:layout_height="160dp"
+        android:layout_weight="1"
         android:padding="@dimen/base_padding"
-        android:background="@color/light"
+        android:background="@drawable/reply_text_background"
         android:orientation="vertical" >
 
         <de.hdodenhof.circleimageview.CircleImageView

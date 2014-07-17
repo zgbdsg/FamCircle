@@ -414,10 +414,10 @@ public class MainActivity extends BaseActivity {
 						String pathRight ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfoRight.getGrpId()+"/"+ groupInfoRight.getCoverPhoto();
 						ImageLoader.getInstance().displayImage(pathRight, holder.tv_image_right);
 					}else{
-						holder.tv_image_left.setVisibility(View.GONE);
-						holder.tv_name_left.setText(groupInfoRight.getName());
-						holder.tv_name_left.setTextSize(80);
-						holder.tv_name_left.setPadding(0, 0, 0, 0);
+						holder.tv_image_right.setVisibility(View.GONE);
+						holder.tv_name_right.setText(groupInfoRight.getName());
+						holder.tv_name_right.setTextSize(80);
+						holder.tv_name_right.setPadding(0, 0, 0, 0);
 					}
 					break;
 			}

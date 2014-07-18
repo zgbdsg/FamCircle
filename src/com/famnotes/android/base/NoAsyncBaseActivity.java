@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -17,7 +18,7 @@ import com.android.famcircle.config.Constants;
 import com.famnotes.android.util.ImageLoaderConfig;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public abstract class NoAsyncBaseActivity extends Activity  {
+public abstract class NoAsyncBaseActivity extends FragmentActivity  {
 
 	public static final String TAG = NoAsyncBaseActivity.class.getSimpleName();
 

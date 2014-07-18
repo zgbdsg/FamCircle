@@ -1,9 +1,12 @@
 package com.android.famcircle.ui;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -16,13 +19,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -49,9 +55,13 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.rockerhieu.emojicon.EmojiconEditText;
+import com.rockerhieu.emojicon.EmojiconGridFragment;
+import com.rockerhieu.emojicon.EmojiconsFragment;
+import com.rockerhieu.emojicon.emoji.Emojicon;
 
 
-public class ShareActivity  extends BaseActivity {
+public class ShareActivity  extends BaseActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener{
 	
 	public static String userId;    //?  int userId; 
 	public static String userName;
@@ -84,6 +94,8 @@ public class ShareActivity  extends BaseActivity {
 	PopupWindow commentPopupWindow;
 	public RelativeLayout replyWindow;
 	public RelativeLayout inputWindow;
+	public RelativeLayout emojicons;
+	public EmojiconEditText reply_content;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +109,12 @@ public class ShareActivity  extends BaseActivity {
 		mCache = ACache.get(this);
 		showNum = 8;
 		
+		updateTime = mCache.getAsString("updateTime"+User.Current.grpId+"---"+User.Current.id);
+		if(updateTime == null){
+			Date dt = new Date(System.currentTimeMillis());
+			SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+			updateTime = df.format(dt);
+		}
 		if(User.Current==null)
 			User.Current=mCache.getAsObject("User.Current");
 		if(Groups.lGroup==null || Groups.lGroup.isEmpty()){
@@ -122,6 +140,8 @@ public class ShareActivity  extends BaseActivity {
 			}
 		});
 		inputWindow = (RelativeLayout)findViewById(R.id.pop_up_input_window);
+		reply_content = (EmojiconEditText)findViewById(R.id.reply_content);
+		emojicons = (RelativeLayout)findViewById(R.id.myemojicons);
 		mPullRefreshListView = (PullToRefreshListView)findViewById(R.id.statuslist);
 		mPullRefreshListView.setMode(Mode.BOTH);
 		// Set a listener to be invoked when the list should be refreshed.
@@ -440,7 +460,7 @@ public class ShareActivity  extends BaseActivity {
 		// TODO Auto-generated method stub
 		List<StatusReplyInfo> replyList = (List<StatusReplyInfo>) newZanAndReplyOfHistory.get("replyList");
 		
-		if(replyList != null){
+		if(replyList != null && replyList.size() > 0){
 			for(int i=0;i<replyList.size();i++){
 				StatusReplyInfo info = replyList.get(i);
 //				Log.i("updateReply :", info.getStatusId()+"  indexMap == null  "+(indexMap==null));
@@ -451,7 +471,7 @@ public class ShareActivity  extends BaseActivity {
 		}
 		
 		List<StatusZanInfo> zanList = (List<StatusZanInfo>) newZanAndReplyOfHistory.get("zanList");
-		if(zanList != null){
+		if(zanList != null && zanList.size() > 0){
 			for(int i=0;i<replyList.size();i++){
 				StatusZanInfo info = zanList.get(i);
 //				Log.i("updateZan :", info.getStatusId()+"  indexMap == null  "+(indexMap==null));
@@ -487,6 +507,7 @@ public class ShareActivity  extends BaseActivity {
 		//initialStatuses();
 		JSONObject allResult = JSON.parseObject(string);
 		updateTime = allResult.getString("timeStamp");
+		mCache.put("updateTime"+User.Current.grpId+"---"+User.Current.id, updateTime);
 		JSONObject jsonResult = allResult.getJSONObject("results");
 		
 		if(string == null || string.length() == 0 || allResult.getInteger("errCode") != 0){
@@ -595,5 +616,17 @@ public class ShareActivity  extends BaseActivity {
 		
 		ImageView imageCover = (ImageView)headview.findViewById(R.id.imageCover);
 		ImageLoader.getInstance().displayImage("http://"+Constants.Server+"/famnotes/Uploads/group/"+groupId+"/"+Groups.selectGrp().getCoverPhoto(), imageCover); //
+	}
+
+	@Override
+	public void onEmojiconBackspaceClicked(View v) {
+		// TODO Auto-generated method stub
+		EmojiconsFragment.backspace(reply_content);
+	}
+
+	@Override
+	public void onEmojiconClicked(Emojicon emojicon) {
+		// TODO Auto-generated method stub
+		EmojiconsFragment.input(reply_content, emojicon);
 	}
 }

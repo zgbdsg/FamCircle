@@ -16,20 +16,24 @@ import android.os.Message;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -48,6 +52,8 @@ import com.famnotes.android.util.StringUtils;
 import com.famnotes.android.vo.User;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.rockerhieu.emojicon.EmojiconEditText;
+import com.rockerhieu.emojicon.EmojiconTextView;
 
 public class StatusListAdapter extends BaseAdapter{
 	int[] location;
@@ -129,7 +135,7 @@ public class StatusListAdapter extends BaseAdapter{
 		TextView userName;
 		LinearListView statusPics;
 		TextView publish_time;
-		TextView status;
+		EmojiconTextView status;
 		ImageButton comment;
 		LinearLayout all_reply_component;
 		TextView zanText;
@@ -214,7 +220,7 @@ public class StatusListAdapter extends BaseAdapter{
 			holder.statusPics = (LinearListView)convertView.findViewById(R.id.status_content_pics);
 			holder.userLogo = (ImageView)convertView.findViewById(R.id.user_logo);
 			holder.userName = (TextView)convertView.findViewById(R.id.username);
-			holder.status = (TextView)convertView.findViewById(R.id.status_content_text);
+			holder.status = (EmojiconTextView)convertView.findViewById(R.id.status_content_text);
 			holder.comment = (ImageButton)convertView.findViewById(R.id.commentButton);
 			holder.all_reply_component = (LinearLayout)convertView.findViewById(R.id.all_reply_component);
 			holder.zanText = (TextView)convertView.findViewById(R.id.zan_text);
@@ -309,13 +315,40 @@ public class StatusListAdapter extends BaseAdapter{
 				inputWindow.setVisibility(View.VISIBLE);
 				replyWindow.setVisibility(View.VISIBLE);
 				inputWindow.requestFocus();
-				InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
-				imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY); 
+				final InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);  
+				imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.RESULT_HIDDEN); 
 				
 				Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
 				btnReplySend.setTag(position);
-				replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+				replyTextContent = (EmojiconEditText)inputWindow.findViewById(R.id.reply_content);
+				final RelativeLayout emojicons = share.emojicons;
 				replyTextContent.setHint("reply to:"+replyInfoList.get(position).getFromUsrName());
+				replyTextContent.setOnTouchListener(new OnTouchListener() {
+			        @Override
+			        public boolean onTouch(View v, MotionEvent event) {
+			            final int DRAWABLE_RIGHT = 2;
+
+			            if(event.getAction() == MotionEvent.ACTION_UP) {
+			                if(event.getX() >= (replyTextContent.getRight() - replyTextContent.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+			                    // your action here
+			                	//Toast.makeText(context, "aaa", Toast.LENGTH_SHORT).show();
+			                	if(emojicons.getVisibility() == View.VISIBLE){
+			                		emojicons.setVisibility(View.GONE);
+//			                		imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+			                		imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.RESULT_HIDDEN); 
+			                	}else{
+			                		//imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, InputMethodManager.HIDE_NOT_ALWAYS);
+			      
+			                		replyTextContent.clearFocus();
+			                		imm.hideSoftInputFromWindow(inputWindow.getWindowToken(),0);
+			                		emojicons.setVisibility(View.VISIBLE); 
+//			                		imm.hideSoftInputFromWindow(inputWindow.getWindowToken(),0);
+			                	}
+			                }
+			            }
+			            return false;
+			        }
+			    });
 				
 				btnReplySend.setOnClickListener(new OnClickListener() {
 					
@@ -379,7 +412,7 @@ public class StatusListAdapter extends BaseAdapter{
 						
 						Button btnReplySend = (Button)inputWindow.findViewById(R.id.btn_reply_send);
 						btnReplySend.setTag(loc);
-						replyTextContent = (EditText)inputWindow.findViewById(R.id.reply_content);
+						replyTextContent = (EmojiconEditText)inputWindow.findViewById(R.id.reply_content);
 						btnReplySend.setOnClickListener(new OnClickListener() {
 							
 							@Override
@@ -432,7 +465,7 @@ class ReplyListAdapter extends BaseAdapter{
 	class ReplyViewHolder{
 		TextView replyFromName;
 		TextView replayToName;
-		TextView replyContent;
+		EmojiconTextView replyContent;
 	}
 	 List<StatusReplyInfo> statusReplyInfoList;
 	Context context;
@@ -466,11 +499,11 @@ class ReplyListAdapter extends BaseAdapter{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 		//Log.i("reply add :", ""+position);
-		TextView replyTextView;
+		EmojiconTextView replyTextView;
 		if(convertView != null) {
-			replyTextView = (TextView)convertView;
+			replyTextView = (EmojiconTextView)convertView;
 		}else{
-			replyTextView = new TextView(context);
+			replyTextView = new EmojiconTextView(context);
 //			replyTextView.setAutoLinkMask(0);
 			replyTextView.setBackgroundResource(R.drawable.reply_text_background);
 			replyTextView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));

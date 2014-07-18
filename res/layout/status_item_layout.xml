@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    		xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     		android:layout_width="match_parent"
 		    android:layout_height="match_parent"
 		    android:layout_gravity="center"
@@ -58,11 +59,11 @@
 			        	  android:text="@string/link_message"/>
 			 </LinearLayout>
 			 
-		    <TextView android:id="@+id/status_content_text"
+		    <com.rockerhieu.emojicon.EmojiconTextView android:id="@+id/status_content_text"
 			        	  android:layout_width="fill_parent"
 			        	  android:layout_height="wrap_content"
 			        	  android:layout_marginBottom="5dp"
-			        	  android:textSize="15dp"
+			        	  android:textSize="15sp"
 			        	  android:textColor="#000000"
 			        	  android:text="lilei"/>
 			 

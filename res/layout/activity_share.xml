@@ -47,6 +47,7 @@
 	        					android:visibility="invisible">
 	        <include layout="@layout/status_popup_input_window"/>
 	    </RelativeLayout>
+
 	    <TextView
 	        android:id="@android:id/empty"
 	        android:layout_width="fill_parent"

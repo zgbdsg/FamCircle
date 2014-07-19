@@ -22,6 +22,7 @@ import com.android.famcircle.linearlistview.LinearListView.OnItemClickListener;
 import com.android.famcircle.ui.StatusImagePagerActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.rockerhieu.emojicon.EmojiconTextView;
 
 public class StatusOfPersonListAdapter extends BaseAdapter{
 	Handler handler = new Handler(){
@@ -152,7 +153,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 	class ListHolder{
 		TextView text_status;
 		ImageView pics;
-		TextView pics_discript;
+		EmojiconTextView pics_discript;
 		TextView numOfPics;
 		LinearLayout pics_status;
 	}
@@ -194,7 +195,7 @@ class PersonalStatusListAdapter extends BaseAdapter{
 			convertView = layoutInflater.inflate(R.layout.item_of_status_at_the_time, parent,false);
 			listHolder = new ListHolder();
 			listHolder.pics = (ImageView)convertView.findViewById(R.id.pics);
-			listHolder.pics_discript = (TextView)convertView.findViewById(R.id.pics_discript);
+			listHolder.pics_discript = (EmojiconTextView)convertView.findViewById(R.id.pics_discript);
 			listHolder.pics_status = (LinearLayout)convertView.findViewById(R.id.pics_status);
 			listHolder.text_status = (TextView)convertView.findViewById(R.id.text_status);
 			listHolder.numOfPics = (TextView)convertView.findViewById(R.id.num_of_pics);

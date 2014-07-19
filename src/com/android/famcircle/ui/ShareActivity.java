@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -19,16 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -61,6 +58,7 @@ import com.rockerhieu.emojicon.EmojiconsFragment;
 import com.rockerhieu.emojicon.emoji.Emojicon;
 
 
+@SuppressLint("UseSparseArrays")
 public class ShareActivity  extends BaseActivity implements EmojiconGridFragment.OnEmojiconClickedListener, EmojiconsFragment.OnEmojiconBackspaceClickedListener{
 	
 	public static String userId;    //?  int userId; 
@@ -472,7 +470,7 @@ public class ShareActivity  extends BaseActivity implements EmojiconGridFragment
 		
 		List<StatusZanInfo> zanList = (List<StatusZanInfo>) newZanAndReplyOfHistory.get("zanList");
 		if(zanList != null && zanList.size() > 0){
-			for(int i=0;i<replyList.size();i++){
+			for(int i=0;i<zanList.size();i++){
 				StatusZanInfo info = zanList.get(i);
 //				Log.i("updateZan :", info.getStatusId()+"  indexMap == null  "+(indexMap==null));
 				int index = indexMap.get(Integer.parseInt(info.getStatusId()));
@@ -506,13 +504,15 @@ public class ShareActivity  extends BaseActivity implements EmojiconGridFragment
 
 		//initialStatuses();
 		JSONObject allResult = JSON.parseObject(string);
-		updateTime = allResult.getString("timeStamp");
-		mCache.put("updateTime"+User.Current.grpId+"---"+User.Current.id, updateTime);
 		JSONObject jsonResult = allResult.getJSONObject("results");
 		
 		if(string == null || string.length() == 0 || allResult.getInteger("errCode") != 0){
 			return null;
 		}
+		
+		updateTime = allResult.getString("timeStamp");
+		if(updateTime != null)
+			mCache.put("updateTime"+User.Current.grpId+"---"+User.Current.id, updateTime);
 				
 		JSONArray statusArray = jsonResult.getJSONArray("status");
 		List<HashMap<String,Object>> listmap = new ArrayList<HashMap<String,Object>>();
@@ -576,7 +576,7 @@ public class ShareActivity  extends BaseActivity implements EmojiconGridFragment
 			newZanAndReplyOfHistory = new HashMap<String, Object>();
 		else
 			newZanAndReplyOfHistory.clear();
-		if(replys != null){
+		if(replys.size() > 0){
 			 List<StatusReplyInfo> replyList = new ArrayList<StatusReplyInfo>();
 			 for(int i=0;i<replys.size();i++){
 				 StatusReplyInfo reply = new StatusReplyInfo();
@@ -592,7 +592,7 @@ public class ShareActivity  extends BaseActivity implements EmojiconGridFragment
 			 newZanAndReplyOfHistory.put("replyList", replyList);
 		}
 		
-		if(zans != null){
+		if(zans.size() > 0){
 			 List<StatusZanInfo> zanList = new ArrayList<StatusZanInfo>();
 			 for(int i=0;i<zans.size();i++){
 				 StatusZanInfo zan = new StatusZanInfo();

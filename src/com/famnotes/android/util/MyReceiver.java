@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
 
+import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.ui.MainActivity;
 
 /**
@@ -88,10 +89,10 @@ public class MyReceiver extends BroadcastReceiver {
             JPushInterface.reportNotificationOpened(context, bundle.getString(JPushInterface.EXTRA_MSG_ID));
             
         	//打开自定义的Activity
-//        	Intent i = new Intent(context, TestActivity.class);
-//        	i.putExtras(bundle);
-//        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        	context.startActivity(i);
+        	Intent i = new Intent(context, PublishedActivity.class);
+        	i.putExtras(bundle);
+        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	context.startActivity(i);
         	
         } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户收到到RICH PUSH CALLBACK: " + bundle.getString(JPushInterface.EXTRA_EXTRA));
@@ -139,9 +140,10 @@ public class MyReceiver extends BroadcastReceiver {
 	
 	//send msg to MainActivity
 	private void processCustomMessage(Context context, Bundle bundle) {
-		if (MainActivity.isForeground) {
+//		if (MainActivity.isForeground) {
 			String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
 			String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
+			Log.i("custom message:", extras);
 			Intent msgIntent = new Intent(MainActivity.MESSAGE_RECEIVED_ACTION);
 			msgIntent.putExtra(MainActivity.KEY_MESSAGE, message);
 			if (!ExampleUtil.isEmpty(extras)) {
@@ -156,6 +158,6 @@ public class MyReceiver extends BroadcastReceiver {
 
 			}
 			context.sendBroadcast(msgIntent);
-		}
+//		}
 	}
 }

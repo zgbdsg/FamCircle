@@ -33,8 +33,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
 import com.android.famcircle.linearlistview.LinearListView;
-import com.android.famcircle.linearlistview.LinearListView.OnItemClickListener;
-import com.android.famcircle.linearlistview.LinearListView.OnItemLongClickListener;
 import com.famnotes.android.base.AppManager;
 import com.famnotes.android.base.BaseActivity;
 import com.famnotes.android.base.BaseAsyncTask;
@@ -55,8 +53,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 //import android.view.View;
 //import android.view.ViewGroup;
 
-
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends BaseActivity {
@@ -72,8 +68,6 @@ public class MainActivity extends BaseActivity {
 	private LinearListView lvGroup;
 	private ListViewGroupAdapter lvGroupAdaper;
 	private List<Group> infos;
-	private OnItemClickListener groupListClick;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,9 +98,9 @@ public class MainActivity extends BaseActivity {
 		
 		Set<String> tags = new HashSet<String>();
 		for(int i=0;i<Groups.lGroup.size();i++){
-			tags.add("grpId"+Groups.lGroup.get(i).grpId);
+			tags.add(""+Groups.lGroup.get(i).grpId);
 		}
-		JPushInterface.setAliasAndTags(this, "usrId"+User.Current.loginId, tags, new TagAliasCallback() {
+		JPushInterface.setAliasAndTags(this, ""+User.Current.loginId, tags, new TagAliasCallback() {
 			
 			@Override
 			public void gotResult(int arg0, String arg1, Set<String> arg2) {

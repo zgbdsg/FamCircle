@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
 
+import com.android.famcircle.config.Constants;
 import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.ui.MainActivity;
 
@@ -144,7 +145,7 @@ public class MyReceiver extends BroadcastReceiver {
 			String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
 			String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
 			Log.i("custom message:", extras);
-			Intent msgIntent = new Intent(MainActivity.MESSAGE_RECEIVED_ACTION);
+			Intent msgIntent = new Intent(Constants.MESSAGE_RECEIVED_ACTION);
 			msgIntent.putExtra(MainActivity.KEY_MESSAGE, message);
 			if (!ExampleUtil.isEmpty(extras)) {
 				try {

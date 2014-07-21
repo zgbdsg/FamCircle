@@ -59,8 +59,7 @@ public class MainActivity extends BaseActivity {
 	
 	public static boolean isForeground = false;
 	//for receive customer msg from jpush server
-	private MyReceiver mMessageReceiver;
-	public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
+
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_MESSAGE = "message";
 	public static final String KEY_EXTRAS = "extras";
@@ -72,11 +71,6 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-//        JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
-//        JPushInterface.init(this);     		// 初始化 JPush
-		
-        registerMessageReceiver();
         
 		try {
             ViewConfiguration config = ViewConfiguration.get(this);
@@ -155,18 +149,7 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void onDestroy() {
-		unregisterReceiver(mMessageReceiver);
 		super.onDestroy();
-	}
-	
-	
-	public void registerMessageReceiver() {
-		mMessageReceiver = new MyReceiver();
-		IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
-		filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-		filter.addAction(MESSAGE_RECEIVED_ACTION);
-		filter.addAction(Intent.ACTION_BOOT_COMPLETED);
-		registerReceiver(mMessageReceiver, filter);
 	}
 	
 	

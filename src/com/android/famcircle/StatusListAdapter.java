@@ -550,7 +550,7 @@ class ReplyListAdapter extends BaseAdapter{
 		
 		StatusReplyInfo reply = statusReplyInfoList.get(position);
 		
-		SpannableString ssReplyFromName = new SpannableString(reply.getFromUsrName());
+//		SpannableString ssReplyFromName = new SpannableString(reply.getFromUsrName());
 		
 		replyTextView.setText(reply.getFromUsrName()+" reply  "+reply.getToUsrName()+": "+reply.getReply());
 		return replyTextView;

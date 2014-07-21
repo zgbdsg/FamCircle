@@ -45,6 +45,7 @@
 
     <application
         android:allowBackup="true"
+        android:name="com.famnotes.android.boot.BaseApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -274,6 +275,13 @@
         <!-- Required SDK核心功能 -->
         <receiver android:name="cn.jpush.android.service.AlarmReceiver" />
 
+        <service
+            android:name="com.android.famcircle.FamPushService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=".famPush" >
+        </service>
+        
         <!-- User defined.  For test only  用户自定义的广播接收器 -->
         <receiver
             android:name="com.famnotes.android.util.MyReceiver"

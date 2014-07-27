@@ -6,9 +6,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 import cn.jpush.android.api.JPushInterface;
-
-import com.famnotes.android.util.MyReceiver;
 
 public class FamPushService extends Service{
 
@@ -26,7 +25,7 @@ public class FamPushService extends Service{
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-//		Toast.makeText(getApplicationContext(), "Push service !", Toast.LENGTH_SHORT).show();
+		Toast.makeText(getApplicationContext(), "Push service !", Toast.LENGTH_SHORT).show();
 		Log.i("famphoto push service", "create !");
 		JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
         JPushInterface.init(this);     		// 初始化 JPush
@@ -43,7 +42,7 @@ public class FamPushService extends Service{
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
 		super.onStartCommand(intent, flags, startId);
-//		Toast.makeText(getApplicationContext(), "Callback Successed!", Toast.LENGTH_SHORT).show();  
+		Toast.makeText(getApplicationContext(), "Callback Successed!", Toast.LENGTH_SHORT).show();  
 		Log.i("famphoto push service", "start !");
 		return START_STICKY;
 	}

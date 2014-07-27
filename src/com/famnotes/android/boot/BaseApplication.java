@@ -24,6 +24,7 @@ public class BaseApplication extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		ImageLoaderConfig.initImageLoader(this, Constants.BASE_IMAGE_CACHE);
+		registerMessageReceiver();
 		Intent service = new Intent(this,FamPushService.class);
 		startService(service);
 	}

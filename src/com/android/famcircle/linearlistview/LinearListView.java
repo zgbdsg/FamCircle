@@ -374,7 +374,7 @@ public class LinearListView extends IcsLinearLayout {
 		@Override
 		public boolean onLongClick(View v) {
 			// TODO Auto-generated method stub
-			if ((mOnItemClickListener != null) && (mAdapter != null)) {
+			if ((mOnItemLongClickListener != null) && (mAdapter != null)) {
 				mOnItemLongClickListener.onItemLongClick(LinearListView.this, v,
 						mPosition, mAdapter.getItemId(mPosition));
 				return true;

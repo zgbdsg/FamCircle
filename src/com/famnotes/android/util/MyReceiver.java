@@ -2,14 +2,12 @@ package com.famnotes.android.util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
-
 import com.android.famcircle.config.Constants;
 import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.ui.MainActivity;
@@ -27,7 +25,6 @@ public class MyReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
-
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) { 
         	Log.d(TAG, "[MyReceiver] onReceive - " + intent.getAction());
         	if(!JPushInterface.getConnectionState(context)){

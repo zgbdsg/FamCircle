@@ -22,4 +22,14 @@ public class Groups {
 		}
 		return null;
 	}
+	
+	public static Group getGroup(int grpId){
+		for(int i=0; i<lGroup.size(); i++){
+			Group grp=lGroup.get(i);
+			if(grp.grpId==grpId){
+				return grp;
+			}
+		}
+		return null;
+	}
 }

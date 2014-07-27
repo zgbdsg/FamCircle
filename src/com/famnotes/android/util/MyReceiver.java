@@ -1,16 +1,23 @@
 package com.famnotes.android.util;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
 import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.ui.MainActivity;
+import com.famnotes.android.vo.Group;
+import com.famnotes.android.vo.Groups;
+import com.famnotes.android.vo.User;
 
 /**
  * 自定义接收器
@@ -144,18 +151,76 @@ public class MyReceiver extends BroadcastReceiver {
 			Log.i("custom message:", extras);
 			Intent msgIntent = new Intent(Constants.MESSAGE_RECEIVED_ACTION);
 			msgIntent.putExtra(MainActivity.KEY_MESSAGE, message);
-			if (!ExampleUtil.isEmpty(extras)) {
-				try {
-					JSONObject extraJson = new JSONObject(extras);
-					if (null != extraJson && extraJson.length() > 0) {
-						msgIntent.putExtra(MainActivity.KEY_EXTRAS, extras);
-					}
-				} catch (JSONException e) {
-
+			JSONObject extraJson = JSON.parseObject(extras);
+			int type = Integer.parseInt(extraJson.getString("type"));
+			int usrId = Integer.parseInt(extraJson.getString("usrId"));
+			int grpId = Integer.parseInt(extraJson.getString("grpId"));
+			String mess = extraJson.getString("message");					
+			User postUser;
+			Group postGroup;
+			String notificationMessage;					
+			
+			switch (type) {
+//					1-postStatus
+//					2-postReply
+//					3-postZan（postReply里type= 1）
+//					4-removeStatus
+//					5-removeReply
+//					6-removeZan（postReply里type= 1）
+			case 1:
+				Log.i("custom message:", ""+1);
+				postUser = User.getUserById(usrId);
+				postGroup = Groups.getGroup(grpId);
+				notificationMessage = postUser.getName()+" post a status in Group "+postGroup.name;
+				notification(context,notificationMessage);
+				break;
+			case 2:
+				if(User.Current.id != usrId){
+					Log.i("custom message:", ""+2);
+					postUser = User.getUserById(usrId);
+					postGroup = Groups.getGroup(grpId);
+					notificationMessage = postUser.getName()+" post a reply in Group "+postGroup.name;
+					notification(context,notificationMessage);
 				}
-
+				break;
+			case 3:
+				if(User.Current.id != usrId){
+					Log.i("custom message:", ""+3);
+					postUser = User.getUserById(usrId);
+					postGroup = Groups.getGroup(grpId);
+					notificationMessage = postUser.getName()+" post a like in Group "+postGroup.name;
+					notification(context,notificationMessage);
+				}
+				break;
+			case 4:
+				break;
+			case 5:
+				break;
+			case 6:
+				break;
 			}
+			msgIntent.putExtra(MainActivity.KEY_EXTRAS, extras);
 			context.sendBroadcast(msgIntent);
 //		}
+	}
+	
+	private void notification(Context context,String message){
+		Log.i("custom message:", "notification");
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(
+				 context)
+        // Set Icon
+        .setSmallIcon(R.drawable.ic_launcher)
+        // Set Ticker Message
+        .setTicker(message)
+        // Set Title
+        .setContentTitle("FamCircle")
+        // Set Text
+        .setContentText(message)
+        // Set PendingIntent into Notification
+//        .setContentIntent(pIntent)
+        // Dismiss Notification
+        .setAutoCancel(true);
+		NotificationManager notificationmanager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationmanager.notify(0, builder.build());
 	}
 }

@@ -93,9 +93,12 @@ public class FamPushService extends Service{
 		int type = Integer.parseInt(extraJson.getString("type"));
 		int usrId = Integer.parseInt(extraJson.getString("usrId"));
 		int grpId = Integer.parseInt(extraJson.getString("grpId"));
+		String usrName = extraJson.getString("fromUsrName");
+		String grpName = extraJson.getString("grpName");
+		
 //		String mess = extraJson.getString("message");					
-		User postUser;
-		Group postGroup;
+//		User postUser;
+//		Group postGroup;
 		String notificationMessage;					
 		
 		switch (type) {
@@ -110,26 +113,20 @@ public class FamPushService extends Service{
 			
 		case 1:
 			Log.i("custom message:", ""+1);
-			postUser = User.getUserById(usrId);
-			postGroup = Groups.getGroup(grpId);
-			notificationMessage = postUser.getName()+" post a status in Group "+postGroup.name;
+			notificationMessage = usrName+" post a status in Group "+grpName;
 			notification(FamPushService.this,notificationMessage);
 			break;
 		case 2:
 			if(User.Current.id != usrId){
 				Log.i("custom message:", ""+2);
-				postUser = User.getUserById(usrId);
-				postGroup = Groups.getGroup(grpId);
-				notificationMessage = postUser.getName()+" post a reply in Group "+postGroup.name;
+				notificationMessage = usrName+" post a reply in Group "+grpName;
 				notification(FamPushService.this,notificationMessage);
 			}
 			break;
 		case 3:
 			if(User.Current.id != usrId){
 				Log.i("custom message:", ""+3);
-				postUser = User.getUserById(usrId);
-				postGroup = Groups.getGroup(grpId);
-				notificationMessage = postUser.getName()+" post a like in Group "+postGroup.name;
+				notificationMessage = usrName+" post a like in Group "+grpName;
 				notification(FamPushService.this,notificationMessage);
 			}
 			break;

@@ -432,6 +432,7 @@ public class MainActivity extends BaseActivity {
 						iUser.setAvatar(userJSON.getString("avatar"));
 						User.Members.add(iUser);
 					}
+					mCache.put("User.Members", (Serializable)User.Members);
 				}
 			}
 			return null;

@@ -147,6 +147,7 @@ class AppstartTask  extends BaseAsyncTask<Appstart, Void, Integer>{
 					iUser.setAvatar(userJSON.getString("avatar"));
 					User.Members.add(iUser);
 				}
+				mCache.put("User.Members", (Serializable)User.Members);
 			}
 			
 			pdata=new PostData("user", "get_groups");

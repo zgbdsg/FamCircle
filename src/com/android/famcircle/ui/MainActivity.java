@@ -59,10 +59,6 @@ public class MainActivity extends BaseActivity {
 	
 	public static boolean isForeground = false;
 	//for receive customer msg from jpush server
-
-	public static final String KEY_TITLE = "title";
-	public static final String KEY_MESSAGE = "message";
-	public static final String KEY_EXTRAS = "extras";
 	
 	private LinearListView lvGroup;
 	private ListViewGroupAdapter lvGroupAdaper;

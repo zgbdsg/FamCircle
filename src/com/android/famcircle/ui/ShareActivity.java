@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Context;
@@ -26,6 +27,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -69,6 +71,7 @@ public class ShareActivity  extends BaseActivity implements EmojiconGridFragment
 	
 	public static int showNum ;
 	public static Boolean isNeedRefresh;
+	public static boolean isForeground = false;
 	private ACache mCache;
 	
 	String statusResult; //getStatusXXXX()  返回的json数据包
@@ -231,9 +234,17 @@ public class ShareActivity  extends BaseActivity implements EmojiconGridFragment
 	@Override
 	protected void onResume(){
 		super.onResume();
+		isForeground = true;
 		if(isNeedRefresh)
 			listNotifyDataSetChanged();
 	}
+	
+	@Override
+	protected void onPause() {
+		isForeground = false;
+		super.onPause();
+	}
+	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

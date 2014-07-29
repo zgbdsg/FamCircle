@@ -21,6 +21,10 @@ public class Constants {
 	public static int publishResult = 0;
 	
 	public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
+	public static final String KEY_TITLE = "title";
+	public static final String KEY_MESSAGE = "message";
+	public static final String KEY_EXTRAS = "extras";
+	
 	// 图片路径
 	//public static final String IMAGE_URL = "http://58.211.5.34:8080/studioms/staticmedia/images/#";
 

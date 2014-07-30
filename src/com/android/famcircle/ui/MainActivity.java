@@ -4,16 +4,20 @@ import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,6 +58,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 //import android.view.View;
 //import android.view.ViewGroup;
 
+
+import com.readystatesoftware.viewbadger.BadgeView;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends BaseActivity {
@@ -61,13 +69,21 @@ public class MainActivity extends BaseActivity {
 	//for receive customer msg from jpush server
 	
 	private LinearListView lvGroup;
-	private ListViewGroupAdapter lvGroupAdaper;
+	private static ListViewGroupAdapter lvGroupAdaper;
 	private List<Group> infos;
+	private HashMap<Integer,Integer> msgNumber;
+	
+	public static Handler handler = new Handler(){
+		public void handleMessage(Message msg) {
+			Log.i("main activity ", "refresh");
+			lvGroupAdaper.notifyDataSetChanged();
+		}
+	};
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-        
+        Log.i("main activity ", "create");
 		try {
             ViewConfiguration config = ViewConfiguration.get(this);
             Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
@@ -90,14 +106,18 @@ public class MainActivity extends BaseActivity {
 		for(int i=0;i<Groups.lGroup.size();i++){
 			tags.add(""+Groups.lGroup.get(i).grpId);
 		}
-		JPushInterface.setAliasAndTags(this, ""+User.Current.loginId, tags, new TagAliasCallback() {
-			
-			@Override
-			public void gotResult(int arg0, String arg1, Set<String> arg2) {
-				// TODO Auto-generated method stub
+		
+		Boolean isSetAliasAndTags = mCache.getAsObject("isSetAliasAndTags");
+		if(isSetAliasAndTags == null || isSetAliasAndTags == false){
+			JPushInterface.setAliasAndTags(this, ""+User.Current.loginId, tags, new TagAliasCallback() {
 				
-			}
-		});
+				@Override
+				public void gotResult(int arg0, String arg1, Set<String> arg2) {
+					// TODO Auto-generated method stub
+					mCache.put("isSetAliasAndTags", true);
+				}
+			});
+		}
 		
 		Log.i("base path", getFilesDir().getPath());
 		String baseFilePath  = getFilesDir().getPath()+"/zip";
@@ -124,24 +144,49 @@ public class MainActivity extends BaseActivity {
 		infos.add(pesudoGrp);
 		
     	lvGroup = (LinearListView) findViewById(R.id.group_listview); // inflater.inflate(R.id.group_listview, container, false);
-    	lvGroupAdaper=new ListViewGroupAdapter((LayoutInflater)LayoutInflater.from(this));
+    	lvGroupAdaper=new ListViewGroupAdapter((LayoutInflater)LayoutInflater.from(this),this);
 		lvGroup.setAdapter(lvGroupAdaper);
-        
+		isForeground = true;
+		
 	}
 
-
+	
 	@Override
 	protected void onResume() {
 		isForeground = true;
+		Log.i("main activity ", "onResume true");
 		super.onResume();
+//		Intent intent = getIntent();
+//		Bundle bundle = intent.getExtras();
+//		Boolean hasMsg = false;
+//		if(bundle != null)
+//			hasMsg = bundle.getBoolean("push", false);
+//		Log.i("main activity ", "hasMsg "+hasMsg);
+//		if(hasMsg){
+		mCache = ACache.get(this);
+		if(User.Current==null)
+			User.Current=mCache.getAsObject("User.Current");
+		Groups.lGroup=mCache.getAsObject("Groups.lGroup");
+		lvGroupAdaper.notifyDataSetChanged();
+//		}
+			
 	}
 
 
 	@Override
-	protected void onPause() {
+	protected void onStop() {
+		// TODO Auto-generated method stub
 		isForeground = false;
-		super.onPause();
+		Log.i("main activity ", "onStop false");
+		super.onStop();
 	}
+
+//
+//	@Override
+//	protected void onPause() {
+//		isForeground = false;
+//		super.onPause();
+//	}
 	
 	@Override
 	protected void onDestroy() {
@@ -223,9 +268,11 @@ public class MainActivity extends BaseActivity {
     
 	class ListViewGroupAdapter  extends BaseAdapter {
 		private LayoutInflater inflater;
-		public ListViewGroupAdapter(LayoutInflater inflater) {
+		private Context context;
+		public ListViewGroupAdapter(LayoutInflater inflater,Context context) {
 			// TODO Auto-generated constructor stub
 			this.inflater = inflater;
+			this.context = context;
 		}
 
 		@Override
@@ -259,7 +306,16 @@ public class MainActivity extends BaseActivity {
 				holder.tv_image_right = (CircleImageView)convertView.findViewById(R.id.group_image_right);
 				holder.tv_left_block = (LinearLayout) convertView.findViewById(R.id.left_block);
 				holder.tv_right_block = (LinearLayout) convertView.findViewById(R.id.right_block);
-				
+				holder.leftBadge =  (TextView) convertView.findViewById(R.id.push_left);
+				holder.rightBadge =  (TextView) convertView.findViewById(R.id.push_right);
+//				holder.leftBadge =  new BadgeView(context, holder.tv_left_block);
+//				holder.leftBadge.setTextSize(16);
+//				holder.leftBadge.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
+//				holder.leftBadge.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
+//				holder.rightBadge = new BadgeView(context, holder.tv_right_block);
+//				holder.rightBadge.setTextSize(16);
+//				holder.rightBadge.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
+//				holder.rightBadge.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 				convertView.setTag(holder);
 			} else {
 				holder = (ViewHolder) convertView.getTag();
@@ -271,6 +327,9 @@ public class MainActivity extends BaseActivity {
 			holder.tv_image_left.setTag(position*2);
 			holder.tv_left_block.setTag(position*2);
 			holder.tv_right_block.setTag(position*2+1);
+			
+//			BadgeView leftBadge = new BadgeView(context, holder.tv_left_block);
+//			BadgeView rightBadge = new BadgeView(context, holder.tv_right_block);
 			
 			/*set the click listener*/
 			View.OnClickListener listener = new View.OnClickListener() {
@@ -362,16 +421,26 @@ public class MainActivity extends BaseActivity {
 					Log.i("add group name:", infos.get(position*2).getName());
 					Group groupInfo = infos.get(position*2);
 					if(!groupInfo.getName().equals("+")){
+						Log.i("group list push number ", ""+groupInfo.notificationNum);
+						if(groupInfo.notificationNum > 0){
+							holder.leftBadge.setText(""+groupInfo.notificationNum);
+							holder.leftBadge.setTextColor(R.color.red);
+							holder.leftBadge.setVisibility(View.VISIBLE);
+						}else
+							holder.leftBadge.setVisibility(View.GONE);
+							
 						holder.tv_name_left.setText(groupInfo.getName());
 						String path ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfo.getGrpId()+"/"+ groupInfo.getCoverPhoto();
 						ImageLoader.getInstance().displayImage(path, holder.tv_image_left);
 					}else{
+						holder.leftBadge.setVisibility(View.GONE);
 						holder.tv_image_left.setVisibility(View.GONE);
 						holder.tv_name_left.setText(groupInfo.getName());
 						holder.tv_name_left.setTextSize(80);
 						holder.tv_name_left.setPadding(0, 0, 0, 0);
 					}
-
+					
+					holder.rightBadge.setVisibility(View.GONE);
 					holder.tv_right_block.setVisibility(View.INVISIBLE);
 					break;
 				default:
@@ -380,13 +449,29 @@ public class MainActivity extends BaseActivity {
 					holder.tv_name_left.setText(groupInfoLeft.getName());
 					String pathLeft ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfoLeft.getGrpId()+"/"+ groupInfoLeft.getCoverPhoto();
 					ImageLoader.getInstance().displayImage(pathLeft, holder.tv_image_left);
+					Log.i("group list push number ", ""+groupInfoLeft.notificationNum);
+					if(groupInfoLeft.notificationNum > 0){
+						holder.leftBadge.setText(""+groupInfoLeft.notificationNum);
+						holder.leftBadge.setTextColor(R.color.red);
+						holder.leftBadge.setVisibility(View.VISIBLE);
+					}else
+						holder.leftBadge.setVisibility(View.GONE);
 					
 					Group groupInfoRight = infos.get(position*2+1);
 					if(!groupInfoRight.getName().equals("+")){
 						holder.tv_name_right.setText(groupInfoRight.getName());
 						String pathRight ="http://"+Constants.Server+"/famnotes/Uploads/group/"+groupInfoRight.getGrpId()+"/"+ groupInfoRight.getCoverPhoto();
 						ImageLoader.getInstance().displayImage(pathRight, holder.tv_image_right);
+						Log.i("group list push number ", ""+groupInfoRight.notificationNum);
+						if(groupInfoRight.notificationNum > 0){
+							holder.rightBadge.setText(""+groupInfoRight.notificationNum);
+							holder.rightBadge.setTextColor(R.color.red);
+							holder.rightBadge.setVisibility(View.VISIBLE);
+						}else
+							holder.rightBadge.setVisibility(View.GONE);
+						
 					}else{
+						holder.rightBadge.setVisibility(View.GONE);
 						holder.tv_image_right.setVisibility(View.GONE);
 						holder.tv_name_right.setText(groupInfoRight.getName());
 						holder.tv_name_right.setTextSize(80);
@@ -409,6 +494,8 @@ public class MainActivity extends BaseActivity {
 		CircleImageView tv_image_right;
 		LinearLayout tv_left_block;
 		LinearLayout tv_right_block;
+		TextView leftBadge;
+		TextView rightBadge;
 	}	
 	
 	class MemberTask extends BaseAsyncTask<MainActivity, Void, Void> {
@@ -452,6 +539,12 @@ public class MainActivity extends BaseActivity {
 		@Override
 		public boolean onTaskSuccess(MainActivity context, Void result) {
 			Log.i(TAG, "memberTask success");
+			Group selGrp=infos.get(Groups.selectIdx);
+			selGrp.notificationNum = 0;
+			mCache.put("Groups.lGroup", (Serializable)Groups.lGroup);
+			Message msg = new Message();
+			msg.setTarget(handler);
+			msg.sendToTarget();
 			
 			Intent intent = new Intent(MainActivity.this,ShareActivity.class);
 			startActivity(intent);		

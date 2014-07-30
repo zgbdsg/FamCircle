@@ -32,7 +32,16 @@
             android:text="aaaa"
             android:textSize="15sp" />
     </LinearLayout>
-
+	
+     <TextView
+		     android:id="@+id/push_left"
+		     android:layout_width="24dp"
+		     android:layout_height="24dp"
+		     android:gravity="top"
+		     android:layout_marginLeft="-29dp"
+		     android:layout_marginTop="5dp"
+		     android:text="12"/>
+            
     <LinearLayout
         android:id="@+id/right_block"
         android:layout_width="0dp"
@@ -60,4 +69,13 @@
             android:textSize="15sp" />
     </LinearLayout>
 
+     <TextView
+		   android:id="@+id/push_right"
+		   android:layout_width="24dp"
+		   android:layout_height="24dp"
+		   android:gravity="top"
+		   android:layout_marginLeft="-29dp"
+		   android:layout_marginTop="5dp"
+		   android:text="12"/>
+     
 </LinearLayout>

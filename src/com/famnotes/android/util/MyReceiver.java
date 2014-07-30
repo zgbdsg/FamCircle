@@ -1,26 +1,14 @@
 package com.famnotes.android.util;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.sax.StartElementListener;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import cn.jpush.android.api.JPushInterface;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.android.famcircle.FamPushService;
-import com.android.famcircle.R;
 import com.android.famcircle.config.Constants;
-import com.android.famcircle.picselect.PublishedActivity;
 import com.android.famcircle.ui.MainActivity;
-import com.famnotes.android.vo.Group;
-import com.famnotes.android.vo.Groups;
-import com.famnotes.android.vo.User;
 
 /**
  * 自定义接收器
@@ -94,12 +82,14 @@ public class MyReceiver extends BroadcastReceiver {
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户点击打开了通知");
             
-            JPushInterface.reportNotificationOpened(context, bundle.getString(JPushInterface.EXTRA_MSG_ID));
+//            JPushInterface.reportNotificationOpened(context, bundle.getString(JPushInterface.EXTRA_MSG_ID));
             
         	//打开自定义的Activity
-        	Intent i = new Intent(context, PublishedActivity.class);
-        	i.putExtras(bundle);
-        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	Intent i = new Intent(context, MainActivity.class);
+        	Bundle intentBundle = new Bundle();
+        	intentBundle.putBoolean("push", true);
+        	i.putExtras(intentBundle);
+        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         	context.startActivity(i);
         	
         } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {

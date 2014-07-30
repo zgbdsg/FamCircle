@@ -5,7 +5,7 @@ public class Group implements java.io.Serializable {
 
 	
 	public Group(){
-		this.notificationNum = 0;
+		this.notificationNum = 1;
 	}
 	
 	public Group(int grpId, String name, String coverPhoto) {
@@ -13,7 +13,7 @@ public class Group implements java.io.Serializable {
 		this.grpId = grpId;
 		this.name = name;
 		this.coverPhoto=coverPhoto;
-		this.notificationNum = 0;
+		this.notificationNum = 1;
 	}
 	
 	

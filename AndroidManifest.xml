@@ -135,7 +135,6 @@
         <activity
             android:name="com.android.famcircle.ui.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light" >
         </activity>
